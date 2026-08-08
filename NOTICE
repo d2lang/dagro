@@ -1,0 +1,20 @@
+Dagro is a Go port of Dagre 0.8.5 and the subset of Graphlib 2.1.8 required by
+Dagre's layout implementation.
+
+Compatibility sources:
+
+  Dagre 0.8.5
+  https://github.com/dagrejs/dagre
+  commit f56edb1abbb8530e532158f7cbd403228f5b0018
+
+  Graphlib 2.1.8
+  https://github.com/dagrejs/graphlib
+  commit 64375bb8d96bce0d906d238853c2b5afa2f2c231
+
+Both upstream projects are licensed under the MIT License and carry the
+copyright notice "Copyright (c) 2012-2014 Chris Pettitt". The repository's
+LICENSE preserves that notice and license text.
+
+Dagre 0.8.5 also depends on Lodash 4.17.15. Dagro does not include Lodash
+source; Go helpers reproduce only the observable collection and numeric
+semantics required by the port.
