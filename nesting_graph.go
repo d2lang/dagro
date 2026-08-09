@@ -34,9 +34,9 @@ func nestingDFS(g *Graph, root string, nodeSep int, weight float64, height int, 
 	top := addBorderNode(g, "_bt")
 	bottom := addBorderNode(g, "_bb")
 	label := asAttrs(g.Node(v))
-	_ = g.SetParent(top, v)
+	_ = g.setParentKnownAcyclic(top, v)
 	label["borderTop"] = top
-	_ = g.SetParent(bottom, v)
+	_ = g.setParentKnownAcyclic(bottom, v)
 	label["borderBottom"] = bottom
 	for _, child := range children {
 		nestingDFS(g, root, nodeSep, weight, height, depths, child)

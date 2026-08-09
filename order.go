@@ -24,7 +24,10 @@ type orderResult struct {
 // order applies Dagre 0.8.5's four-way sweeping heuristic and writes the best
 // order found back to the node labels.
 func order(g *Graph) {
-	maxRank := orderMaxRank(g)
+	// The topology does not change during ordering. Capture JavaScript node
+	// enumeration once, then use it for rank bucketing and layer snapshots.
+	nodes := g.Nodes()
+	maxRank := orderMaxRankNodes(g, nodes)
 	downRanks := make([]int, 0, maxRank)
 	for rank := 1; rank <= maxRank; rank++ {
 		downRanks = append(downRanks, rank)
@@ -34,10 +37,11 @@ func order(g *Graph) {
 		upRanks = append(upRanks, rank)
 	}
 
-	downLayerGraphs := buildLayerGraphs(g, downRanks, "inEdges")
-	upLayerGraphs := buildLayerGraphs(g, upRanks, "outEdges")
+	nodesByRank := buildLayerNodeBuckets(g, nodes, maxRank)
+	downLayerGraphs := buildLayerGraphsFromBuckets(g, downRanks, "inEdges", nodesByRank)
+	upLayerGraphs := buildLayerGraphsFromBuckets(g, upRanks, "outEdges", nodesByRank)
 
-	layering := initOrder(g)
+	layering := initOrderNodes(g, nodes)
 	assignOrder(g, layering)
 
 	bestCC := math.Inf(1)
@@ -49,7 +53,7 @@ func order(g *Graph) {
 			sweepLayerGraphs(upLayerGraphs, i%4 >= 2)
 		}
 
-		layering = orderBuildLayerMatrix(g)
+		layering = orderBuildLayerMatrixNodes(g, nodes, maxRank)
 		cc := crossCount(g, layering)
 		if cc < bestCC {
 			lastBest = 0
@@ -62,11 +66,65 @@ func order(g *Graph) {
 }
 
 func buildLayerGraphs(g *Graph, ranks []int, relationship string) []*Graph {
+	maxRank := -1
+	for _, rank := range ranks {
+		if rank > maxRank {
+			maxRank = rank
+		}
+	}
+	nodes := g.Nodes()
+	nodesByRank := buildLayerNodeBuckets(g, nodes, maxRank)
+	return buildLayerGraphsFromBuckets(g, ranks, relationship, nodesByRank)
+}
+
+func buildLayerGraphsFromBuckets(g *Graph, ranks []int, relationship string, nodesByRank [][]string) []*Graph {
 	result := make([]*Graph, 0, len(ranks))
 	for _, rank := range ranks {
-		result = append(result, buildLayerGraph(g, rank, relationship))
+		var nodes []string
+		if 0 <= rank && rank < len(nodesByRank) {
+			nodes = nodesByRank[rank]
+		}
+		result = append(result, buildLayerGraphNodes(g, rank, relationship, nodes))
 	}
 	return result
+}
+
+// buildLayerNodeBuckets performs the same global JavaScript-order filtering as
+// buildLayerGraph did rank by rank. Nodes are the outer loop, so every bucket
+// retains the exact order of g.nodes(). Compound nodes are added to each rank
+// in their inclusive minRank/maxRank interval.
+func buildLayerNodeBuckets(g *Graph, nodes []string, maxRank int) [][]string {
+	if maxRank < 0 {
+		return nil
+	}
+	buckets := make([][]string, maxRank+1)
+	for _, v := range nodes {
+		node := asAttrs(g.Node(v))
+		nodeRank, hasRank := 0, has(node, "rank")
+		if hasRank {
+			nodeRank = integer(node, "rank")
+			if 0 <= nodeRank && nodeRank <= maxRank {
+				buckets[nodeRank] = append(buckets[nodeRank], v)
+			}
+		}
+		if !has(node, "minRank") || !has(node, "maxRank") {
+			continue
+		}
+		minRank, maxNodeRank := integer(node, "minRank"), integer(node, "maxRank")
+		if minRank < 0 {
+			minRank = 0
+		}
+		if maxNodeRank > maxRank {
+			maxNodeRank = maxRank
+		}
+		for rank := minRank; rank <= maxNodeRank; rank++ {
+			if hasRank && rank == nodeRank {
+				continue
+			}
+			buckets[rank] = append(buckets[rank], v)
+		}
+	}
+	return buckets
 }
 
 func sweepLayerGraphs(layerGraphs []*Graph, biasRight bool) {
@@ -90,8 +148,12 @@ func assignOrder(g *Graph, layering [][]string) {
 }
 
 func orderMaxRank(g *Graph) int {
+	return orderMaxRankNodes(g, g.Nodes())
+}
+
+func orderMaxRankNodes(g *Graph, nodes []string) int {
 	maxRank := -1
-	for _, v := range g.Nodes() {
+	for _, v := range nodes {
 		node := asAttrs(g.Node(v))
 		if has(node, "rank") {
 			rank := integer(node, "rank")
@@ -104,12 +166,17 @@ func orderMaxRank(g *Graph) int {
 }
 
 func orderBuildLayerMatrix(g *Graph) [][]string {
-	maxRank := orderMaxRank(g)
+	nodes := g.Nodes()
+	return orderBuildLayerMatrixNodes(g, nodes, orderMaxRankNodes(g, nodes))
+}
+
+func orderBuildLayerMatrixNodes(g *Graph, nodes []string, maxRank int) [][]string {
 	if maxRank < 0 {
 		return nil
 	}
 	layering := make([][]string, maxRank+1)
-	for _, v := range g.Nodes() {
+	layerSizes := make([]int, maxRank+1)
+	for _, v := range nodes {
 		node := asAttrs(g.Node(v))
 		if !has(node, "rank") || !has(node, "order") {
 			continue
@@ -119,10 +186,22 @@ func orderBuildLayerMatrix(g *Graph) [][]string {
 		if rank < 0 || rank >= len(layering) || position < 0 {
 			continue
 		}
-		if position >= len(layering[rank]) {
-			grown := make([]string, position+1)
-			copy(grown, layering[rank])
-			layering[rank] = grown
+		if position >= layerSizes[rank] {
+			layerSizes[rank] = position + 1
+		}
+	}
+	for rank, size := range layerSizes {
+		layering[rank] = make([]string, size)
+	}
+	for _, v := range nodes {
+		node := asAttrs(g.Node(v))
+		if !has(node, "rank") || !has(node, "order") {
+			continue
+		}
+		rank := integer(node, "rank")
+		position := integer(node, "order")
+		if rank < 0 || rank >= len(layering) || position < 0 {
+			continue
 		}
 		layering[rank][position] = v
 	}

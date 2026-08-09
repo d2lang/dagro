@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"sort"
 	"strconv"
-	"strings"
 	"unicode/utf16"
 )
 
@@ -50,8 +49,11 @@ func (s *orderedSet) remove(v string) {
 		return
 	}
 	delete(s.has, v)
-	for i, item := range s.order {
-		if item == v {
+	// Reparenting algorithm-generated nodes normally removes the node that was
+	// just appended. Search backwards so that common case is constant time while
+	// preserving JavaScript property order exactly.
+	for i := len(s.order) - 1; i >= 0; i-- {
+		if s.order[i] == v {
 			s.order = append(s.order[:i], s.order[i+1:]...)
 			return
 		}
@@ -100,6 +102,10 @@ type edgeMap struct {
 
 func newEdgeMap() *edgeMap { return &edgeMap{items: map[string]Edge{}} }
 
+func newEdgeMapWithCapacity(capacity int) *edgeMap {
+	return &edgeMap{order: make([]string, 0, capacity), items: make(map[string]Edge, capacity)}
+}
+
 func (m *edgeMap) set(id string, e Edge) {
 	if _, ok := m.items[id]; !ok {
 		m.order = append(m.order, id)
@@ -121,6 +127,9 @@ func (m *edgeMap) remove(id string) {
 }
 
 func (m *edgeMap) values() []Edge {
+	if m == nil {
+		return nil
+	}
 	keys := jsObjectKeyOrder(append([]string(nil), m.order...))
 	out := make([]Edge, 0, len(keys))
 	for _, id := range keys {
@@ -154,20 +163,29 @@ func NewGraph(opts ...GraphOptions) *Graph {
 	if len(opts) > 0 {
 		o = opts[0]
 	}
+	return newGraphWithCapacity(o, 0, 0)
+}
+
+func newGraphWithCapacity(o GraphOptions, nodeCapacity, edgeCapacity int) *Graph {
 	directed := true
 	if o.Undirected {
 		directed = false
 	} else if o.Directed {
 		directed = true
 	}
+	adjacencyCapacity := nodeCapacity
+	if edgeCapacity*2 < adjacencyCapacity {
+		adjacencyCapacity = edgeCapacity * 2
+	}
 	g := &Graph{
 		directed: directed, multigraph: o.Multigraph, compound: o.Compound,
 		defaultNodeLabel: func(string) any { return nil },
 		defaultEdgeLabel: func(string, string, *string) any { return nil },
-		nodes:            map[string]any{}, parent: map[string]string{}, children: map[string]*orderedSet{},
-		in: map[string]*edgeMap{}, out: map[string]*edgeMap{},
-		preds: map[string]*orderedCounter{}, sucs: map[string]*orderedCounter{},
-		edgeObjs: newEdgeMap(), edgeLabels: map[string]any{},
+		nodes:            make(map[string]any, nodeCapacity), nodeOrder: make([]string, 0, nodeCapacity),
+		parent: make(map[string]string, nodeCapacity), children: make(map[string]*orderedSet, nodeCapacity+1),
+		in: make(map[string]*edgeMap, adjacencyCapacity), out: make(map[string]*edgeMap, adjacencyCapacity),
+		preds: make(map[string]*orderedCounter, adjacencyCapacity), sucs: make(map[string]*orderedCounter, adjacencyCapacity),
+		edgeObjs: newEdgeMapWithCapacity(edgeCapacity), edgeLabels: make(map[string]any, edgeCapacity),
 	}
 	if g.compound {
 		g.children[graphNode] = newOrderedSet()
@@ -208,7 +226,7 @@ func (g *Graph) Nodes() []string { return jsObjectKeyOrder(append([]string(nil),
 func (g *Graph) Sources() []string {
 	var out []string
 	for _, v := range g.Nodes() {
-		if len(g.in[v].items) == 0 {
+		if in := g.in[v]; in == nil || len(in.items) == 0 {
 			out = append(out, v)
 		}
 	}
@@ -218,7 +236,7 @@ func (g *Graph) Sources() []string {
 func (g *Graph) Sinks() []string {
 	var out []string
 	for _, v := range g.Nodes() {
-		if len(g.out[v].items) == 0 {
+		if outEdges := g.out[v]; outEdges == nil || len(outEdges.items) == 0 {
 			out = append(out, v)
 		}
 	}
@@ -247,13 +265,8 @@ func (g *Graph) SetNode(v string, value ...any) *Graph {
 	g.nodeOrder = append(g.nodeOrder, v)
 	if g.compound {
 		g.parent[v] = graphNode
-		g.children[v] = newOrderedSet()
 		g.children[graphNode].add(v)
 	}
-	g.in[v] = newEdgeMap()
-	g.out[v] = newEdgeMap()
-	g.preds[v] = newOrderedCounter()
-	g.sucs[v] = newOrderedCounter()
 	return g
 }
 
@@ -296,30 +309,49 @@ func (g *Graph) RemoveNode(v string) *Graph {
 }
 
 func (g *Graph) SetParent(v string, parent ...string) error {
+	return g.setParent(v, true, parent...)
+}
+
+// setParentKnownAcyclic is for internal graphs and dummy nodes whose parent
+// relationship is derived from an already validated compound tree. It retains
+// graphlib's insertion and child ordering, but avoids walking the ancestor
+// chain for every generated parent assignment.
+func (g *Graph) setParentKnownAcyclic(v string, parent ...string) error {
+	return g.setParent(v, false, parent...)
+}
+
+func (g *Graph) setParent(v string, checkCycle bool, parent ...string) error {
 	if !g.compound {
 		return fmt.Errorf("cannot set parent in a non-compound graph")
 	}
 	p := graphNode
 	if len(parent) > 0 {
 		p = parent[0]
-		for ancestor, defined := p, true; defined; {
-			if ancestor == v {
-				return fmt.Errorf("setting %s as parent of %s would create a cycle", p, v)
+		if checkCycle {
+			for ancestor, defined := p, true; defined; {
+				if ancestor == v {
+					return fmt.Errorf("setting %s as parent of %s would create a cycle", p, v)
+				}
+				ancestor, defined = g.Parent(ancestor)
 			}
-			ancestor, defined = g.Parent(ancestor)
 		}
 		g.SetNode(p)
 	}
 	g.SetNode(v)
 	g.removeFromParentsChildList(v)
 	g.parent[v] = p
+	if g.children[p] == nil {
+		g.children[p] = newOrderedSet()
+	}
 	g.children[p].add(v)
 	return nil
 }
 
 func (g *Graph) removeFromParentsChildList(v string) {
 	if p, ok := g.parent[v]; ok {
-		g.children[p].remove(v)
+		if children := g.children[p]; children != nil {
+			children.remove(v)
+		}
 	}
 }
 
@@ -463,6 +495,7 @@ func (g *Graph) SetEdge(v, w string, args ...any) *Graph {
 	}
 	e := edgeArgsToObj(g.directed, v, w, name)
 	g.edgeObjs.set(id, e)
+	g.ensureEdgeEndpointMaps(e.V, e.W)
 	g.preds[e.W].inc(e.V)
 	g.sucs[e.V].inc(e.W)
 	g.in[e.W].set(id, e)
@@ -503,6 +536,7 @@ func (g *Graph) setEdge(v, w string, value any, valueSpecified bool, name *strin
 			g.edgeLabels[id] = g.defaultEdgeLabel(v, w, name)
 			e := edgeArgsToObj(g.directed, v, w, name)
 			g.edgeObjs.set(id, e)
+			g.ensureEdgeEndpointMaps(e.V, e.W)
 			g.preds[e.W].inc(e.V)
 			g.sucs[e.V].inc(e.W)
 			g.in[e.W].set(id, e)
@@ -512,6 +546,21 @@ func (g *Graph) setEdge(v, w string, value any, valueSpecified bool, name *strin
 		args = append(args, *name)
 	}
 	return g.SetEdge(v, w, args...)
+}
+
+func (g *Graph) ensureEdgeEndpointMaps(v, w string) {
+	if g.out[v] == nil {
+		g.out[v] = newEdgeMap()
+	}
+	if g.sucs[v] == nil {
+		g.sucs[v] = newOrderedCounter()
+	}
+	if g.in[w] == nil {
+		g.in[w] = newEdgeMap()
+	}
+	if g.preds[w] == nil {
+		g.preds[w] = newOrderedCounter()
+	}
 }
 
 func (g *Graph) uniqueID(prefix string) string {
@@ -572,6 +621,9 @@ func (g *Graph) RemoveEdgeByArgs(v, w string, name ...string) *Graph {
 func (g *Graph) InEdges(v string, u ...string) []Edge {
 	m := g.in[v]
 	if m == nil {
+		if g.HasNode(v) {
+			return []Edge{}
+		}
 		return nil
 	}
 	edges := m.values()
@@ -589,6 +641,9 @@ func (g *Graph) InEdges(v string, u ...string) []Edge {
 func (g *Graph) OutEdges(v string, w ...string) []Edge {
 	m := g.out[v]
 	if m == nil {
+		if g.HasNode(v) {
+			return []Edge{}
+		}
 		return nil
 	}
 	edges := m.values()
@@ -648,37 +703,76 @@ func edgeObjToID(directed bool, e Edge) string {
 }
 
 // JavaScript Object.keys enumerates array-index keys first in numeric order.
-// Dagre mostly uses opaque IDs, but matching this detail keeps numeric IDs
-// compatible with graphlib.
+// jsObjectKeyOrder reorders the caller-owned slice in place. Most Dagre key
+// sets are already in JavaScript order, so the first pass also acts as a fast
+// path that avoids parsing with strconv, sorting, and allocating helper slices.
 func jsObjectKeyOrder(keys []string) []string {
 	type indexed struct {
 		key   string
-		value uint64
+		value uint32
 	}
-	var indices []indexed
-	var rest []string
+	if len(keys) < 2 {
+		return keys
+	}
+
+	indexCount := 0
+	indicesInPlace := true
+	sawNonIndex := false
+	var previous uint32
 	for _, key := range keys {
-		if key == "0" {
-			indices = append(indices, indexed{key, 0})
+		value, ok := jsArrayIndex(key)
+		if !ok {
+			sawNonIndex = true
 			continue
 		}
-		if strings.HasPrefix(key, "0") || key == "" {
-			rest = append(rest, key)
-			continue
+		if sawNonIndex || indexCount > 0 && value < previous {
+			indicesInPlace = false
 		}
-		n, err := strconv.ParseUint(key, 10, 32)
-		if err == nil && n < 4294967295 && strconv.FormatUint(n, 10) == key {
-			indices = append(indices, indexed{key, n})
+		previous = value
+		indexCount++
+	}
+	if indicesInPlace {
+		return keys
+	}
+
+	indices := make([]indexed, 0, indexCount)
+	rest := make([]string, 0, len(keys)-indexCount)
+	for _, key := range keys {
+		if value, ok := jsArrayIndex(key); ok {
+			indices = append(indices, indexed{key: key, value: value})
 		} else {
 			rest = append(rest, key)
 		}
 	}
 	sort.SliceStable(indices, func(i, j int) bool { return indices[i].value < indices[j].value })
-	out := make([]string, 0, len(keys))
-	for _, item := range indices {
-		out = append(out, item.key)
+	for i, item := range indices {
+		keys[i] = item.key
 	}
-	return append(out, rest...)
+	copy(keys[len(indices):], rest)
+	return keys
+}
+
+// jsArrayIndex implements the array-index portion of ECMAScript property-key
+// ordering: a canonical unsigned decimal string in [0, 2^32-2].
+func jsArrayIndex(key string) (uint32, bool) {
+	if key == "0" {
+		return 0, true
+	}
+	if len(key) == 0 || len(key) > 10 || key[0] == '0' {
+		return 0, false
+	}
+	var value uint64
+	for i := 0; i < len(key); i++ {
+		digit := key[i]
+		if digit < '0' || digit > '9' {
+			return 0, false
+		}
+		value = value*10 + uint64(digit-'0')
+		if value >= 1<<32-1 {
+			return 0, false
+		}
+	}
+	return uint32(value), true
 }
 
 func preorder(g *Graph, starts []string) []string  { return dfs(g, starts, false) }

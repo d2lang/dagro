@@ -175,6 +175,17 @@ func differentialFixtures() []namedFixture {
 	out = append(out, namedFixture{"compound", in})
 
 	in = base()
+	deepIDs := []string{"10", "2", "alpha", "1", "beta", "01", "4294967294", "4294967295", "z", "3", "leaf"}
+	for i, id := range deepIDs {
+		node := diffNodeInput{ID: id, Attrs: Attrs{"width": 40.0 + float64(i), "height": 30.0 + float64(i)}}
+		if i > 0 {
+			node.Parent = strptr(deepIDs[i-1])
+		}
+		in.Nodes = append(in.Nodes, node)
+	}
+	out = append(out, namedFixture{"deep-compound-key-order", in})
+
+	in = base()
 	in.Graph = Attrs{"nodeSep": 23.0, "marginX": 7.0, "marginY": 9.0}
 	in.Nodes = []diffNodeInput{
 		{"10", Attrs{"width": 12.0, "height": 12.0}, nil}, {"2", Attrs{"width": 14.0, "height": 14.0}, nil},
