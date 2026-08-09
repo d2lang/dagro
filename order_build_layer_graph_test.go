@@ -140,3 +140,81 @@ func TestBuildLayerGraph(t *testing.T) {
 		}
 	})
 }
+
+func TestBuildLayerGraphsRankBucketsMatchPerRankFiltering(t *testing.T) {
+	newGraph := func() *Graph {
+		g := NewGraph(GraphOptions{Compound: true, Multigraph: true})
+		g.SetNode("10", Attrs{"rank": float64(2)})
+		g.SetNode("2", Attrs{"rank": float64(1)})
+		g.SetNode("cluster", Attrs{
+			"minRank": float64(0), "maxRank": float64(3),
+			"borderLeft":  map[int]string{0: "bl0", 1: "bl1", 2: "bl2", 3: "bl3"},
+			"borderRight": map[int]string{0: "br0", 1: "br1", 2: "br2", 3: "br3"},
+		})
+		g.SetNode("1", Attrs{"rank": float64(2)})
+		g.SetNode("alpha", Attrs{"rank": float64(3)})
+		g.SetNode("01", Attrs{"rank": float64(0)})
+		g.SetNode("both", Attrs{
+			"rank": float64(2), "minRank": float64(1), "maxRank": float64(3),
+			"borderLeft":  map[int]string{1: "bbl1", 2: "bbl2", 3: "bbl3"},
+			"borderRight": map[int]string{1: "bbr1", 2: "bbr2", 3: "bbr3"},
+		})
+		for _, child := range []string{"1", "01", "both"} {
+			if err := g.SetParent(child, "cluster"); err != nil {
+				panic(err)
+			}
+		}
+		g.SetEdge("2", "1", Attrs{"weight": float64(2)})
+		g.SetEdge("10", "alpha", Attrs{"weight": float64(3)})
+		g.SetEdge("01", "alpha", Attrs{"weight": float64(5)}, "multi")
+		return g
+	}
+
+	for _, relationship := range []string{"inEdges", "outEdges"} {
+		t.Run(relationship, func(t *testing.T) {
+			gotSource, wantSource := newGraph(), newGraph()
+			buckets := buildLayerNodeBuckets(gotSource, gotSource.Nodes(), 3)
+			for rank := 0; rank <= 3; rank++ {
+				got := buildLayerGraphNodes(gotSource, rank, relationship, buckets[rank])
+				want := buildLayerGraph(wantSource, rank, relationship)
+				assertLayerGraphsEqual(t, got, want)
+			}
+		})
+	}
+}
+
+func assertLayerGraphsEqual(t *testing.T, got, want *Graph) {
+	t.Helper()
+	if !reflect.DeepEqual(got.Graph(), want.Graph()) {
+		t.Fatalf("graph labels differ: got %#v, want %#v", got.Graph(), want.Graph())
+	}
+	gotNodes, wantNodes := got.Nodes(), want.Nodes()
+	if !reflect.DeepEqual(gotNodes, wantNodes) {
+		t.Fatalf("nodes differ: got %v, want %v", gotNodes, wantNodes)
+	}
+	if !reflect.DeepEqual(got.Children(), want.Children()) {
+		t.Fatalf("root children differ: got %v, want %v", got.Children(), want.Children())
+	}
+	for _, v := range wantNodes {
+		if !reflect.DeepEqual(got.Node(v), want.Node(v)) {
+			t.Fatalf("node %q differs: got %#v, want %#v", v, got.Node(v), want.Node(v))
+		}
+		gotParent, gotHasParent := got.Parent(v)
+		wantParent, wantHasParent := want.Parent(v)
+		if gotParent != wantParent || gotHasParent != wantHasParent {
+			t.Fatalf("parent %q differs: got %q/%v, want %q/%v", v, gotParent, gotHasParent, wantParent, wantHasParent)
+		}
+		if !reflect.DeepEqual(got.Children(v), want.Children(v)) {
+			t.Fatalf("children %q differ: got %v, want %v", v, got.Children(v), want.Children(v))
+		}
+	}
+	gotEdges, wantEdges := got.Edges(), want.Edges()
+	if !reflect.DeepEqual(gotEdges, wantEdges) {
+		t.Fatalf("edges differ: got %#v, want %#v", gotEdges, wantEdges)
+	}
+	for _, edge := range wantEdges {
+		if !reflect.DeepEqual(got.Edge(edge), want.Edge(edge)) {
+			t.Fatalf("edge %#v differs: got %#v, want %#v", edge, got.Edge(edge), want.Edge(edge))
+		}
+	}
+}

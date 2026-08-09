@@ -1,36 +1,57 @@
 package dagro
 
 func buildLayerGraph(g *Graph, rank int, relationship string) *Graph {
-	root := createOrderRootNode(g)
-	result := NewGraph(GraphOptions{Compound: true}).SetGraph(Attrs{"root": root})
-	result.SetDefaultNodeLabel(func(v string) any { return g.Node(v) })
-
+	var nodes []string
 	for _, v := range g.Nodes() {
 		node := asAttrs(g.Node(v))
 		onRank := has(node, "rank") && integer(node, "rank") == rank
 		spansRank := has(node, "minRank") && has(node, "maxRank") &&
 			integer(node, "minRank") <= rank && rank <= integer(node, "maxRank")
-		if !onRank && !spansRank {
-			continue
+		if onRank || spansRank {
+			nodes = append(nodes, v)
 		}
+	}
+	return buildLayerGraphNodes(g, rank, relationship, nodes)
+}
 
+func buildLayerGraphNodes(g *Graph, rank int, relationship string, nodes []string) *Graph {
+	root := createOrderRootNode(g)
+	edgeCapacity := 0
+	switch relationship {
+	case "inEdges":
+		for _, v := range nodes {
+			if edges := g.in[v]; edges != nil {
+				edgeCapacity += len(edges.items)
+			}
+		}
+	case "outEdges":
+		for _, v := range nodes {
+			if edges := g.out[v]; edges != nil {
+				edgeCapacity += len(edges.items)
+			}
+		}
+	default:
+		panic("dagro: unsupported layer-graph relationship: " + relationship)
+	}
+	result := newGraphWithCapacity(GraphOptions{Compound: true}, len(nodes)+1, edgeCapacity).SetGraph(Attrs{"root": root})
+	result.SetDefaultNodeLabel(func(v string) any { return g.Node(v) })
+
+	for _, v := range nodes {
+		node := asAttrs(g.Node(v))
 		result.SetNode(v)
 		parent, ok := g.Parent(v)
 		if !ok || parent == "" {
 			parent = root
 		}
-		if err := result.SetParent(v, parent); err != nil {
+		if err := result.setParentKnownAcyclic(v, parent); err != nil {
 			panic(err)
 		}
 
 		var incident []Edge
-		switch relationship {
-		case "inEdges":
+		if relationship == "inEdges" {
 			incident = g.InEdges(v)
-		case "outEdges":
+		} else {
 			incident = g.OutEdges(v)
-		default:
-			panic("dagro: unsupported layer-graph relationship: " + relationship)
 		}
 		for _, e := range incident {
 			u := e.V

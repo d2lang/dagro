@@ -3,9 +3,13 @@ package dagro
 import gosort "sort"
 
 func initOrder(g *Graph) [][]string {
+	return initOrderNodes(g, g.Nodes())
+}
+
+func initOrderNodes(g *Graph, nodes []string) [][]string {
 	visited := map[string]bool{}
 	simpleNodes := make([]string, 0, g.NodeCount())
-	for _, v := range g.Nodes() {
+	for _, v := range nodes {
 		if len(g.Children(v)) == 0 {
 			simpleNodes = append(simpleNodes, v)
 		}

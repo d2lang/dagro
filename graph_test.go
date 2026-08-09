@@ -48,6 +48,39 @@ func TestGraphNodeOrderMatchesJavaScriptObjectKeys(t *testing.T) {
 	if got := g.Nodes(); !reflect.DeepEqual(got, want) {
 		t.Fatalf("reinserted Nodes() = %v, want %v", got, want)
 	}
+
+	// Array-index properties always remain in numeric order, including after
+	// deletion and reinsertion.
+	g.RemoveNode("2").SetNode("2")
+	if got := g.Nodes(); !reflect.DeepEqual(got, want) {
+		t.Fatalf("reinserted numeric Nodes() = %v, want %v", got, want)
+	}
+}
+
+func TestJSArrayIndexAndObjectKeyOrder(t *testing.T) {
+	valid := map[string]uint32{
+		"0": 0, "1": 1, "10": 10, "4294967294": 4294967294,
+	}
+	for key, want := range valid {
+		got, ok := jsArrayIndex(key)
+		if !ok || got != want {
+			t.Errorf("jsArrayIndex(%q) = %d, %v; want %d, true", key, got, ok, want)
+		}
+	}
+	for _, key := range []string{
+		"", "00", "01", "-0", "+1", " 1", "1 ", "1.0", "1e0",
+		"4294967295", "4294967296", "9999999999", "18446744073709551615", "１",
+	} {
+		if got, ok := jsArrayIndex(key); ok {
+			t.Errorf("jsArrayIndex(%q) = %d, true; want false", key, got)
+		}
+	}
+
+	keys := []string{"4294967295", "10", "2", "01", "0", "4294967294", "alpha", "+1"}
+	want := []string{"0", "2", "10", "4294967294", "4294967295", "01", "alpha", "+1"}
+	if got := jsObjectKeyOrder(keys); !reflect.DeepEqual(got, want) {
+		t.Fatalf("jsObjectKeyOrder() = %v, want %v", got, want)
+	}
 }
 
 func TestGraphNodeDefaultsAndRemoval(t *testing.T) {
@@ -220,6 +253,26 @@ func TestGraphSourcesSinksAndNeighborCounts(t *testing.T) {
 	if len(g.Successors("a")) != 0 || len(g.Predecessors("b")) != 0 {
 		t.Fatalf("last multiedge left neighbor counts: sucs=%v preds=%v",
 			g.Successors("a"), g.Predecessors("b"))
+	}
+}
+
+func TestGraphIsolatedNodeQueriesAndRemoval(t *testing.T) {
+	g := NewGraph().SetNode("isolated")
+	if got := g.Sources(); !reflect.DeepEqual(got, []string{"isolated"}) {
+		t.Fatalf("isolated Sources() = %v", got)
+	}
+	if got := g.Sinks(); !reflect.DeepEqual(got, []string{"isolated"}) {
+		t.Fatalf("isolated Sinks() = %v", got)
+	}
+	if got := g.InEdges("isolated"); got == nil || len(got) != 0 {
+		t.Fatalf("isolated InEdges() = %#v, want non-nil empty slice", got)
+	}
+	if got := g.OutEdges("isolated"); got == nil || len(got) != 0 {
+		t.Fatalf("isolated OutEdges() = %#v, want non-nil empty slice", got)
+	}
+	g.RemoveNode("isolated")
+	if g.NodeCount() != 0 {
+		t.Fatalf("isolated node survived removal: %v", g.Nodes())
 	}
 }
 

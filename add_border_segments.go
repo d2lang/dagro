@@ -31,7 +31,7 @@ func addSubgraphBorderNode(g *Graph, prop, prefix, subgraph string, subgraphNode
 	prev := borders[rank-1]
 	curr := addDummyNode(g, "border", label, prefix)
 	borders[rank] = curr
-	_ = g.SetParent(curr, subgraph)
+	_ = g.setParentKnownAcyclic(curr, subgraph)
 	if prev != "" {
 		g.SetEdge(prev, curr, Attrs{"weight": float64(1)})
 	}

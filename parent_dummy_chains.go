@@ -39,9 +39,9 @@ func parentDummyChains(g *Graph) {
 				pathV = path[pathIdx]
 			}
 			if pathV == "" {
-				_ = g.SetParent(v)
+				_ = g.setParentKnownAcyclic(v)
 			} else {
-				_ = g.SetParent(v, pathV)
+				_ = g.setParentKnownAcyclic(v, pathV)
 			}
 			v = g.Successors(v)[0]
 		}
