@@ -11,7 +11,7 @@ import (
 )
 
 // Attrs is Dagro's equivalent of a JavaScript object used as a graph, node,
-// or edge label by Dagre 0.8.5.
+// or edge label by the verified Dagre profile.
 type Attrs map[string]any
 
 // Point is a point in the coordinate system produced by Layout.

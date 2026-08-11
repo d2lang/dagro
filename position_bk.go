@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// The horizontal coordinate assignment below is a direct port of Dagre
-// 0.8.5's Brandes-Kopf implementation in lib/position/bk.js.
+// The horizontal coordinate assignment below ports Dagre 3.1.1's
+// Brandes-Kopf implementation in lib/position/bk.ts.
 
 type positionConflicts map[string]map[string]bool
 
@@ -65,7 +65,7 @@ func findType1Conflicts(g *Graph, layering [][]string) positionConflicts {
 }
 
 // findType2Conflicts finds crossings between inner segments, favoring border
-// segments. The scan placement intentionally mirrors Dagre 0.8.5, including
+// segments. The scan placement intentionally mirrors Dagre, including
 // its repeated tail scan inside the south-layer loop.
 func findType2Conflicts(g *Graph, layering [][]string) positionConflicts {
 	conflicts := positionConflicts{}

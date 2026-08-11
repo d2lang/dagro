@@ -12,7 +12,7 @@ const (
 	edgeKeyDelim    = "\x01"
 )
 
-// GraphOptions matches graphlib 2.1.8's Graph constructor options.
+// GraphOptions is the D2-used subset of Graphlib 4.0.5's Graph options.
 type GraphOptions struct {
 	Directed   bool
 	Undirected bool
@@ -137,8 +137,8 @@ func (m *edgeMap) values() []Edge {
 	return out
 }
 
-// Graph is a behavior-compatible Go implementation of the graphlib 2.1.8
-// graph used by Dagre 0.8.5.
+// Graph implements the D2-used Graphlib 4.0.5 operations plus the operations
+// required by Dagre's verified default layout path.
 type Graph struct {
 	directed, multigraph, compound bool
 	label                          any

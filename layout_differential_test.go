@@ -161,6 +161,11 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 		Source struct {
 			CompatibilityPatch       string `json:"compatibility_patch"`
 			CompatibilityPatchSHA256 string `json:"compatibility_patch_sha256"`
+			D2Copyright              string `json:"d2_copyright"`
+			D2License                string `json:"d2_license"`
+			D2LicenseFile            string `json:"d2_license_file"`
+			D2LicenseSHA256          string `json:"d2_license_sha256"`
+			D2NoticeFile             string `json:"d2_notice_file"`
 		} `json:"source"`
 		Cases []compatibilityCase `json:"cases"`
 	}
@@ -180,6 +185,19 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 	}
 	if got := fmt.Sprintf("%x", sha256.Sum256(patchData)); got != manifest.Source.CompatibilityPatchSHA256 {
 		t.Fatalf("compatibility patch SHA-256 = %s, want %s", got, manifest.Source.CompatibilityPatchSHA256)
+	}
+	if manifest.Source.D2Copyright != "Copyright 2022 Terrastruct Inc." || manifest.Source.D2License != "MPL-2.0" || manifest.Source.D2NoticeFile == "" {
+		t.Fatalf("unexpected D2 corpus attribution: %#v", manifest.Source)
+	}
+	d2License, err := os.ReadFile(filepath.Join(compatibilityDir, manifest.Source.D2LicenseFile))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := fmt.Sprintf("%x", sha256.Sum256(d2License)); got != manifest.Source.D2LicenseSHA256 {
+		t.Fatalf("D2 license SHA-256 = %s, want %s", got, manifest.Source.D2LicenseSHA256)
+	}
+	if _, err := os.Stat(filepath.Join(compatibilityDir, manifest.Source.D2NoticeFile)); err != nil {
+		t.Fatal(err)
 	}
 
 	dagreJS := os.Getenv("DAGRO_DAGRE_JS")
@@ -313,7 +331,12 @@ func TestLayoutMatchesD2Corpus(t *testing.T) {
 		Graphs                     map[string]corpusEntry `json:"graphs"`
 		CompatibilityRootFixInputs []string               `json:"compatibility_root_fix_inputs"`
 		D2                         struct {
-			Commit string `json:"commit"`
+			Commit        string `json:"commit"`
+			Copyright     string `json:"copyright"`
+			License       string `json:"license"`
+			LicenseFile   string `json:"license_file"`
+			LicenseSHA256 string `json:"license_sha256"`
+			NoticeFile    string `json:"notice_file"`
 		} `json:"d2"`
 		Oracle struct {
 			DagreVersion     string `json:"dagre_version"`
@@ -339,6 +362,19 @@ func TestLayoutMatchesD2Corpus(t *testing.T) {
 	}
 	if manifest.D2.Commit != "1a60d69e4df9b9557923e61bf10f9aa3aa5422e1" {
 		t.Fatalf("D2 corpus commit = %q", manifest.D2.Commit)
+	}
+	if manifest.D2.Copyright != "Copyright 2022 Terrastruct Inc." || manifest.D2.License != "MPL-2.0" || manifest.D2.NoticeFile == "" {
+		t.Fatalf("unexpected D2 corpus attribution: %#v", manifest.D2)
+	}
+	d2License, err := os.ReadFile(filepath.Join(corpusDir, manifest.D2.LicenseFile))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := fmt.Sprintf("%x", sha256.Sum256(d2License)); got != manifest.D2.LicenseSHA256 {
+		t.Fatalf("D2 license SHA-256 = %s, want %s", got, manifest.D2.LicenseSHA256)
+	}
+	if _, err := os.Stat(filepath.Join(corpusDir, manifest.D2.NoticeFile)); err != nil {
+		t.Fatal(err)
 	}
 	if manifest.Oracle.DagreVersion != "3.1.1" || manifest.Oracle.DagreGitHead != "c3ed0802cd98de74c21cff1f754689ebbb0f8dae" || manifest.Oracle.DagreCJSHA256 != "70b9a4367932dd436075d98892a7968d65cf66ae83263f995e0531823b59b671" {
 		t.Fatalf("unexpected Dagre oracle provenance: %#v", manifest.Oracle)

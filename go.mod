@@ -1,3 +1,3 @@
 module github.com/d2lang/dagro
 
-go 1.22
+go 1.26.5

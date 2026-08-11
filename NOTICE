@@ -1,20 +1,37 @@
-Dagro is a Go port of Dagre 0.8.5 and the subset of Graphlib 2.1.8 required by
-Dagre's layout implementation.
+Dagro is a native Go implementation of the D2-used default layout profile from
+Dagre 3.1.1 and the subset of Graphlib 4.0.5 required by that profile.
 
-Compatibility sources:
+Behavioral sources:
 
-  Dagre 0.8.5
+  @dagrejs/dagre 3.1.1
   https://github.com/dagrejs/dagre
-  commit f56edb1abbb8530e532158f7cbd403228f5b0018
+  commit c3ed0802cd98de74c21cff1f754689ebbb0f8dae
+  npm integrity sha512-zroZB1dFOFiGgv4Xcrn1DckB1o4aOikPqD2NDQPV0WM//CXGcS6xiD0rNkqHmw6FEg4tabt4nxPLwgCWT+Vb2A==
 
-  Graphlib 2.1.8
+  @dagrejs/graphlib 4.0.5
   https://github.com/dagrejs/graphlib
-  commit 64375bb8d96bce0d906d238853c2b5afa2f2c231
+  commit d3a0cf36f55ebd75f28b6acf7a436a54e1b990dc
+  npm integrity sha512-7xrBTqIts3o+PMUZX97wSc+7TUbW+/rULzGNCTP6yooNVDXbzw4Wutg/H/xOutTB/c/k0YqOAavgPh4/Zk9PFA==
 
 Both upstream projects are licensed under the MIT License and carry the
 copyright notice "Copyright (c) 2012-2014 Chris Pettitt". The repository's
 LICENSE preserves that notice and license text.
 
-Dagre 0.8.5 also depends on Lodash 4.17.15. Dagro does not include Lodash
-source; Go helpers reproduce only the observable collection and numeric
-semantics required by the port.
+Dagro does not bundle the JavaScript packages. They are installed only in the
+test oracle. Dagro intentionally covers the D2-used surface rather than all
+features or APIs of either upstream project.
+
+The JSON under testdata/differential/d2-corpus and
+testdata/differential/compatibility is derived from D2 E2E fixtures captured
+at commit 1a60d69e4df9b9557923e61bf10f9aa3aa5422e1 and retains D2's copyright
+and Mozilla Public License 2.0 coverage. D2 is Copyright 2022 Terrastruct Inc.
+See testdata/differential/D2-LICENSE.txt and D2-CORPUS-NOTICE.md. The expected
+JSON additionally contains generated layout geometry from the pinned MIT
+oracle or documented compatibility patch.
+
+Two narrow source-level compatibility corrections are represented by
+testdata/differential/dagre-3.1.1-d2-compat.patch (SHA-256
+75fb417a9536d5bd3483fda38da5d5f3468ad00969b7c06fad5a5187e208666e):
+parallel-edge special handling requires exactly one reversed edge, and
+zero-size rectangle intersections remain finite. Dagro also collision-checks
+generated reversed-edge names to preserve caller-owned named multiedges.

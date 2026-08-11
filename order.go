@@ -22,7 +22,7 @@ type orderResult struct {
 	UsedBias      bool
 }
 
-// order applies Dagre 0.8.5's four-way sweeping heuristic and writes the best
+// order applies Dagre's four-way sweeping heuristic and writes the best
 // order found back to the node labels.
 func order(g *Graph) {
 	// The topology does not change during ordering. Capture JavaScript node

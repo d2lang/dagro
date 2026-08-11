@@ -1,7 +1,7 @@
 package dagro
 
 // position assigns coordinates to the leaf nodes in g. Compound container
-// nodes are positioned later from their border nodes, as in Dagre 0.8.5.
+// nodes are positioned later from their border nodes, as in Dagre 3.1.1.
 func position(g *Graph) {
 	g = asNonCompoundGraph(g)
 

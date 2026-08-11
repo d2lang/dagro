@@ -2,7 +2,7 @@ package dagro
 
 // networkSimplex assigns ranks and iteratively exchanges negative-cut tree
 // edges to reduce weighted edge length. The structure follows
-// lib/rank/network-simplex.js from Dagre 0.8.5.
+// lib/rank/network-simplex.ts from Dagre 3.1.1.
 func networkSimplex(input *Graph) {
 	g := simplify(input)
 	longestPath(g)

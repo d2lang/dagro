@@ -12,8 +12,8 @@ type LayoutOptions struct {
 	DebugTiming bool
 }
 
-// Layout runs the Dagre 0.8.5 layout algorithm and writes coordinates and
-// routes back to g. The input graph's topology is not modified.
+// Layout runs the verified Dagre 3.1.1 default-path profile and writes
+// coordinates and routes back to g. The input graph's topology is not modified.
 func Layout(g *Graph, options ...LayoutOptions) error {
 	opts := LayoutOptions{}
 	if len(options) > 0 {

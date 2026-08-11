@@ -3,7 +3,12 @@
   "description": "Raw Dagro inputs at D2's adapter boundary plus pinned official Dagre 3.1.1 expectations.",
   "d2": {
     "commit": "1a60d69e4df9b9557923e61bf10f9aa3aa5422e1",
-    "repository": "https://github.com/d2lang/d2"
+    "repository": "https://github.com/d2lang/d2",
+    "copyright": "Copyright 2022 Terrastruct Inc.",
+    "license": "MPL-2.0",
+    "license_file": "../D2-LICENSE.txt",
+    "license_sha256": "97933e571f92c0b21e09a59fe67d7ce9a77d3eac5efe5f341756d5f93d191775",
+    "notice_file": "../D2-CORPUS-NOTICE.md"
   },
   "oracle": {
     "dagre_cjs_sha256": "70b9a4367932dd436075d98892a7968d65cf66ae83263f995e0531823b59b671",

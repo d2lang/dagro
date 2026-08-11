@@ -3,10 +3,15 @@
   "source": {
     "repository": "https://github.com/d2lang/d2",
     "commit": "1a60d69e4df9b9557923e61bf10f9aa3aa5422e1",
+    "d2_copyright": "Copyright 2022 Terrastruct Inc.",
+    "d2_license": "MPL-2.0",
+    "d2_license_file": "../D2-LICENSE.txt",
+    "d2_license_sha256": "97933e571f92c0b21e09a59fe67d7ce9a77d3eac5efe5f341756d5f93d191775",
+    "d2_notice_file": "../D2-CORPUS-NOTICE.md",
     "dagre_repository": "https://github.com/dagrejs/dagre",
     "dagre_commit": "c3ed0802cd98de74c21cff1f754689ebbb0f8dae",
     "compatibility_patch": "../dagre-3.1.1-d2-compat.patch",
-    "compatibility_patch_sha256": "0fb0cc1e2b848fd4a55391f659b5d5d32b424e755fb3d2cca2b437b6f1d9e3dd"
+    "compatibility_patch_sha256": "75fb417a9536d5bd3483fda38da5d5f3468ad00969b7c06fad5a5187e208666e"
   },
   "cases": [
     {
