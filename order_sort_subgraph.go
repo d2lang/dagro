@@ -102,14 +102,10 @@ func sortSubgraph(g *Graph, v string, cg *Graph, biasRight bool) orderResult {
 }
 
 func setReversedOrderPair(pairs *[]reversedOrderPair, key string, entry orderEntry) {
-	for i := range *pairs {
-		if (*pairs)[i].key == key {
-			// JavaScript object assignment overwrites the existing value but
-			// retains the property's original enumeration position.
-			(*pairs)[i].entry = entry
-			return
-		}
-	}
+	// Dagre's object-valued reversedPairs table loses an earlier reversed
+	// parallel dummy when more than one partner maps to the same forward dummy.
+	// Keep every partner; sortOrderEntriesWithReversedPairs restores them in
+	// encounter order immediately after the forward dummy.
 	*pairs = append(*pairs, reversedOrderPair{key: key, entry: entry})
 }
 

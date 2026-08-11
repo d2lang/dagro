@@ -1,8 +1,17 @@
 diff --git a/lib/order/sort-subgraph.ts b/lib/order/sort-subgraph.ts
-index 00aea27..a5f0ab2 100644
+index 00aea27..d6b10da 100644
 --- a/lib/order/sort-subgraph.ts
 +++ b/lib/order/sort-subgraph.ts
-@@ -71,7 +71,8 @@ export default function sortSubgraph(
+@@ -56,7 +56,7 @@ export default function sortSubgraph(
+     const entries = resolveConflicts(barycenters, constraintGraph);
+     expandSubgraphs(entries, subgraphs);
+
+-    const reversedPairs: Record<string, ResolvedEntry> = {};
++    const reversedPairs: Record<string, ResolvedEntry[]> = {};
+     let usedBias = false;
+     for (let i = 0; i < entries.length; i++) {
+         for (let j = i + 1; j < entries.length; j++) {
+@@ -71,14 +71,15 @@ export default function sortSubgraph(
 
                  if (nodeI.dummy === "edge" && nodeJ.dummy === "edge" &&
                      nodeI.edgeObj?.v === nodeJ.edgeObj?.v &&
@@ -10,8 +19,48 @@ index 00aea27..a5f0ab2 100644
 +                    nodeI.edgeObj?.w === nodeJ.edgeObj?.w &&
 +                    nodeI.edgeLabel.reversed !== nodeJ.edgeLabel.reversed) {
                      if (nodeI.edgeLabel.reversed) {
-                         reversedPairs[nameJ] = entries[i]!;
+-                        reversedPairs[nameJ] = entries[i]!;
++                        (reversedPairs[nameJ] ??= []).push(entries[i]!);
                          entries.splice(i, 1);
+                         i--;
+                         break;
+                     } else {
+-                        reversedPairs[nameI] = entries[j]!;
++                        (reversedPairs[nameI] ??= []).push(entries[j]!);
+                         entries.splice(j, 1);
+                         j--;
+                     }
+diff --git a/lib/order/sort.ts b/lib/order/sort.ts
+index e24f96e..7dd2b0e 100644
+--- a/lib/order/sort.ts
++++ b/lib/order/sort.ts
+@@ -17,12 +17,12 @@ interface SortResult {
+
+ export default function sort(
+     entries: SortEntry[],
+-    reversedPairs?: Record<string, ResolvedEntry> | boolean,
++    reversedPairs?: Record<string, ResolvedEntry[]> | boolean,
+     oldNodes?: NodeCollection,
+     graph?: Graph | null,
+     biasRight?: boolean
+ ): SortResult {
+-    let resolvedReversedPairs: Record<string, ResolvedEntry> = {};
++    let resolvedReversedPairs: Record<string, ResolvedEntry[]> = {};
+     let resolvedOldNodes: NodeCollection = null;
+     let resolvedGraph: Graph | null = null;
+     let resolvedBiasRight: boolean | undefined = biasRight;
+@@ -49,9 +49,9 @@ export default function sort(
+     sortable.sort(compareWithOldOrder(resolvedGraph, resolvedOldNodes, !!resolvedBiasRight));
+
+     // re-inserts the links, that are already in sortable but reversed, next to its reverse counterpart
+-    for (const [key, value] of Object.entries(resolvedReversedPairs)) {
++    for (const [key, values] of Object.entries(resolvedReversedPairs)) {
+         const keyIndex = sortable.findIndex(entry => entry.vs[0] === key);
+-        sortable.splice(keyIndex + 1, 0, value);
++        sortable.splice(keyIndex + 1, 0, ...values);
+     }
+
+     vsIndex = consumeUnsortable(vs, unsortable, vsIndex);
 diff --git a/lib/util.ts b/lib/util.ts
 index cd94a68..799faa0 100644
 --- a/lib/util.ts

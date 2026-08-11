@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -15,6 +16,8 @@ import (
 	"sync"
 	"testing"
 )
+
+const compatibilityOracleSHA256 = "8e34c25ed53dbccca2fa206780b0b46974b285c74e0cd7b34d0d1fafa5506cab"
 
 type diffNodeInput struct {
 	ID     string  `json:"id"`
@@ -155,12 +158,15 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 		OfficialStatus     string `json:"official_status"`
 		OfficialNullValues int    `json:"official_null_values"`
 		OfficialError      string `json:"official_error"`
+		OfficialSHA256     string `json:"official_sha256"`
 		Reason             string `json:"reason"`
 	}
 	var manifest struct {
 		Source struct {
 			CompatibilityPatch       string `json:"compatibility_patch"`
 			CompatibilityPatchSHA256 string `json:"compatibility_patch_sha256"`
+			CompatibilityOracle      string `json:"compatibility_oracle_builder"`
+			CompatibilityOracleSHA   string `json:"compatibility_oracle_sha256"`
 			D2Copyright              string `json:"d2_copyright"`
 			D2License                string `json:"d2_license"`
 			D2LicenseFile            string `json:"d2_license_file"`
@@ -176,8 +182,8 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 	if err := json.Unmarshal(manifestJSON, &manifest); err != nil {
 		t.Fatal(err)
 	}
-	if len(manifest.Cases) != 3 {
-		t.Fatalf("compatibility cases = %d, want 3", len(manifest.Cases))
+	if len(manifest.Cases) != 4 {
+		t.Fatalf("compatibility cases = %d, want 4", len(manifest.Cases))
 	}
 	patchData, err := os.ReadFile(filepath.Join(compatibilityDir, manifest.Source.CompatibilityPatch))
 	if err != nil {
@@ -185,6 +191,12 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 	}
 	if got := fmt.Sprintf("%x", sha256.Sum256(patchData)); got != manifest.Source.CompatibilityPatchSHA256 {
 		t.Fatalf("compatibility patch SHA-256 = %s, want %s", got, manifest.Source.CompatibilityPatchSHA256)
+	}
+	if manifest.Source.CompatibilityOracleSHA != compatibilityOracleSHA256 {
+		t.Fatalf("compatibility oracle SHA-256 = %s, want %s", manifest.Source.CompatibilityOracleSHA, compatibilityOracleSHA256)
+	}
+	if _, err := os.Stat(filepath.Join(compatibilityDir, manifest.Source.CompatibilityOracle)); err != nil {
+		t.Fatal(err)
 	}
 	if manifest.Source.D2Copyright != "Copyright 2022 Terrastruct Inc." || manifest.Source.D2License != "MPL-2.0" || manifest.Source.D2NoticeFile == "" {
 		t.Fatalf("unexpected D2 corpus attribution: %#v", manifest.Source)
@@ -250,6 +262,21 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 				cmd.Stderr = &stderr
 				jsJSON, err := cmd.Output()
 				switch testCase.OfficialStatus {
+				case "finite-different":
+					if err != nil {
+						t.Fatalf("official oracle unexpectedly failed: %v: %s", err, stderr.String())
+					}
+					if got := fmt.Sprintf("%x", sha256.Sum256(jsJSON)); got != testCase.OfficialSHA256 {
+						t.Fatalf("official output SHA-256 = %s, want %s", got, testCase.OfficialSHA256)
+					}
+					var official any
+					if err := json.Unmarshal(jsJSON, &official); err != nil {
+						t.Fatal(err)
+					}
+					assertFiniteJSON(t, "official", official)
+					if reflect.DeepEqual(official, want) {
+						t.Fatal("official output unexpectedly matches the compatibility result")
+					}
 				case "nonfinite":
 					if err != nil {
 						t.Fatalf("official oracle unexpectedly failed: %v: %s", err, stderr.String())
@@ -275,6 +302,131 @@ func TestLayoutDagre311CompatibilityCases(t *testing.T) {
 			})
 		})
 	}
+}
+
+func TestD2ProfileRandomLayoutsAreFinite(t *testing.T) {
+	rng := rand.New(rand.NewSource(3112026))
+	for i := 0; i < 300; i++ {
+		input := d2ProfileRandomInput(rng, i)
+		if i == 24 {
+			wire, err := json.Marshal(input)
+			if err != nil {
+				t.Fatal(err)
+			}
+			const wantSHA256 = "abfd93c91884b993c19a70c48f26c83816e95f22f750750cf966f4a2fa80089b"
+			if got := fmt.Sprintf("%x", sha256.Sum256(wire)); got != wantSHA256 {
+				t.Fatalf("seed case 24 SHA-256 = %s, want %s", got, wantSHA256)
+			}
+		}
+		output, err := runDifferentialGoResult(input)
+		if err != nil {
+			t.Fatalf("seed 3112026 case %d: %v", i, err)
+		}
+		var decoded any
+		if err := json.Unmarshal(output, &decoded); err != nil {
+			t.Fatalf("seed 3112026 case %d: decode output: %v", i, err)
+		}
+		assertFiniteJSON(t, fmt.Sprintf("seed[3112026].case[%d]", i), decoded)
+	}
+}
+
+func TestD2ProfileRandomLayoutsMatchCompatibilityOracle(t *testing.T) {
+	dagreJS := os.Getenv("DAGRO_DAGRE_JS_COMPAT")
+	if dagreJS == "" {
+		t.Skip("set DAGRO_DAGRE_JS_COMPAT to the reproducibly built compatibility oracle")
+	}
+	oracle, err := os.ReadFile(dagreJS)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := fmt.Sprintf("%x", sha256.Sum256(oracle)); got != compatibilityOracleSHA256 {
+		t.Fatalf("compatibility oracle SHA-256 = %s, want %s", got, compatibilityOracleSHA256)
+	}
+	node, err := exec.LookPath("node")
+	if err != nil {
+		t.Skip("node is not on PATH")
+	}
+
+	rng := rand.New(rand.NewSource(3112026))
+	for i := 0; i < 300; i++ {
+		input := d2ProfileRandomInput(rng, i)
+		inputJSON, err := json.Marshal(input)
+		if err != nil {
+			t.Fatalf("seed 3112026 case %d: encode input: %v", i, err)
+		}
+		goJSON, err := runDifferentialGoResult(input)
+		if err != nil {
+			t.Fatalf("seed 3112026 case %d: Go layout: %v", i, err)
+		}
+		cmd := exec.Command(node, "testdata/differential/oracle.js")
+		cmd.Env = append(os.Environ(), "DAGRO_DAGRE_JS="+dagreJS)
+		cmd.Stdin = bytes.NewReader(inputJSON)
+		var stderr bytes.Buffer
+		cmd.Stderr = &stderr
+		jsJSON, err := cmd.Output()
+		if err != nil {
+			t.Fatalf("seed 3112026 case %d: compatibility oracle: %v: %s", i, err, stderr.String())
+		}
+		var want, got any
+		if err := json.Unmarshal(jsJSON, &want); err != nil {
+			t.Fatalf("seed 3112026 case %d: decode oracle output: %v", i, err)
+		}
+		if err := json.Unmarshal(goJSON, &got); err != nil {
+			t.Fatalf("seed 3112026 case %d: decode Go output: %v", i, err)
+		}
+		compareJSON(t, fmt.Sprintf("seed[3112026].case[%d]", i), want, got)
+	}
+}
+
+func d2ProfileRandomInput(rng *rand.Rand, index int) diffInput {
+	directions := []string{"TB", "BT", "LR", "RL"}
+	input := diffInput{
+		Options: GraphOptions{Directed: true, Multigraph: true, Compound: true},
+		Graph: Attrs{
+			"rankdir": directions[rng.Intn(len(directions))],
+			"nodesep": float64(10 + rng.Intn(101)),
+			"edgesep": float64(5 + rng.Intn(51)),
+			"ranksep": float64(20 + rng.Intn(181)),
+		},
+	}
+	nodeCount := 2 + rng.Intn(10)
+	clusterCount := rng.Intn(4)
+	for cluster := 0; cluster < clusterCount; cluster++ {
+		input.Nodes = append(input.Nodes, diffNodeInput{
+			ID: fmt.Sprintf("cluster%d", cluster),
+			Attrs: Attrs{
+				"width": float64(40 + rng.Intn(120)), "height": float64(40 + rng.Intn(100)),
+			},
+		})
+	}
+	ids := make([]string, nodeCount)
+	for i := range ids {
+		ids[i] = fmt.Sprint(i)
+	}
+	rng.Shuffle(len(ids), func(i, j int) { ids[i], ids[j] = ids[j], ids[i] })
+	for i, id := range ids {
+		node := diffNodeInput{
+			ID: id,
+			Attrs: Attrs{
+				"width": float64(10 + rng.Intn(121)), "height": float64(10 + rng.Intn(101)),
+			},
+		}
+		if clusterCount > 0 && (i+index)%3 != 0 {
+			node.Parent = strptr(fmt.Sprintf("cluster%d", rng.Intn(clusterCount)))
+		}
+		input.Nodes = append(input.Nodes, node)
+	}
+	edgeCount := 1 + rng.Intn(nodeCount*3)
+	for i := 0; i < edgeCount; i++ {
+		v, w := ids[rng.Intn(nodeCount)], ids[rng.Intn(nodeCount)]
+		input.Edges = append(input.Edges, diffEdgeInput{
+			V: v, W: w, Name: strptr(fmt.Sprintf("(%s -> %s)[%d]", v, w, i)),
+			Attrs: Attrs{
+				"width": float64(rng.Intn(81)), "height": float64(rng.Intn(41)), "labelpos": "c",
+			},
+		})
+	}
+	return input
 }
 
 func TestLayoutConcurrentDummyIDsAreDeterministic(t *testing.T) {

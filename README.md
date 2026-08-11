@@ -68,23 +68,37 @@ The checked-in D2 corpus contains 311 unique layouts captured at D2 commit
   Dagre 3.1.1 either emits non-finite geometry or throws.
 
 The compatibility correction only pairs parallel dummy nodes when exactly one
-edge is reversed, and keeps degenerate zero-size rectangle intersections
+edge is reversed, preserves every reversed partner when several map to the
+same forward dummy, and keeps degenerate zero-size rectangle intersections
 finite. Dagro also collision-checks generated reversed-edge names so a caller
-edge such as `rev1` cannot be overwritten. The first two changes are recorded
-as a reviewable source patch in
+edge such as `rev1` cannot be overwritten. The first three changes are
+recorded as a reviewable source patch in
 `testdata/differential/dagre-3.1.1-d2-compat.patch`.
+
+A fourth synthetic compatibility case minimizes the multiple-reversed-partner
+failure using only D2-profile inputs. It is separate from the 311 captured
+layouts and pins the finite result of the source patch.
 
 The normal Go suite runs the complete 311-input corpus. CI additionally
 installs the exact JavaScript oracle from `package-lock.json`, checks ordinary
 fixtures against official Dagre 3.1.1 using exact `float64` bits, and verifies
-the three named upstream failure modes:
+the three captured upstream failures plus the minimized synthetic divergence:
 
 ```sh
 cd testdata/differential
 npm ci --ignore-scripts
 cd ../..
 DAGRO_DAGRE_JS="$PWD/testdata/differential/node_modules/@dagrejs/dagre/dist/dagre.cjs" go test ./...
+
+./testdata/differential/build-dagre-3.1.1-d2-compat.sh /tmp/dagre-3.1.1-d2-compat.cjs
+DAGRO_DAGRE_JS_COMPAT=/tmp/dagre-3.1.1-d2-compat.cjs \
+  go test -run '^TestD2ProfileRandomLayoutsMatchCompatibilityOracle$' -count=1 .
 ```
+
+The compatibility builder fetches the exact upstream commit, verifies its
+lockfile and the source patch, builds with the upstream-pinned toolchain, and
+checks the final CommonJS SHA-256 before writing it. No JavaScript bundle is
+checked into Dagro or used in production.
 
 See [UPSTREAM.md](UPSTREAM.md) for source pins, hashes, the port map, and the
 precise compatibility boundary.

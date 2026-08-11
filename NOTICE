@@ -17,21 +17,27 @@ Both upstream projects are licensed under the MIT License and carry the
 copyright notice "Copyright (c) 2012-2014 Chris Pettitt". The repository's
 LICENSE preserves that notice and license text.
 
-Dagro does not bundle the JavaScript packages. They are installed only in the
-test oracle. Dagro intentionally covers the D2-used surface rather than all
-features or APIs of either upstream project.
+Dagro does not bundle the JavaScript packages. Official packages are installed
+only for tests, and the patched compatibility oracle is reproducibly generated
+from the pinned source commit during tests. Dagro intentionally covers the
+D2-used surface rather than all features or APIs of either upstream project.
 
-The JSON under testdata/differential/d2-corpus and
-testdata/differential/compatibility is derived from D2 E2E fixtures captured
-at commit 1a60d69e4df9b9557923e61bf10f9aa3aa5422e1 and retains D2's copyright
-and Mozilla Public License 2.0 coverage. D2 is Copyright 2022 Terrastruct Inc.
-See testdata/differential/D2-LICENSE.txt and D2-CORPUS-NOTICE.md. The expected
+The JSON under testdata/differential/d2-corpus and the first three named
+compatibility cases is derived from D2 E2E fixtures captured at commit
+1a60d69e4df9b9557923e61bf10f9aa3aa5422e1 and retains D2's copyright and
+Mozilla Public License 2.0 coverage. D2 is Copyright 2022 Terrastruct Inc. See
+testdata/differential/D2-LICENSE.txt and D2-CORPUS-NOTICE.md. Their expected
 JSON additionally contains generated layout geometry from the pinned MIT
-oracle or documented compatibility patch.
+oracle or documented compatibility patch. The synthetic fourth compatibility
+case is generated under Dagro's MIT license.
 
-Two narrow source-level compatibility corrections are represented by
+Three narrow source-level compatibility corrections are represented by
 testdata/differential/dagre-3.1.1-d2-compat.patch (SHA-256
-75fb417a9536d5bd3483fda38da5d5f3468ad00969b7c06fad5a5187e208666e):
-parallel-edge special handling requires exactly one reversed edge, and
-zero-size rectangle intersections remain finite. Dagro also collision-checks
-generated reversed-edge names to preserve caller-owned named multiedges.
+d510c474e1f291c38c14c276f6bc498dbbd0dc7132e3b9694e31b47650356d19):
+parallel-edge special handling requires exactly one reversed edge, all
+opposite-direction partners for the same forward dummy are retained, and
+zero-size rectangle intersections remain finite. The generated test-only
+oracle has SHA-256
+8e34c25ed53dbccca2fa206780b0b46974b285c74e0cd7b34d0d1fafa5506cab.
+Dagro also collision-checks generated reversed-edge names to preserve
+caller-owned named multiedges.

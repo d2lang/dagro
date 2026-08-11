@@ -174,11 +174,18 @@ func verticalAlignment(
 			mp := float64(len(ws)-1) / 2
 			for i, last := int(math.Floor(mp)), int(math.Ceil(mp)); i <= last; i++ {
 				w := ws[i]
-				if align[v] == v && prevIdx < pos[w] && !hasConflict(conflicts, v, w) {
+				wPos, ok := pos[w]
+				if !ok {
+					// In JavaScript, comparing an index with undefined is false. A
+					// missing Go map entry is zero, so an unchecked lookup can instead
+					// create an alignment rooted at the empty string and panic later.
+					continue
+				}
+				if align[v] == v && prevIdx < wPos && !hasConflict(conflicts, v, w) {
 					align[w] = v
 					root[v] = root[w]
 					align[v] = root[v]
-					prevIdx = pos[w]
+					prevIdx = wPos
 				}
 			}
 		}

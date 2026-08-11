@@ -127,8 +127,6 @@ func buildLayoutGraph(inputGraph *Graph) *Graph {
 		g.SetNode(v, label)
 		if parent, ok := inputGraph.Parent(v); ok {
 			_ = g.setParentKnownAcyclic(v, parent)
-		} else {
-			_ = g.setParentKnownAcyclic(v)
 		}
 	}
 	for _, e := range inputGraph.Edges() {

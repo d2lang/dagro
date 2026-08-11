@@ -110,6 +110,32 @@ func TestSortSubgraph(t *testing.T) {
 		}
 	})
 
+	t.Run("preserves multiple reversed partners for one forward dummy", func(t *testing.T) {
+		g, cg := newSortSubgraphTestGraph(t)
+		edge := Edge{V: "a", W: "b", Name: "parallel", HasName: true}
+		g.SetNode("forward", Attrs{
+			"dummy": "edge", "edgeObj": edge, "edgeLabel": Attrs{},
+		})
+		for _, v := range []string{"reverse-1", "reverse-2"} {
+			g.SetNode(v, Attrs{
+				"dummy": "edge", "edgeObj": edge, "edgeLabel": Attrs{"reversed": true},
+			})
+		}
+		for _, v := range []string{"forward", "reverse-1", "reverse-2"} {
+			g.SetEdge("1", v)
+		}
+		setOrderTestParents(t, g, []string{"forward", "reverse-1", "reverse-2"}, "movable")
+
+		got := sortSubgraph(g, "movable", cg, false)
+		want := []string{"forward", "reverse-2", "reverse-1"}
+		if !reflect.DeepEqual(got.VS, want) {
+			t.Fatalf("multi-reversed-pair sort = %v, want %v", got.VS, want)
+		}
+		if !got.UsedBias {
+			t.Fatal("same-direction reversed partners did not report bias use")
+		}
+	})
+
 	t.Run("aggregates subgraph statistics", func(t *testing.T) {
 		g, cg := newSortSubgraphTestGraph(t)
 		g.SetEdge("3", "x")

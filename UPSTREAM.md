@@ -14,6 +14,18 @@ The test-only `package.json` and lockfile pin those exact packages. CI pins
 Node 24.19.0 and uses `npm ci --ignore-scripts`; neither JavaScript package is
 a production dependency.
 
+The compatibility oracle is rebuilt from the exact Dagre commit by
+`testdata/differential/build-dagre-3.1.1-d2-compat.sh`. The builder verifies
+upstream `package-lock.json` SHA-256
+`9f5e1e7a40667dcffc12e35ea5d4db96f346dadf943e97c1ecc2b4dc21afbb2d`,
+applies the pinned source patch, runs the upstream build with esbuild 0.27.3,
+tsx 4.21.0, TypeScript 5.9.3, and Graphlib 4.0.5, and verifies patched
+`dist/dagre.js` SHA-256
+`9b91fccee8e70a74299cf47eaf8100c46a900fb1f334a11424ff3682c1019585`.
+The generated test-only CommonJS oracle has SHA-256
+`8e34c25ed53dbccca2fa206780b0b46974b285c74e0cd7b34d0d1fafa5506cab`;
+it is generated in CI and is not checked in or shipped.
+
 ## Source map
 
 | Upstream source | Dagro implementation |
@@ -46,11 +58,12 @@ finite. The exact expected-output partition is therefore:
 - three named compatibility outputs: one replaces a successful but
   non-finite official result, and two replace official errors.
 
-All corpus and compatibility JSON is derived from D2's MPL-2.0 E2E fixtures
-and retains D2's copyright and license coverage; see
-`testdata/differential/D2-CORPUS-NOTICE.md` and `D2-LICENSE.txt`. Expected JSON
-additionally contains generated layout geometry from the pinned MIT oracle or
-documented compatibility patch, with source and hashes recorded in the
+The 311-input corpus and the first three named compatibility cases are derived
+from D2's MPL-2.0 E2E fixtures and retain D2's copyright and license coverage;
+see `testdata/differential/D2-CORPUS-NOTICE.md` and `D2-LICENSE.txt`. Their
+expected JSON additionally contains generated layout geometry from the pinned
+MIT oracle or documented compatibility patch. The synthetic fourth case is
+generated under Dagro's MIT license. Sources and hashes are recorded in the
 manifests.
 
 The compatibility cases are:
@@ -60,24 +73,29 @@ The compatibility cases are:
 | `regression/overlapping-edge-label/dagre` | `7cfd90e29056db3a1a4d2b45690869ff537734eb5d809ab5f1bb832e59a0bc67` | returns non-finite geometry |
 | `txtar/theme-overrides/dagre` | `e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88` | throws during rectangle intersection |
 | `stable/us_map/dagre` | `e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853` | throws during rectangle intersection |
+| `d2-profile/multiple-reversed-parallel-partners` | `297220aa20dc2b11460f16bd2c6387f96a4fba40497a7ce71296b45bae600cc4` | returns a finite but different layout; synthetic MIT-licensed regression that pins the composition of the two ordering corrections, not a captured D2 fixture |
 
 `TestLayoutMatchesD2Corpus` verifies the partition, every input and expected
 output hash, finiteness, and exact `float64` bits. The pinned JavaScript oracle
-also checks ordinary fixtures directly and confirms the three named upstream
-failure modes rather than silently skipping them.
+also checks ordinary fixtures directly and confirms all four documented
+upstream behaviors rather than silently skipping them.
 
 ## Compatibility corrections
 
 The reviewable patch
 `testdata/differential/dagre-3.1.1-d2-compat.patch` has SHA-256
-`75fb417a9536d5bd3483fda38da5d5f3468ad00969b7c06fad5a5187e208666e`
-and applies to the pinned Dagre commit. It makes two changes:
+`d510c474e1f291c38c14c276f6bc498dbbd0dc7132e3b9694e31b47650356d19`
+and applies to the pinned Dagre commit. It makes three changes:
 
 1. The reversed-parallel-edge ordering special case applies only when exactly
    one dummy represents a reversed edge. Official 3.1.1 can otherwise drop a
    same-direction dummy from a group of three and propagate non-finite
    geometry.
-2. A rectangle intersection at the exact center of a zero-width or
+2. Every reversed partner for the same forward dummy is retained in encounter
+   order. With correction 1 applied, upstream's single-valued object table can
+   overwrite an earlier opposite-direction partner and leave a valid
+   D2-profile graph without coordinates.
+3. A rectangle intersection at the exact center of a zero-width or
    zero-height node returns the center, and axis-aligned intersections avoid
    division by zero.
 

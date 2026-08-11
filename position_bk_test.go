@@ -165,6 +165,18 @@ func TestPositionConflictMergeUsesModernShallowOverwrite(t *testing.T) {
 }
 
 func TestVerticalAlignment(t *testing.T) {
+	t.Run("ignores neighbors missing from the layering", func(t *testing.T) {
+		g := newBKTestGraph()
+		g.SetNode("outside", Attrs{})
+		g.SetNode("inside", Attrs{"rank": float64(0), "order": float64(0)})
+		g.SetEdge("outside", "inside")
+
+		got := verticalAlignment(g, [][]string{{"inside"}}, positionConflicts{}, g.Predecessors)
+		if got.root["inside"] != "inside" || got.align["inside"] != "inside" {
+			t.Fatalf("missing neighbor changed alignment: %#v", got)
+		}
+	})
+
 	t.Run("self without adjacencies", func(t *testing.T) {
 		g := newBKTestGraph()
 		g.SetNode("a", Attrs{"rank": float64(0), "order": float64(0)})

@@ -27,8 +27,20 @@ jobs:
           cache-dependency-path: testdata/differential/package-lock.json
       - run: npm ci --ignore-scripts
         working-directory: testdata/differential
+      - name: Build source-pinned D2 compatibility oracle
+        run: ./testdata/differential/build-dagre-3.1.1-d2-compat.sh /tmp/dagre-3.1.1-d2-compat.cjs
+      - name: Compare deterministic D2-profile layouts to compatibility oracle
+        env:
+          DAGRO_DAGRE_JS_COMPAT: /tmp/dagre-3.1.1-d2-compat.cjs
+        run: go test -run '^TestD2ProfileRandomLayoutsMatchCompatibilityOracle$' -count=1 -timeout=5m .
       - run: go test ./...
       - run: go test -race ./...
       - run: go vet ./...
       - run: go build ./...
       - run: GOOS=js GOARCH=wasm go build ./...
+      - name: Execute deterministic D2-profile layouts in WASM
+        run: >-
+          GOOS=js GOARCH=wasm go test
+          -exec="$(go env GOROOT)/lib/wasm/go_js_wasm_exec"
+          -run '^TestD2ProfileRandomLayoutsAreFinite$'
+          -count=1 -timeout=5m .
