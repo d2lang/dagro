@@ -1,0 +1,371 @@
+{
+  "edges": [
+    {
+      "name": "(rectangle -> square)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 55.5,
+          "y": 79
+        },
+        {
+          "x": 55.5,
+          "y": 142
+        },
+        {
+          "x": 55.5,
+          "y": 192
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(square -> page)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 55.5,
+          "y": 286
+        },
+        {
+          "x": 55.5,
+          "y": 336
+        },
+        {
+          "x": 55.5,
+          "y": 401.5
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(parallelogram -> document)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 269,
+          "y": 79
+        },
+        {
+          "x": 269,
+          "y": 142
+        },
+        {
+          "x": 269,
+          "y": 201
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(document -> cylinder)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 269,
+          "y": 277
+        },
+        {
+          "x": 269,
+          "y": 336
+        },
+        {
+          "x": 269,
+          "y": 386
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(queue -> package)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 497.5,
+          "y": 79
+        },
+        {
+          "x": 497.5,
+          "y": 142
+        },
+        {
+          "x": 497.5,
+          "y": 202.5
+        }
+      ],
+      "v": "6",
+      "w": "7",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(package -> step)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 497.5,
+          "y": 275.5
+        },
+        {
+          "x": 497.5,
+          "y": 336
+        },
+        {
+          "x": 497.5,
+          "y": 394.5
+        }
+      ],
+      "v": "7",
+      "w": "8",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(callout -> stored_data)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 684.5,
+          "y": 91.5
+        },
+        {
+          "x": 684.5,
+          "y": 142
+        },
+        {
+          "x": 684.5,
+          "y": 206
+        }
+      ],
+      "v": "9",
+      "w": "10",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(stored_data -> person)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 684.5,
+          "y": 272
+        },
+        {
+          "x": 684.5,
+          "y": 336
+        },
+        {
+          "x": 684.5,
+          "y": 412
+        }
+      ],
+      "v": "10",
+      "w": "11",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(diamond -> oval)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 870,
+          "y": 92
+        },
+        {
+          "x": 870,
+          "y": 142
+        },
+        {
+          "x": 870,
+          "y": 204
+        }
+      ],
+      "v": "12",
+      "w": "13",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(oval -> circle)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 870,
+          "y": 274
+        },
+        {
+          "x": 870,
+          "y": 336
+        },
+        {
+          "x": 870,
+          "y": 393.5
+        }
+      ],
+      "v": "13",
+      "w": "14",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(hexagon -> cloud)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1072,
+          "y": 80.5
+        },
+        {
+          "x": 1072,
+          "y": 142
+        },
+        {
+          "x": 1072,
+          "y": 197
+        }
+      ],
+      "v": "15",
+      "w": "16",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 504,
+    "width": 1136
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 111,
+      "x": 55.5,
+      "y": 46
+    },
+    {
+      "height": 94,
+      "id": "1",
+      "width": 94,
+      "x": 55.5,
+      "y": 239
+    },
+    {
+      "height": 87,
+      "id": "2",
+      "width": 79,
+      "x": 55.5,
+      "y": 445
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 196,
+      "x": 269,
+      "y": 46
+    },
+    {
+      "height": 76,
+      "id": "4",
+      "width": 117,
+      "x": 269,
+      "y": 239
+    },
+    {
+      "height": 118,
+      "id": "5",
+      "width": 104,
+      "x": 269,
+      "y": 445
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 141,
+      "x": 497.5,
+      "y": 46
+    },
+    {
+      "height": 73,
+      "id": "7",
+      "width": 103,
+      "x": 497.5,
+      "y": 239
+    },
+    {
+      "height": 101,
+      "id": "8",
+      "width": 116,
+      "x": 497.5,
+      "y": 445
+    },
+    {
+      "height": 91,
+      "id": "9",
+      "width": 95,
+      "x": 684.5,
+      "y": 46
+    },
+    {
+      "height": 66,
+      "id": "10",
+      "width": 151,
+      "x": 684.5,
+      "y": 239
+    },
+    {
+      "height": 66,
+      "id": "11",
+      "width": 63,
+      "x": 684.5,
+      "y": 445
+    },
+    {
+      "height": 92,
+      "id": "12",
+      "width": 156,
+      "x": 870,
+      "y": 46
+    },
+    {
+      "height": 70,
+      "id": "13",
+      "width": 97,
+      "x": 870,
+      "y": 239
+    },
+    {
+      "height": 103,
+      "id": "14",
+      "width": 103,
+      "x": 870,
+      "y": 445
+    },
+    {
+      "height": 69,
+      "id": "15",
+      "width": 128,
+      "x": 1072,
+      "y": 46
+    },
+    {
+      "height": 84,
+      "id": "16",
+      "width": 104,
+      "x": 1072,
+      "y": 239
+    }
+  ]
+}

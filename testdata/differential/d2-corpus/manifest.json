@@ -1,0 +1,2587 @@
+{
+  "schema": "dagro-d2-e2e-corpus/v1",
+  "description": "Raw Dagro inputs at D2's adapter boundary plus pinned official Dagre 3.1.1 expectations.",
+  "d2": {
+    "commit": "1a60d69e4df9b9557923e61bf10f9aa3aa5422e1",
+    "repository": "https://github.com/d2lang/d2"
+  },
+  "oracle": {
+    "dagre_cjs_sha256": "70b9a4367932dd436075d98892a7968d65cf66ae83263f995e0531823b59b671",
+    "dagre_git_head": "c3ed0802cd98de74c21cff1f754689ebbb0f8dae",
+    "dagre_npm_integrity": "sha512-zroZB1dFOFiGgv4Xcrn1DckB1o4aOikPqD2NDQPV0WM//CXGcS6xiD0rNkqHmw6FEg4tabt4nxPLwgCWT+Vb2A==",
+    "dagre_package": "@dagrejs/dagre",
+    "dagre_version": "3.1.1",
+    "graphlib_cjs_sha256": "271f39d50dbcf2f795808cb4f5b90fb42a096b5f84b4dd6bb672487b454011e7",
+    "graphlib_git_head": "d3a0cf36f55ebd75f28b6acf7a436a54e1b990dc",
+    "graphlib_npm_integrity": "sha512-7xrBTqIts3o+PMUZX97wSc+7TUbW+/rULzGNCTP6yooNVDXbzw4Wutg/H/xOutTB/c/k0YqOAavgPh4/Zk9PFA==",
+    "graphlib_package": "@dagrejs/graphlib",
+    "graphlib_version": "4.0.5",
+    "layout_options": {}
+  },
+  "adapter_profile": {
+    "compound": true,
+    "directed": true,
+    "edge_attrs": [
+      "width",
+      "height",
+      "labelpos"
+    ],
+    "edge_names": "D2 stable connection IDs",
+    "expected_normalization": "JSON null in a typed numeric Dagro result becomes 0, matching the existing D2 Go adapter boundary; candidates must emit only finite numeric coordinates.",
+    "graph_attrs": [
+      "rankdir",
+      "nodesep",
+      "edgesep",
+      "ranksep"
+    ],
+    "multigraph": true,
+    "node_attrs": [
+      "id",
+      "width",
+      "height"
+    ]
+  },
+  "counts": {
+    "adapter_bypassed_cases": 43,
+    "adapter_invoked_cases": 270,
+    "compatibility_root_fix_inputs": 3,
+    "d2_test_nonzero_exit_expected_from_golden_diffs_or_oracle_errors": 59,
+    "dagro_calls": 349,
+    "e2e_cases": 313,
+    "official_errors": 2,
+    "official_successes": 309,
+    "unique_inputs": 311
+  },
+  "compatibility_root_fix_inputs": [
+    "7cfd90e29056db3a1a4d2b45690869ff537734eb5d809ab5f1bb832e59a0bc67",
+    "e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88",
+    "e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853"
+  ],
+  "graphs": {
+    "02553af169d72aeacba36b769de0caaf1cbf8c931aeee858678096020aae3620": {
+      "input": "inputs/02553af169d72aeacba36b769de0caaf1cbf8c931aeee858678096020aae3620.json",
+      "expected": "expected/02553af169d72aeacba36b769de0caaf1cbf8c931aeee858678096020aae3620.json",
+      "expected_sha256": "15f3bb0972b73be1d33199fb79d45aea0a093696faa4d8da45bd8cfe4ea99a1f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "02bb681162abec7e302c38eb1d7d014d3b5ebdbabe275588c48c3c14ba984633": {
+      "input": "inputs/02bb681162abec7e302c38eb1d7d014d3b5ebdbabe275588c48c3c14ba984633.json",
+      "expected": "expected/02bb681162abec7e302c38eb1d7d014d3b5ebdbabe275588c48c3c14ba984633.json",
+      "expected_sha256": "d40010f534778566791b27ce8d6e3f8ccab454e63035382a0cc2c492a163f7b9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "031b27abd65a2024a4179fa2bccf5f9b0f12a7e0581978f862d3bfc68747ad41": {
+      "input": "inputs/031b27abd65a2024a4179fa2bccf5f9b0f12a7e0581978f862d3bfc68747ad41.json",
+      "expected": "expected/031b27abd65a2024a4179fa2bccf5f9b0f12a7e0581978f862d3bfc68747ad41.json",
+      "expected_sha256": "95bd9deefeb23cb688ef61645d9a4ae2e830ce0863fd497fd5f972c4624f3b0f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "0542aa1cab548129d7775598e58b5ffc541551395c38cc51e04850fc572cce98": {
+      "input": "inputs/0542aa1cab548129d7775598e58b5ffc541551395c38cc51e04850fc572cce98.json",
+      "expected": "expected/0542aa1cab548129d7775598e58b5ffc541551395c38cc51e04850fc572cce98.json",
+      "expected_sha256": "568cf095e78c3d532f99b53ba2e77e8809f49f351d2a2545853e9f0e83146c5e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "090935c217007c8c0514f7c4d16ed46d2a521d22637fa67ef59388ab04d6b0d1": {
+      "input": "inputs/090935c217007c8c0514f7c4d16ed46d2a521d22637fa67ef59388ab04d6b0d1.json",
+      "expected": "expected/090935c217007c8c0514f7c4d16ed46d2a521d22637fa67ef59388ab04d6b0d1.json",
+      "expected_sha256": "b15adee5665be62aba46d87cf014850b6347538b9990863280857c5d26dec2e4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "09760e286227df4912e1381b78190281b8ec7b8005a96b2f0dc02155148eb99e": {
+      "input": "inputs/09760e286227df4912e1381b78190281b8ec7b8005a96b2f0dc02155148eb99e.json",
+      "expected": "expected/09760e286227df4912e1381b78190281b8ec7b8005a96b2f0dc02155148eb99e.json",
+      "expected_sha256": "f7a194e66479cce57a532d45d3c690351b395dc2d10bd3c93e4b0483c8e32747",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "0a92abe571ad0612ef8f1cc8dc245021956afdd1e2add6644eaf8efeb009534b": {
+      "input": "inputs/0a92abe571ad0612ef8f1cc8dc245021956afdd1e2add6644eaf8efeb009534b.json",
+      "expected": "expected/0a92abe571ad0612ef8f1cc8dc245021956afdd1e2add6644eaf8efeb009534b.json",
+      "expected_sha256": "c0df6e8a9a0fae228090523c23fd6971eb555af530b351a2528ce48e63179057",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "0d5608df363ac55521ee09c5fbefda211e0319c70977219545be80d248bd5d81": {
+      "input": "inputs/0d5608df363ac55521ee09c5fbefda211e0319c70977219545be80d248bd5d81.json",
+      "expected": "expected/0d5608df363ac55521ee09c5fbefda211e0319c70977219545be80d248bd5d81.json",
+      "expected_sha256": "34371f4ea4d3f87db2a431a0a2832f4c7d49f6365287d20322159dbf4ff4566a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "0d5cf44744d3b4781e56f1f840a88924cb091b23d70433c26992e819ab424323": {
+      "input": "inputs/0d5cf44744d3b4781e56f1f840a88924cb091b23d70433c26992e819ab424323.json",
+      "expected": "expected/0d5cf44744d3b4781e56f1f840a88924cb091b23d70433c26992e819ab424323.json",
+      "expected_sha256": "1a4f8a21bfb01be1c28a02a0c4efdd85a1518d1910c17c9faadfcb1f8812e5f2",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "0e1651ab16087d5795bad69abc6e1e0da046871b339b2c67496fbbaba87c2eed": {
+      "input": "inputs/0e1651ab16087d5795bad69abc6e1e0da046871b339b2c67496fbbaba87c2eed.json",
+      "expected": "expected/0e1651ab16087d5795bad69abc6e1e0da046871b339b2c67496fbbaba87c2eed.json",
+      "expected_sha256": "3fc615255dd6ed9035be1ecff77d62151172530171954a68ec55948bba392c61",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "0e3ec26c3f11f04742da61645f8a40feecac4787d752d5d7cff6dd399dbf27b5": {
+      "input": "inputs/0e3ec26c3f11f04742da61645f8a40feecac4787d752d5d7cff6dd399dbf27b5.json",
+      "expected": "expected/0e3ec26c3f11f04742da61645f8a40feecac4787d752d5d7cff6dd399dbf27b5.json",
+      "expected_sha256": "1d31c61ce3bd3f916763dfa0cc8505fba888e528f25aa7104a8ac4ccf7117599",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "11608a7feedaec062830b98649df9240281178aa47b0bd71322328925bfbf59b": {
+      "input": "inputs/11608a7feedaec062830b98649df9240281178aa47b0bd71322328925bfbf59b.json",
+      "expected": "expected/11608a7feedaec062830b98649df9240281178aa47b0bd71322328925bfbf59b.json",
+      "expected_sha256": "b803235349a5b3c896539cb3a13bb7273f398912860e71f8bd6ef88c83cf25c9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1354914a8442de7814f96179ccdc9733d5ecc507bb88f389ff265651e62c1352": {
+      "input": "inputs/1354914a8442de7814f96179ccdc9733d5ecc507bb88f389ff265651e62c1352.json",
+      "expected": "expected/1354914a8442de7814f96179ccdc9733d5ecc507bb88f389ff265651e62c1352.json",
+      "expected_sha256": "723a84763334c811fb2b7ba80d9ea72b7f2189fcbc472b03ca00cee30a82cfd5",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "135cd7c5bf1d50b23184324ad62394bc2e64f746202ae7e470e81cac736f070f": {
+      "input": "inputs/135cd7c5bf1d50b23184324ad62394bc2e64f746202ae7e470e81cac736f070f.json",
+      "expected": "expected/135cd7c5bf1d50b23184324ad62394bc2e64f746202ae7e470e81cac736f070f.json",
+      "expected_sha256": "2b67ef46dfe48a20d7a4c0fbd66d09550b5ce2e059d5b24dc70a4f01ca2f9905",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "14b94da585e24aa4c96b4b295f98840a85d70fb0e7f9b45dd9e80070daa6740c": {
+      "input": "inputs/14b94da585e24aa4c96b4b295f98840a85d70fb0e7f9b45dd9e80070daa6740c.json",
+      "expected": "expected/14b94da585e24aa4c96b4b295f98840a85d70fb0e7f9b45dd9e80070daa6740c.json",
+      "expected_sha256": "3a3fe5ef456861725bdb2a74a88651359fd00fcd68e62fe890f26c4335e1169b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "159995418a3982ce3a7bc2c4b703a6cb95d1a023a9ca88398ce56e1615b2495a": {
+      "input": "inputs/159995418a3982ce3a7bc2c4b703a6cb95d1a023a9ca88398ce56e1615b2495a.json",
+      "expected": "expected/159995418a3982ce3a7bc2c4b703a6cb95d1a023a9ca88398ce56e1615b2495a.json",
+      "expected_sha256": "1f2f907de5afa72faf9ae4f184a5df2033803a4d6b8e780ef7a3f72a8ddd0b98",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "15b37acf052959648a1a349b5d44ad09246a399c80ee663c2cc15a9b5e9a25b8": {
+      "input": "inputs/15b37acf052959648a1a349b5d44ad09246a399c80ee663c2cc15a9b5e9a25b8.json",
+      "expected": "expected/15b37acf052959648a1a349b5d44ad09246a399c80ee663c2cc15a9b5e9a25b8.json",
+      "expected_sha256": "07d8febb4cf3c479d93b1f8906e454c9d9b726275f3cd8bdeed706fba8349696",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "162add382bb7f883ec9910946caca117cc9eb12242f1476978dbc5523def629e": {
+      "input": "inputs/162add382bb7f883ec9910946caca117cc9eb12242f1476978dbc5523def629e.json",
+      "expected": "expected/162add382bb7f883ec9910946caca117cc9eb12242f1476978dbc5523def629e.json",
+      "expected_sha256": "fcce1aa9ed343de9cfad0a1d41eafa70a37ad307f0903accbb77c0b5863e4605",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "16575c0951ab849f07f85f199589beb9645b7c7723352bb4d7a31af931364002": {
+      "input": "inputs/16575c0951ab849f07f85f199589beb9645b7c7723352bb4d7a31af931364002.json",
+      "expected": "expected/16575c0951ab849f07f85f199589beb9645b7c7723352bb4d7a31af931364002.json",
+      "expected_sha256": "3b0a9a2c35c86e8562c98e8d88a838c99f5e51161e31b475a1965f4d9acd6949",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "16e35e67c54ef39f6dffeef28141882f7ccdeb3682f2172614c143e88cf7f44a": {
+      "input": "inputs/16e35e67c54ef39f6dffeef28141882f7ccdeb3682f2172614c143e88cf7f44a.json",
+      "expected": "expected/16e35e67c54ef39f6dffeef28141882f7ccdeb3682f2172614c143e88cf7f44a.json",
+      "expected_sha256": "9e1b5c605b6974d55ee749befa905ee4235f87060ee5a8ed41fa9053a0269279",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "17666b8ce2220c8262dfd4b6dd061f485ebcdd3190ee5569fbc3cfc780a29171": {
+      "input": "inputs/17666b8ce2220c8262dfd4b6dd061f485ebcdd3190ee5569fbc3cfc780a29171.json",
+      "expected": "expected/17666b8ce2220c8262dfd4b6dd061f485ebcdd3190ee5569fbc3cfc780a29171.json",
+      "expected_sha256": "f5950537b5f33c74ba9a517ab1b9d2ea04dc5abf1c3e4fcbfe6c920c1d742e22",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "19dcdc33cfbd09714bf932bd48a5b291f169a31429afa5c4f510300370f7d30b": {
+      "input": "inputs/19dcdc33cfbd09714bf932bd48a5b291f169a31429afa5c4f510300370f7d30b.json",
+      "expected": "expected/19dcdc33cfbd09714bf932bd48a5b291f169a31429afa5c4f510300370f7d30b.json",
+      "expected_sha256": "5877ecae260e1300edfaa9503799fa983853c6a0e4d93231272de05f0e4c28e6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1ab3a915f4b82ed8443a8583cbe8d4e94071630be19fc42ebaed338bd4f44dd3": {
+      "input": "inputs/1ab3a915f4b82ed8443a8583cbe8d4e94071630be19fc42ebaed338bd4f44dd3.json",
+      "expected": "expected/1ab3a915f4b82ed8443a8583cbe8d4e94071630be19fc42ebaed338bd4f44dd3.json",
+      "expected_sha256": "fdaf8457e252bfcfdd36649fef20f9401dc80a97c872701b92ffd5ab9397d109",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1b0a14c52992dde76a4602e61bc574751b8a27fc72025bf9a51f54aa75107448": {
+      "input": "inputs/1b0a14c52992dde76a4602e61bc574751b8a27fc72025bf9a51f54aa75107448.json",
+      "expected": "expected/1b0a14c52992dde76a4602e61bc574751b8a27fc72025bf9a51f54aa75107448.json",
+      "expected_sha256": "2b807a549afa22f2a34fdda8101d70390b23a90ffb1a0a60c0b8ab462f8a8e7f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1bc945a79f705e906c2b9b628416d32f9e38bd58793fc578788f20e16d68c231": {
+      "input": "inputs/1bc945a79f705e906c2b9b628416d32f9e38bd58793fc578788f20e16d68c231.json",
+      "expected": "expected/1bc945a79f705e906c2b9b628416d32f9e38bd58793fc578788f20e16d68c231.json",
+      "expected_sha256": "88c50dbf9c8cacfafb55795f6f073f09fd3f65a376a11f5491786bf26e6f9a66",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1c2b763dfd3c074bbc51d101022d5ef01ab7ea872b1a79d1b1a3c14cfbe02d52": {
+      "input": "inputs/1c2b763dfd3c074bbc51d101022d5ef01ab7ea872b1a79d1b1a3c14cfbe02d52.json",
+      "expected": "expected/1c2b763dfd3c074bbc51d101022d5ef01ab7ea872b1a79d1b1a3c14cfbe02d52.json",
+      "expected_sha256": "0d5b07fb135197f7464c73af6424d920893ae9c35c41572a4338d68f05acee45",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1e10d37844bbd3c03603b66a3f42e838a73d96734d82708ae6190e1546ee8aa0": {
+      "input": "inputs/1e10d37844bbd3c03603b66a3f42e838a73d96734d82708ae6190e1546ee8aa0.json",
+      "expected": "expected/1e10d37844bbd3c03603b66a3f42e838a73d96734d82708ae6190e1546ee8aa0.json",
+      "expected_sha256": "24962d305bcf5f78ed77a7a74aeab86547718768970627ff34ac4c20bb9295e3",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "1e429242b47d4d39d83f6325f1942b783e0f5de9e67d51d487476d72422d08ff": {
+      "input": "inputs/1e429242b47d4d39d83f6325f1942b783e0f5de9e67d51d487476d72422d08ff.json",
+      "expected": "expected/1e429242b47d4d39d83f6325f1942b783e0f5de9e67d51d487476d72422d08ff.json",
+      "expected_sha256": "b16d042778c33f4f8fee4562180784a99f05b3245b8d68ef9e79c955af872c0d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "202aa5e2a3f08963d74785d411158eb67e200be4351224dc4ac4e8264e687322": {
+      "input": "inputs/202aa5e2a3f08963d74785d411158eb67e200be4351224dc4ac4e8264e687322.json",
+      "expected": "expected/202aa5e2a3f08963d74785d411158eb67e200be4351224dc4ac4e8264e687322.json",
+      "expected_sha256": "45cc9124bd4a32d5f9a14411253be1e40c70c31320d6d477a2798341fe2f96b0",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "206a79f03f6a3a6e1cf4a7d6f1bbe5358bab4289e53ff6b789427b3cca2a24a2": {
+      "input": "inputs/206a79f03f6a3a6e1cf4a7d6f1bbe5358bab4289e53ff6b789427b3cca2a24a2.json",
+      "expected": "expected/206a79f03f6a3a6e1cf4a7d6f1bbe5358bab4289e53ff6b789427b3cca2a24a2.json",
+      "expected_sha256": "a97f45fbc87378fbfe78f11ad602c15fe3834278d13a1124aa3c444828b60fe7",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "22ee2d4c3bcb5c86c8fe7ee31c3d9df223e03ec42a5d12aa62236799dc5a8cb0": {
+      "input": "inputs/22ee2d4c3bcb5c86c8fe7ee31c3d9df223e03ec42a5d12aa62236799dc5a8cb0.json",
+      "expected": "expected/22ee2d4c3bcb5c86c8fe7ee31c3d9df223e03ec42a5d12aa62236799dc5a8cb0.json",
+      "expected_sha256": "f9293641946da9fb22b82c7a0e27490e5c3da68a5e364c23b26ece7c3ef7624c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "2441c02471e429e941beaab6b39bd5314686f8c6edb150914a506dd11a2f3c40": {
+      "input": "inputs/2441c02471e429e941beaab6b39bd5314686f8c6edb150914a506dd11a2f3c40.json",
+      "expected": "expected/2441c02471e429e941beaab6b39bd5314686f8c6edb150914a506dd11a2f3c40.json",
+      "expected_sha256": "ac07e66db47bd28ba93c71dff003c43743fd98b7323f64d97664dfb549f05d9b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "248844fbb37bac071671c150967673bbda8bd215e883a284d16412840e5858d2": {
+      "input": "inputs/248844fbb37bac071671c150967673bbda8bd215e883a284d16412840e5858d2.json",
+      "expected": "expected/248844fbb37bac071671c150967673bbda8bd215e883a284d16412840e5858d2.json",
+      "expected_sha256": "2f465d78143cbee737dddd59e5211ce25cb98efeb2f8bb9907d5919fa80a7a59",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "25f8fd3688aaefbb623a4ad2cffbe56a7850bab697cded255a35647d070f020a": {
+      "input": "inputs/25f8fd3688aaefbb623a4ad2cffbe56a7850bab697cded255a35647d070f020a.json",
+      "expected": "expected/25f8fd3688aaefbb623a4ad2cffbe56a7850bab697cded255a35647d070f020a.json",
+      "expected_sha256": "7063fdccc114fff8c7000741fde6b49ccf41e0b9b7ddad8b7bb81465d0ec85ea",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "27cb07ff050555d0d5eb46e46fe9391358b7aae03b76e27a441f1b1a74a936f6": {
+      "input": "inputs/27cb07ff050555d0d5eb46e46fe9391358b7aae03b76e27a441f1b1a74a936f6.json",
+      "expected": "expected/27cb07ff050555d0d5eb46e46fe9391358b7aae03b76e27a441f1b1a74a936f6.json",
+      "expected_sha256": "eb971d808ca41003045397943ae06aa3f0533c99305e9df4b3c15296afe7cf09",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "286c7398c301840a5669fe183eca682f094e288fce1bea74c2d5630f7f094e13": {
+      "input": "inputs/286c7398c301840a5669fe183eca682f094e288fce1bea74c2d5630f7f094e13.json",
+      "expected": "expected/286c7398c301840a5669fe183eca682f094e288fce1bea74c2d5630f7f094e13.json",
+      "expected_sha256": "38fefdef384fefcdba689953e7803ea3fa96581f395678719480cec4d85520cc",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "292cda91cdcac3d203ea757b1b25edecef10ff277f027d69b375fa19611b0fdc": {
+      "input": "inputs/292cda91cdcac3d203ea757b1b25edecef10ff277f027d69b375fa19611b0fdc.json",
+      "expected": "expected/292cda91cdcac3d203ea757b1b25edecef10ff277f027d69b375fa19611b0fdc.json",
+      "expected_sha256": "c29b702165d964d4a04c4a6a5a89bd77520a5d98061024367ea69d737140825d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "298081c3089a4ef5c18c5fc75d20a36395eaebd0a4d4d84a57531551c23acbf2": {
+      "input": "inputs/298081c3089a4ef5c18c5fc75d20a36395eaebd0a4d4d84a57531551c23acbf2.json",
+      "expected": "expected/298081c3089a4ef5c18c5fc75d20a36395eaebd0a4d4d84a57531551c23acbf2.json",
+      "expected_sha256": "8a236131fb6ff22780f8a40455735cf55fedd5ba6655f18391e394e3d867b44a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "299f8f6a46edd3ce5824f883486ce9fe0c80cecab9477c34ed60494293014163": {
+      "input": "inputs/299f8f6a46edd3ce5824f883486ce9fe0c80cecab9477c34ed60494293014163.json",
+      "expected": "expected/299f8f6a46edd3ce5824f883486ce9fe0c80cecab9477c34ed60494293014163.json",
+      "expected_sha256": "4bfb1ac0e80c3661fc6508d1d161d0e4afbe0a9abdaf614136b440e690f0ca76",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "2b8b3955bff6077dc2a15534489f75314135986caf4c9529e553253b16c6aaf7": {
+      "input": "inputs/2b8b3955bff6077dc2a15534489f75314135986caf4c9529e553253b16c6aaf7.json",
+      "expected": "expected/2b8b3955bff6077dc2a15534489f75314135986caf4c9529e553253b16c6aaf7.json",
+      "expected_sha256": "c579704116bbfbd0c09a21b1c933b088e37f163144dafd443c3aeac3d2c592e7",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "2cc359966e35822c60b4019db60c3e2441471ff5df807acf9b286ba6cfe4dc62": {
+      "input": "inputs/2cc359966e35822c60b4019db60c3e2441471ff5df807acf9b286ba6cfe4dc62.json",
+      "expected": "expected/2cc359966e35822c60b4019db60c3e2441471ff5df807acf9b286ba6cfe4dc62.json",
+      "expected_sha256": "7b400eee37dc682d3fc6aa6c3c08990d37bc11bc1ec684944bfc2ab965f93b40",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "2d3be76f6d02b7763ecc021842c31bede2457b11cae36b04fe6d23e82edddb52": {
+      "input": "inputs/2d3be76f6d02b7763ecc021842c31bede2457b11cae36b04fe6d23e82edddb52.json",
+      "expected": "expected/2d3be76f6d02b7763ecc021842c31bede2457b11cae36b04fe6d23e82edddb52.json",
+      "expected_sha256": "38e42f0af40a23b9f9e06de4d0293e8959e087bea3eea5fa4492759ff1db0d1a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "2dc8601194abc431972a98d107ab5ba459a9fc3cb01e2ab669a842363a4fafd5": {
+      "input": "inputs/2dc8601194abc431972a98d107ab5ba459a9fc3cb01e2ab669a842363a4fafd5.json",
+      "expected": "expected/2dc8601194abc431972a98d107ab5ba459a9fc3cb01e2ab669a842363a4fafd5.json",
+      "expected_sha256": "8a42f72a2458c8de15dfdd39c35fd142b78a62fcda2888ca7b229c3513ce7900",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "2fb7ef2655494afe5747becd50d890baf4ca7cb416382d43c5bb76c8be45f16c": {
+      "input": "inputs/2fb7ef2655494afe5747becd50d890baf4ca7cb416382d43c5bb76c8be45f16c.json",
+      "expected": "expected/2fb7ef2655494afe5747becd50d890baf4ca7cb416382d43c5bb76c8be45f16c.json",
+      "expected_sha256": "297319207f246988664c55ae5826d3b05f4a5d65ecad37c23be1cf85b8abebec",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3016a0d3cc0acd0cde9c784fb9a286d2f3d61b7f8bbcd4b3d1c3667183ed498a": {
+      "input": "inputs/3016a0d3cc0acd0cde9c784fb9a286d2f3d61b7f8bbcd4b3d1c3667183ed498a.json",
+      "expected": "expected/3016a0d3cc0acd0cde9c784fb9a286d2f3d61b7f8bbcd4b3d1c3667183ed498a.json",
+      "expected_sha256": "914940021065d36d4368843957887529688f8e6b5144d72c8664c054279feec1",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3156ee076888659917a2dbde396216f1b4b8d4111edbd2a9d4ea3184c3f5832b": {
+      "input": "inputs/3156ee076888659917a2dbde396216f1b4b8d4111edbd2a9d4ea3184c3f5832b.json",
+      "expected": "expected/3156ee076888659917a2dbde396216f1b4b8d4111edbd2a9d4ea3184c3f5832b.json",
+      "expected_sha256": "e86c1b3d3335a2a0cb986b54d84ba5b5dc6de204b368c01895cebe68f0832b62",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3273aaa06551ab0caffbd8bcf2fa1155e74b10119a94ba06b7c5c1864231374d": {
+      "input": "inputs/3273aaa06551ab0caffbd8bcf2fa1155e74b10119a94ba06b7c5c1864231374d.json",
+      "expected": "expected/3273aaa06551ab0caffbd8bcf2fa1155e74b10119a94ba06b7c5c1864231374d.json",
+      "expected_sha256": "679b6b4a7017d22159f179214cdbd3cad0134a60058c6b9e1bb2051d580b7765",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "332d0fb9408a72a5251f08d340b908cf754a4eceeed197bf59762ea3983f4730": {
+      "input": "inputs/332d0fb9408a72a5251f08d340b908cf754a4eceeed197bf59762ea3983f4730.json",
+      "expected": "expected/332d0fb9408a72a5251f08d340b908cf754a4eceeed197bf59762ea3983f4730.json",
+      "expected_sha256": "d522fafbdfe532dc2d5063802d79f62cc0514e5687b033bcf218f8356e8e450a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "33327415dfcda1f1b681f642f702117ed523708b5626ad1375c9408748fdc937": {
+      "input": "inputs/33327415dfcda1f1b681f642f702117ed523708b5626ad1375c9408748fdc937.json",
+      "expected": "expected/33327415dfcda1f1b681f642f702117ed523708b5626ad1375c9408748fdc937.json",
+      "expected_sha256": "09b48c6bbd7edb44684e5e13b8ac1417cd1396b7155bf19f104b32ec2866d459",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3358a7f922444ae452967ac714997377a4e35eeed7c4f52af9927e380c53592c": {
+      "input": "inputs/3358a7f922444ae452967ac714997377a4e35eeed7c4f52af9927e380c53592c.json",
+      "expected": "expected/3358a7f922444ae452967ac714997377a4e35eeed7c4f52af9927e380c53592c.json",
+      "expected_sha256": "22e7b6705d01b46da10ea2b289f6524b84254821c2a7316f8959f9754db26f8a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "33a6444c39984b4bee5716efa09a171893ae9cd5b6b2a32250e72c9cb26d6792": {
+      "input": "inputs/33a6444c39984b4bee5716efa09a171893ae9cd5b6b2a32250e72c9cb26d6792.json",
+      "expected": "expected/33a6444c39984b4bee5716efa09a171893ae9cd5b6b2a32250e72c9cb26d6792.json",
+      "expected_sha256": "402c7ff101a1047f826f7b3ec99ece2a85fc45da62979c28c52e4bc3aab70e89",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "34d799810080848c3fb697a9358576f756cc1661194008cfc514d1ef36e2658d": {
+      "input": "inputs/34d799810080848c3fb697a9358576f756cc1661194008cfc514d1ef36e2658d.json",
+      "expected": "expected/34d799810080848c3fb697a9358576f756cc1661194008cfc514d1ef36e2658d.json",
+      "expected_sha256": "e1307642a5cc975da45351c0f578a5e5234534f8d5b27fa2feed2aeed3e74c90",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3595f1edd90f8a8ba45b0a75acaec15b8113ac36a6c649782c6728b7c1109ac8": {
+      "input": "inputs/3595f1edd90f8a8ba45b0a75acaec15b8113ac36a6c649782c6728b7c1109ac8.json",
+      "expected": "expected/3595f1edd90f8a8ba45b0a75acaec15b8113ac36a6c649782c6728b7c1109ac8.json",
+      "expected_sha256": "9c1c7e92f12cff643e7defe9aaa6db300d6479e8cf9f5181283eb9c16b1b101c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "38545afaf8dfc61a670d566ca344f811597832ebeb3f742fe19663f201961788": {
+      "input": "inputs/38545afaf8dfc61a670d566ca344f811597832ebeb3f742fe19663f201961788.json",
+      "expected": "expected/38545afaf8dfc61a670d566ca344f811597832ebeb3f742fe19663f201961788.json",
+      "expected_sha256": "be54551dce4dff938b2cd40aac2f34032c089243baa9292fb948687e3d112828",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "39a7008ece92e52c4fe2a2aa062bfa0cb778a9705512bb84fe5bc3b28b558ab7": {
+      "input": "inputs/39a7008ece92e52c4fe2a2aa062bfa0cb778a9705512bb84fe5bc3b28b558ab7.json",
+      "expected": "expected/39a7008ece92e52c4fe2a2aa062bfa0cb778a9705512bb84fe5bc3b28b558ab7.json",
+      "expected_sha256": "4ed8ba612ae544e25399abf578ccdef1a25f5fb500e9012e00075efb48bd1078",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3a64661e3a955f2e3a6efd32f206ad9875db68abd34e4e47db6bbe098fab6148": {
+      "input": "inputs/3a64661e3a955f2e3a6efd32f206ad9875db68abd34e4e47db6bbe098fab6148.json",
+      "expected": "expected/3a64661e3a955f2e3a6efd32f206ad9875db68abd34e4e47db6bbe098fab6148.json",
+      "expected_sha256": "dc7b2e8608d759e1d7e67490dc41fe4044298a1c4686f87c1af3b61c2db9f122",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3b5d19aee32038267f873516fb8bace13236131a6cdc157dcbc99883a128c4d3": {
+      "input": "inputs/3b5d19aee32038267f873516fb8bace13236131a6cdc157dcbc99883a128c4d3.json",
+      "expected": "expected/3b5d19aee32038267f873516fb8bace13236131a6cdc157dcbc99883a128c4d3.json",
+      "expected_sha256": "68aa7295c203b86a40fd01efbf06a294756ad8d457792aa959f7e223bc6bbe23",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3b6674461969d4223f14b50d8f2288a6c0323c147ef0fc61db4b37229a325681": {
+      "input": "inputs/3b6674461969d4223f14b50d8f2288a6c0323c147ef0fc61db4b37229a325681.json",
+      "expected": "expected/3b6674461969d4223f14b50d8f2288a6c0323c147ef0fc61db4b37229a325681.json",
+      "expected_sha256": "e02d30c571ca8a65a29245a1e16b58ce98d5c1a40353478c1fb3890426c3c61b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3d28e3830623f64fcaf9bc8eda15c92e732e1b969d07b6a47357d5b112ecb7a6": {
+      "input": "inputs/3d28e3830623f64fcaf9bc8eda15c92e732e1b969d07b6a47357d5b112ecb7a6.json",
+      "expected": "expected/3d28e3830623f64fcaf9bc8eda15c92e732e1b969d07b6a47357d5b112ecb7a6.json",
+      "expected_sha256": "3d4b5c8a7342025231ff76872ab6156edc233f4aa28916c8e7df244b58e58a79",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3deec71293a96918f3cf0c4b5240667a16d686c364e169154280bef0fc8359ff": {
+      "input": "inputs/3deec71293a96918f3cf0c4b5240667a16d686c364e169154280bef0fc8359ff.json",
+      "expected": "expected/3deec71293a96918f3cf0c4b5240667a16d686c364e169154280bef0fc8359ff.json",
+      "expected_sha256": "025d24eccd291c594a487ca06c498428c19d1ee85ddcef826c3adaed16101d46",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "3fbb1673906a47eb497f7c7ddb303117b94a3fea8901d2650420b25c7dc06fbd": {
+      "input": "inputs/3fbb1673906a47eb497f7c7ddb303117b94a3fea8901d2650420b25c7dc06fbd.json",
+      "expected": "expected/3fbb1673906a47eb497f7c7ddb303117b94a3fea8901d2650420b25c7dc06fbd.json",
+      "expected_sha256": "a2c3780ed51ecbebdf3a0e71da299d36b5097e7fad90d6685c76abfeeb6db650",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "40a523eaa98b9c321f7869bfb32cda368addee68ac32d2af24f55e24e80f0293": {
+      "input": "inputs/40a523eaa98b9c321f7869bfb32cda368addee68ac32d2af24f55e24e80f0293.json",
+      "expected": "expected/40a523eaa98b9c321f7869bfb32cda368addee68ac32d2af24f55e24e80f0293.json",
+      "expected_sha256": "4450841338521a33a90b13e1eb1c30678ab9d9e49fa1232d6172dffb29bab372",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "40e8a1d4ab8b7a01a75b77aa90c864d8cd38aaff2dbeff4e427f8ed22e76059e": {
+      "input": "inputs/40e8a1d4ab8b7a01a75b77aa90c864d8cd38aaff2dbeff4e427f8ed22e76059e.json",
+      "expected": "expected/40e8a1d4ab8b7a01a75b77aa90c864d8cd38aaff2dbeff4e427f8ed22e76059e.json",
+      "expected_sha256": "618552d50d5518d55f6227970352a4f34da816b31bfe98033d1c1e2046b4a817",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4150ec50adf32f8b4901e4bbf44c51f94684493b13206bfd2f5077fa571b0009": {
+      "input": "inputs/4150ec50adf32f8b4901e4bbf44c51f94684493b13206bfd2f5077fa571b0009.json",
+      "expected": "expected/4150ec50adf32f8b4901e4bbf44c51f94684493b13206bfd2f5077fa571b0009.json",
+      "expected_sha256": "529c3dc1a51ca05d0da0109d4f6317201b1b8ad4d4645901e0ad5b95566909cb",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "424c0e004e80b08a22abf59cdc365a93080c0c726585801399b7f2a6b4629d30": {
+      "input": "inputs/424c0e004e80b08a22abf59cdc365a93080c0c726585801399b7f2a6b4629d30.json",
+      "expected": "expected/424c0e004e80b08a22abf59cdc365a93080c0c726585801399b7f2a6b4629d30.json",
+      "expected_sha256": "147d5157a19eb96d21f69ce2e667e7195f740dac1eb8f70dabe31298ed018b00",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "43c529a884b59b72e697ff19d5ec2b201d2bcfcbee3a9b991d13b60740f52794": {
+      "input": "inputs/43c529a884b59b72e697ff19d5ec2b201d2bcfcbee3a9b991d13b60740f52794.json",
+      "expected": "expected/43c529a884b59b72e697ff19d5ec2b201d2bcfcbee3a9b991d13b60740f52794.json",
+      "expected_sha256": "ec7e24c0a11b3f7f5255b263cdcebe81cd60c600fb1c2bbb2389de3c2d471bf4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "43e5657738637dbe3c8841cd5a1d6a1ac9773da3824fb45d44c8c67340979bbd": {
+      "input": "inputs/43e5657738637dbe3c8841cd5a1d6a1ac9773da3824fb45d44c8c67340979bbd.json",
+      "expected": "expected/43e5657738637dbe3c8841cd5a1d6a1ac9773da3824fb45d44c8c67340979bbd.json",
+      "expected_sha256": "e987f58bc2a1e179fd8c32dc692a9f8223ca75b18e13349e9f3603b9e8c23424",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4400af7d2f461ffc81a45ea74013d1c8ad8eda74a49ffebf47dfdebdea5ed36e": {
+      "input": "inputs/4400af7d2f461ffc81a45ea74013d1c8ad8eda74a49ffebf47dfdebdea5ed36e.json",
+      "expected": "expected/4400af7d2f461ffc81a45ea74013d1c8ad8eda74a49ffebf47dfdebdea5ed36e.json",
+      "expected_sha256": "b16c2d20a790c712aaaf36b53b915989d281994f9f48a74478783645a469fbff",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "44330ff7f9c1ebad1b9253e0c007b73d572663e8ec3f38132cb3843ecadabd42": {
+      "input": "inputs/44330ff7f9c1ebad1b9253e0c007b73d572663e8ec3f38132cb3843ecadabd42.json",
+      "expected": "expected/44330ff7f9c1ebad1b9253e0c007b73d572663e8ec3f38132cb3843ecadabd42.json",
+      "expected_sha256": "86de72241080554bbae5ac3112575407e043a25d2acc966411b7c1e9b48428f4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "44d222f49dbd3d89389211d336dd77af25cf65f5f7100ea4016fbba183b464bc": {
+      "input": "inputs/44d222f49dbd3d89389211d336dd77af25cf65f5f7100ea4016fbba183b464bc.json",
+      "expected": "expected/44d222f49dbd3d89389211d336dd77af25cf65f5f7100ea4016fbba183b464bc.json",
+      "expected_sha256": "44bef8afb748f9375acc16b4b00f552fa28243c93c5fe22b92fe6e4c52a3644d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "454da4aff873e3272735a0a76159ff5b018849f7012c8a387cecdacafccbebea": {
+      "input": "inputs/454da4aff873e3272735a0a76159ff5b018849f7012c8a387cecdacafccbebea.json",
+      "expected": "expected/454da4aff873e3272735a0a76159ff5b018849f7012c8a387cecdacafccbebea.json",
+      "expected_sha256": "654a39282b4684823bfb285b444f045bb2735117b9895851396b9aacbe9688d2",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "46184b9f70186eb973680dbd00eba0c0819b81536a9dc1bda68fb0faa90a93d9": {
+      "input": "inputs/46184b9f70186eb973680dbd00eba0c0819b81536a9dc1bda68fb0faa90a93d9.json",
+      "expected": "expected/46184b9f70186eb973680dbd00eba0c0819b81536a9dc1bda68fb0faa90a93d9.json",
+      "expected_sha256": "3586ffc4144d6d85a7d84f11e2d4d3627667f48e3a8ea35d9aa4df5b7d460062",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "46259978e3b738194eadd769219c814147aa26e1dbaa29ad985dd75e462d4400": {
+      "input": "inputs/46259978e3b738194eadd769219c814147aa26e1dbaa29ad985dd75e462d4400.json",
+      "expected": "expected/46259978e3b738194eadd769219c814147aa26e1dbaa29ad985dd75e462d4400.json",
+      "expected_sha256": "1a258a0a233d5a7aa956b2c771bf380b450b7f9afb7236755b1eb9f7c8dcfe5c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "474ec295dc27e182fa7d2b58bbf247267229731e5bb83ba7b4a25edabd9351f9": {
+      "input": "inputs/474ec295dc27e182fa7d2b58bbf247267229731e5bb83ba7b4a25edabd9351f9.json",
+      "expected": "expected/474ec295dc27e182fa7d2b58bbf247267229731e5bb83ba7b4a25edabd9351f9.json",
+      "expected_sha256": "a5206b9c618e19e7f425cc07f7c09fbf8046e38d4568d19bb838a2d404b1c80e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "47be6a1b08dbbfc9766a8d7ca3339c093f62be80ce068377691cdb0a89cb4485": {
+      "input": "inputs/47be6a1b08dbbfc9766a8d7ca3339c093f62be80ce068377691cdb0a89cb4485.json",
+      "expected": "expected/47be6a1b08dbbfc9766a8d7ca3339c093f62be80ce068377691cdb0a89cb4485.json",
+      "expected_sha256": "3d9daadc0ebb2bd302fd96620287fa4b2861d2acc1be60952dc482f37bfaa9e6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "484b1978c9c6e7945c46216a1fe45a315e6511839ffc11f272ab4db8a7163e9f": {
+      "input": "inputs/484b1978c9c6e7945c46216a1fe45a315e6511839ffc11f272ab4db8a7163e9f.json",
+      "expected": "expected/484b1978c9c6e7945c46216a1fe45a315e6511839ffc11f272ab4db8a7163e9f.json",
+      "expected_sha256": "ac1c494e9db94d3cc26114d19bc4215f3882063ad5b896c0fa7021d85bb26b4c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4934ee85fad760d7e08d5a41a3abcef5d7b59473905ead887efd561c073333e0": {
+      "input": "inputs/4934ee85fad760d7e08d5a41a3abcef5d7b59473905ead887efd561c073333e0.json",
+      "expected": "expected/4934ee85fad760d7e08d5a41a3abcef5d7b59473905ead887efd561c073333e0.json",
+      "expected_sha256": "39e0e180646568216552b5f3a83f3521e45c95db18e4647ebcbbf7c27b6a766c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4996554de840e3d8d9ea82ea1d7fc1c27a088f8cc5cd55940c7a269808971917": {
+      "input": "inputs/4996554de840e3d8d9ea82ea1d7fc1c27a088f8cc5cd55940c7a269808971917.json",
+      "expected": "expected/4996554de840e3d8d9ea82ea1d7fc1c27a088f8cc5cd55940c7a269808971917.json",
+      "expected_sha256": "68c7c7b47c4c933feacfe87c25f8fa2422c71fa06449119c0669e4370345a1ce",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4ac4b95998cced873986ac98cf803625808907c27d69e1d4530c9878ccb454fc": {
+      "input": "inputs/4ac4b95998cced873986ac98cf803625808907c27d69e1d4530c9878ccb454fc.json",
+      "expected": "expected/4ac4b95998cced873986ac98cf803625808907c27d69e1d4530c9878ccb454fc.json",
+      "expected_sha256": "1d549b9391514df4e07e730694ae0ebfe574908892ad749bb065447b9fcffda0",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4ac8a46f83a70725529ecf9af7ead52d7c915f51f12ae73ac64e2d608a571f1b": {
+      "input": "inputs/4ac8a46f83a70725529ecf9af7ead52d7c915f51f12ae73ac64e2d608a571f1b.json",
+      "expected": "expected/4ac8a46f83a70725529ecf9af7ead52d7c915f51f12ae73ac64e2d608a571f1b.json",
+      "expected_sha256": "74efa044b350178f991dd09929acda3ae175a72b2b79ffb70ea4dc852a61a78d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4b730562bcf54d91a0715be2f723ca44167164fefa4aca731ee259c2b6eea5a5": {
+      "input": "inputs/4b730562bcf54d91a0715be2f723ca44167164fefa4aca731ee259c2b6eea5a5.json",
+      "expected": "expected/4b730562bcf54d91a0715be2f723ca44167164fefa4aca731ee259c2b6eea5a5.json",
+      "expected_sha256": "5f1b42f9c456132430b81c98ef0975bad82ef879b6f8eb6532f909eb8bc2105a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4c3c16f8760ad950ea77b0ad6f1ece74b4a98c57ccaf2a57e2b4e91f91623ea0": {
+      "input": "inputs/4c3c16f8760ad950ea77b0ad6f1ece74b4a98c57ccaf2a57e2b4e91f91623ea0.json",
+      "expected": "expected/4c3c16f8760ad950ea77b0ad6f1ece74b4a98c57ccaf2a57e2b4e91f91623ea0.json",
+      "expected_sha256": "022962a85459f47f3cf976084e0746e9d83678fd4b49cc41abb40a1488eb6f5e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4cb7574d75775a662e6a609b629a5dace051a8dfdcb1c066c7bc21a305174caf": {
+      "input": "inputs/4cb7574d75775a662e6a609b629a5dace051a8dfdcb1c066c7bc21a305174caf.json",
+      "expected": "expected/4cb7574d75775a662e6a609b629a5dace051a8dfdcb1c066c7bc21a305174caf.json",
+      "expected_sha256": "fa596cf5934d82b78a1d68e6a5c49ccde7fe9ce3e341d392f92305e6e8b2cebc",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4cbe5345f56612ad61dc455c7892340bb99673f40f26a03173e58d8d9888909f": {
+      "input": "inputs/4cbe5345f56612ad61dc455c7892340bb99673f40f26a03173e58d8d9888909f.json",
+      "expected": "expected/4cbe5345f56612ad61dc455c7892340bb99673f40f26a03173e58d8d9888909f.json",
+      "expected_sha256": "8c3a471ea2f1c9cf15bfecaef8f946520a763656a65b7b7a56fd46d123878d73",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4d22795e9c0c82a95808fa9ec16676dc554cf03a798ab7196d916afeb69a22eb": {
+      "input": "inputs/4d22795e9c0c82a95808fa9ec16676dc554cf03a798ab7196d916afeb69a22eb.json",
+      "expected": "expected/4d22795e9c0c82a95808fa9ec16676dc554cf03a798ab7196d916afeb69a22eb.json",
+      "expected_sha256": "723cdc41f0b0e8ba6751b22cb9f12c943056226ec4ef3a8ec55fabb7122942bc",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4dda2edd9bf105fdb0d5aa33ff9c31a0b6d8c4f7995e91a8e79ae5fd0fbeecd0": {
+      "input": "inputs/4dda2edd9bf105fdb0d5aa33ff9c31a0b6d8c4f7995e91a8e79ae5fd0fbeecd0.json",
+      "expected": "expected/4dda2edd9bf105fdb0d5aa33ff9c31a0b6d8c4f7995e91a8e79ae5fd0fbeecd0.json",
+      "expected_sha256": "45bd899bf041d40c501b008553b35bb22acab935e960efe304bcc06208984315",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "4f465e0335a81b0e5d23e0343fd396c710a2cf8aa4fcdd8d9ef4425ca0aa17af": {
+      "input": "inputs/4f465e0335a81b0e5d23e0343fd396c710a2cf8aa4fcdd8d9ef4425ca0aa17af.json",
+      "expected": "expected/4f465e0335a81b0e5d23e0343fd396c710a2cf8aa4fcdd8d9ef4425ca0aa17af.json",
+      "expected_sha256": "d834131d7432e1b64507c0308e0aa6f39ee3c24c76f298531856cd0cce8cba2d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "507668ef066f5e11fd046c969940d2f9b0ddb5366bb6f9ed080289cd18cf78d9": {
+      "input": "inputs/507668ef066f5e11fd046c969940d2f9b0ddb5366bb6f9ed080289cd18cf78d9.json",
+      "expected": "expected/507668ef066f5e11fd046c969940d2f9b0ddb5366bb6f9ed080289cd18cf78d9.json",
+      "expected_sha256": "a80d1fddd72da748d5db8dc63af7c1fcdce73b9aed9d8e3442bc9ca7bae49650",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5176f0ab75e25e06e7ea63a86d039afccf8632b5d8dea7f0fc7c3b23f1fc6e22": {
+      "input": "inputs/5176f0ab75e25e06e7ea63a86d039afccf8632b5d8dea7f0fc7c3b23f1fc6e22.json",
+      "expected": "expected/5176f0ab75e25e06e7ea63a86d039afccf8632b5d8dea7f0fc7c3b23f1fc6e22.json",
+      "expected_sha256": "c186fbc1297e9e84f21057e006d8dec5038640ca7a9cd2d14e32a9b44b2ef724",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "519787e72aba61fecc3382f32e19e1d81ea2bb79731c944a2741b8a28fdbf9cb": {
+      "input": "inputs/519787e72aba61fecc3382f32e19e1d81ea2bb79731c944a2741b8a28fdbf9cb.json",
+      "expected": "expected/519787e72aba61fecc3382f32e19e1d81ea2bb79731c944a2741b8a28fdbf9cb.json",
+      "expected_sha256": "b7221be6833b4b72227320b4d5e550bd7d9942748db7be5dbb6d39ea93ea1588",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "533d15b0dd92b581295eb9d9e1208d4ed0fee950de35f257afc281db24175cab": {
+      "input": "inputs/533d15b0dd92b581295eb9d9e1208d4ed0fee950de35f257afc281db24175cab.json",
+      "expected": "expected/533d15b0dd92b581295eb9d9e1208d4ed0fee950de35f257afc281db24175cab.json",
+      "expected_sha256": "eaea37b5f982a5328bbf391a699f731a56c424b86bc3acd080854b5f3e88750e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "53fd8cce5ccb38ad6699ba70214c9c15cfbbb02fbf2fdd2a4407b31e0559862f": {
+      "input": "inputs/53fd8cce5ccb38ad6699ba70214c9c15cfbbb02fbf2fdd2a4407b31e0559862f.json",
+      "expected": "expected/53fd8cce5ccb38ad6699ba70214c9c15cfbbb02fbf2fdd2a4407b31e0559862f.json",
+      "expected_sha256": "ea8ec857b481cead2b12efdd31f18f0074ae19f121eb9cfed92b808d42963c0e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "544082035deadf74dab949b144ce089da8a33b151f44eb1a40ce8251d1ef229a": {
+      "input": "inputs/544082035deadf74dab949b144ce089da8a33b151f44eb1a40ce8251d1ef229a.json",
+      "expected": "expected/544082035deadf74dab949b144ce089da8a33b151f44eb1a40ce8251d1ef229a.json",
+      "expected_sha256": "320b2e0bccb7456a4d9ea7a574a3ded2b71810a833386ed5c149737b89bd1e49",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "544d0560650f2529d2303aacae43961397dc638dce50ae116f8cdff089225a45": {
+      "input": "inputs/544d0560650f2529d2303aacae43961397dc638dce50ae116f8cdff089225a45.json",
+      "expected": "expected/544d0560650f2529d2303aacae43961397dc638dce50ae116f8cdff089225a45.json",
+      "expected_sha256": "e140c55e0c32d55faf944ea91acd284d3dc6b9b5df8c4f15fbe9989e0f412bb4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "54a75f59e452168a81082dfabdbda05c17b7ece4c5b46c0bc4e6d60e0addc503": {
+      "input": "inputs/54a75f59e452168a81082dfabdbda05c17b7ece4c5b46c0bc4e6d60e0addc503.json",
+      "expected": "expected/54a75f59e452168a81082dfabdbda05c17b7ece4c5b46c0bc4e6d60e0addc503.json",
+      "expected_sha256": "03d73a2d5bbbe807244e04cf4ced19973158249325ae759e13545e4732810123",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "54e1bb8d67ad7c17cf8410b824884a64c1b5225c10109427bfb2bc98ceb7e8c4": {
+      "input": "inputs/54e1bb8d67ad7c17cf8410b824884a64c1b5225c10109427bfb2bc98ceb7e8c4.json",
+      "expected": "expected/54e1bb8d67ad7c17cf8410b824884a64c1b5225c10109427bfb2bc98ceb7e8c4.json",
+      "expected_sha256": "fb0d0d341e5e662f3c52eb0a18e0e83c917120f95aa8b2ff4f753a00b766b529",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "54ee188a7224d3e9b3cfb06c627a3197afd6129e40aea6499f62113cee2043c2": {
+      "input": "inputs/54ee188a7224d3e9b3cfb06c627a3197afd6129e40aea6499f62113cee2043c2.json",
+      "expected": "expected/54ee188a7224d3e9b3cfb06c627a3197afd6129e40aea6499f62113cee2043c2.json",
+      "expected_sha256": "f5aa63dd714b2b4bee3328847422e6f870605e0b675b2eb7851bc52a9be65d6e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5544718041c6790ebcb25710767721129045aca918a03b05eef03c3389450256": {
+      "input": "inputs/5544718041c6790ebcb25710767721129045aca918a03b05eef03c3389450256.json",
+      "expected": "expected/5544718041c6790ebcb25710767721129045aca918a03b05eef03c3389450256.json",
+      "expected_sha256": "49f2d5b45423c3152e2867b5c3e0374c68862368dcfd2fb6a967dd03fab51ddf",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "558054fe1fed3cdccd014e6fcca3a64c8aa69afdd3c45a427ba3817d44708208": {
+      "input": "inputs/558054fe1fed3cdccd014e6fcca3a64c8aa69afdd3c45a427ba3817d44708208.json",
+      "expected": "expected/558054fe1fed3cdccd014e6fcca3a64c8aa69afdd3c45a427ba3817d44708208.json",
+      "expected_sha256": "079caa618356c185f68e19cfe50330793f6080cca0befffa51d0b275828f5a64",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "560a701b6810c60891628387c47af9c67eb9ae6f1827b79063d9b11740c9e00c": {
+      "input": "inputs/560a701b6810c60891628387c47af9c67eb9ae6f1827b79063d9b11740c9e00c.json",
+      "expected": "expected/560a701b6810c60891628387c47af9c67eb9ae6f1827b79063d9b11740c9e00c.json",
+      "expected_sha256": "d3f73a42035ecee85127c8295ef8a1dedfa4b61aa5cdc26b6e7689be58e87a2f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "56a6f877aa9cc2766d7c7a153ff063a04b68084e99e12e669eefb5cc180e7b1d": {
+      "input": "inputs/56a6f877aa9cc2766d7c7a153ff063a04b68084e99e12e669eefb5cc180e7b1d.json",
+      "expected": "expected/56a6f877aa9cc2766d7c7a153ff063a04b68084e99e12e669eefb5cc180e7b1d.json",
+      "expected_sha256": "4baf7ff4585ace2c647d09551e9c5b95b10acdbdcea0d3bb5b35f2b3b1f9b70c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "56d9760db6d04351c4289885137827034e7d321e90d58dc98193de1dfdf2d231": {
+      "input": "inputs/56d9760db6d04351c4289885137827034e7d321e90d58dc98193de1dfdf2d231.json",
+      "expected": "expected/56d9760db6d04351c4289885137827034e7d321e90d58dc98193de1dfdf2d231.json",
+      "expected_sha256": "17ea5ccda3d4432a4726a9f2683461c16c1771f57f05c618ce75642aeeac7ef5",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "57be5a05a793b65c757abe5363be4d769ef7823922bf28c1d7e1e2bb6863a423": {
+      "input": "inputs/57be5a05a793b65c757abe5363be4d769ef7823922bf28c1d7e1e2bb6863a423.json",
+      "expected": "expected/57be5a05a793b65c757abe5363be4d769ef7823922bf28c1d7e1e2bb6863a423.json",
+      "expected_sha256": "3a9cecb6a91c74ef7935e80c57a10333bf5f1c8c2b9c6c15aba14489035cc9b3",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "592992fa3c0d0c93ecfec119b313abc5233dc5af63475b642c76be51ba19062d": {
+      "input": "inputs/592992fa3c0d0c93ecfec119b313abc5233dc5af63475b642c76be51ba19062d.json",
+      "expected": "expected/592992fa3c0d0c93ecfec119b313abc5233dc5af63475b642c76be51ba19062d.json",
+      "expected_sha256": "73b3c2f25fb90066873a806ca421b870d2ab9ac72a6be98e034498d0db2d3594",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "59fe1d5f14cb6fa7e7168059645cf8e363751b66e55cdccd8f092ce36b06b821": {
+      "input": "inputs/59fe1d5f14cb6fa7e7168059645cf8e363751b66e55cdccd8f092ce36b06b821.json",
+      "expected": "expected/59fe1d5f14cb6fa7e7168059645cf8e363751b66e55cdccd8f092ce36b06b821.json",
+      "expected_sha256": "23637e9e5ac4acc872a5ab4bfba51a184e76046cfcee5cf24673314d2be3a43e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5abb8f565455e87c9ed5389661cd0edea0cbf2d2278af1361c9a700f9ad54146": {
+      "input": "inputs/5abb8f565455e87c9ed5389661cd0edea0cbf2d2278af1361c9a700f9ad54146.json",
+      "expected": "expected/5abb8f565455e87c9ed5389661cd0edea0cbf2d2278af1361c9a700f9ad54146.json",
+      "expected_sha256": "aba2d63b5b39eb363555714dba24850010f0887dfbb8efceb911f296f07dbd41",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5b0ea8981bdf2895d9a465ee17cf5d7ee10ca402f9c1acb1c9a7586d65be091d": {
+      "input": "inputs/5b0ea8981bdf2895d9a465ee17cf5d7ee10ca402f9c1acb1c9a7586d65be091d.json",
+      "expected": "expected/5b0ea8981bdf2895d9a465ee17cf5d7ee10ca402f9c1acb1c9a7586d65be091d.json",
+      "expected_sha256": "41506fb177185fb4b9c268c4aa60d99a936b3e5ae8f5817047eae34648609c45",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5b320dda76c3efd041b6ac2738915c06d1943b3677aa0b3bc8b012e1e721532b": {
+      "input": "inputs/5b320dda76c3efd041b6ac2738915c06d1943b3677aa0b3bc8b012e1e721532b.json",
+      "expected": "expected/5b320dda76c3efd041b6ac2738915c06d1943b3677aa0b3bc8b012e1e721532b.json",
+      "expected_sha256": "3369471d01889b3c47c58498a4f7d387156e876866f5bb37f60fa8dfdfb8413b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5bf6adf666d29ba7d40f574be0fa77cfa8c5f15fba5cc6525bdd3c57b36a8af4": {
+      "input": "inputs/5bf6adf666d29ba7d40f574be0fa77cfa8c5f15fba5cc6525bdd3c57b36a8af4.json",
+      "expected": "expected/5bf6adf666d29ba7d40f574be0fa77cfa8c5f15fba5cc6525bdd3c57b36a8af4.json",
+      "expected_sha256": "2d974bdcdc91125562be91914e3bcde38b6a4cfccf492eaff72876c152327f1f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5c2e4a1c337dee46a14a40164061a0b95c42808169abf99930a2e659b087df9a": {
+      "input": "inputs/5c2e4a1c337dee46a14a40164061a0b95c42808169abf99930a2e659b087df9a.json",
+      "expected": "expected/5c2e4a1c337dee46a14a40164061a0b95c42808169abf99930a2e659b087df9a.json",
+      "expected_sha256": "a3214f471874c32b40b260abb51f109be35a224cb5994dfa1d731d5a0d124123",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5d219cb689b0c9056883651f59c0927cdb06f4fb0d41f1071f52e7cf2c6c9ab6": {
+      "input": "inputs/5d219cb689b0c9056883651f59c0927cdb06f4fb0d41f1071f52e7cf2c6c9ab6.json",
+      "expected": "expected/5d219cb689b0c9056883651f59c0927cdb06f4fb0d41f1071f52e7cf2c6c9ab6.json",
+      "expected_sha256": "046a6b9bdcbf2f0363f4b0ee708a3dece1558477741468fc46496171f40d3596",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5e16fbc8a3e94fe1febc4f7dc759b34559290c689dbd2afeb493f561144e618b": {
+      "input": "inputs/5e16fbc8a3e94fe1febc4f7dc759b34559290c689dbd2afeb493f561144e618b.json",
+      "expected": "expected/5e16fbc8a3e94fe1febc4f7dc759b34559290c689dbd2afeb493f561144e618b.json",
+      "expected_sha256": "fcce1aa9ed343de9cfad0a1d41eafa70a37ad307f0903accbb77c0b5863e4605",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5e4c089e58e4859d968905078398bf2ced4783c43fa23c72f7c77ce57e65a998": {
+      "input": "inputs/5e4c089e58e4859d968905078398bf2ced4783c43fa23c72f7c77ce57e65a998.json",
+      "expected": "expected/5e4c089e58e4859d968905078398bf2ced4783c43fa23c72f7c77ce57e65a998.json",
+      "expected_sha256": "196ea06fc7030076853d68e525aa447536ca1b1385e4fcf35d519eaa62332f43",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5eb8c0fd3265cee8840224c22dd97d148cfff651d15144b19b84f959fb9c2d5a": {
+      "input": "inputs/5eb8c0fd3265cee8840224c22dd97d148cfff651d15144b19b84f959fb9c2d5a.json",
+      "expected": "expected/5eb8c0fd3265cee8840224c22dd97d148cfff651d15144b19b84f959fb9c2d5a.json",
+      "expected_sha256": "4d489906a1cf3c4f329d86abdd3d8aa61d020bfe86f8a2d9b005cfc30db93228",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5f44049fc52d6f5233a839067051b7167772c276a93958510f3d12a87b3a27ec": {
+      "input": "inputs/5f44049fc52d6f5233a839067051b7167772c276a93958510f3d12a87b3a27ec.json",
+      "expected": "expected/5f44049fc52d6f5233a839067051b7167772c276a93958510f3d12a87b3a27ec.json",
+      "expected_sha256": "d1664d3fc33cbbd7464482d5a6ae4795e384c04735943e2382dc7b76b2018a05",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "5ffcb8a79ef204cbd77068836f33808f850660ff8392a3311ccb10934116535f": {
+      "input": "inputs/5ffcb8a79ef204cbd77068836f33808f850660ff8392a3311ccb10934116535f.json",
+      "expected": "expected/5ffcb8a79ef204cbd77068836f33808f850660ff8392a3311ccb10934116535f.json",
+      "expected_sha256": "898c4d114c47c9f0c6471a3ffba90155a37206b8a2cd408278bcfb28050f29a9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "60038384e56134f73e8747892ee7f3547e799b3b58858fb3936893544e0b8989": {
+      "input": "inputs/60038384e56134f73e8747892ee7f3547e799b3b58858fb3936893544e0b8989.json",
+      "expected": "expected/60038384e56134f73e8747892ee7f3547e799b3b58858fb3936893544e0b8989.json",
+      "expected_sha256": "a8e982e104247fdf649f1413cb09844bde03fce7d96acff8c49171cf0cbdb5e6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "60648bcbaa2efb25aaa44c1f417696d546e1879eff5f3d169aefb0417778a102": {
+      "input": "inputs/60648bcbaa2efb25aaa44c1f417696d546e1879eff5f3d169aefb0417778a102.json",
+      "expected": "expected/60648bcbaa2efb25aaa44c1f417696d546e1879eff5f3d169aefb0417778a102.json",
+      "expected_sha256": "9fffea6d61a41ff4d358c9208ac1cd3639a3aeedba9b94b655cd9bc2035dcffd",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "606f0beed0af6761a9567cb2586d922752e60619b68db904be3ae69365afc186": {
+      "input": "inputs/606f0beed0af6761a9567cb2586d922752e60619b68db904be3ae69365afc186.json",
+      "expected": "expected/606f0beed0af6761a9567cb2586d922752e60619b68db904be3ae69365afc186.json",
+      "expected_sha256": "35b6f7324bbb11792fba42f88365fcf47c075cae89a4be30ed044128c9696e6f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "60f8d74fd2be791bc178a41c035736aae0f90ffb45ea91670b2871389052daa3": {
+      "input": "inputs/60f8d74fd2be791bc178a41c035736aae0f90ffb45ea91670b2871389052daa3.json",
+      "expected": "expected/60f8d74fd2be791bc178a41c035736aae0f90ffb45ea91670b2871389052daa3.json",
+      "expected_sha256": "f1e4ebbe1d8cf7630b6f189507845b05f9de2b3e843494033eb63e90bce273ea",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "61e565846accefd9f833bb0178fad46f39ae7ba6822d3b8d02e54405cacf8072": {
+      "input": "inputs/61e565846accefd9f833bb0178fad46f39ae7ba6822d3b8d02e54405cacf8072.json",
+      "expected": "expected/61e565846accefd9f833bb0178fad46f39ae7ba6822d3b8d02e54405cacf8072.json",
+      "expected_sha256": "0a84f0ace95771136bf072543566495f9867a50486293fbf47b3c88ce2aabcd4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "634688bd3a6ed4a7ec38006eb4c877b3858a06f25489e59166ac07ce7a4b6e3b": {
+      "input": "inputs/634688bd3a6ed4a7ec38006eb4c877b3858a06f25489e59166ac07ce7a4b6e3b.json",
+      "expected": "expected/634688bd3a6ed4a7ec38006eb4c877b3858a06f25489e59166ac07ce7a4b6e3b.json",
+      "expected_sha256": "087601ab8fd10fe8e9ef2f3965e13d89c96c7862ee4a2330c84b8e15e6eca489",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "637a87376c404306c6e545cb2b081f5ad6017708148eb3cd37663addf2b2375b": {
+      "input": "inputs/637a87376c404306c6e545cb2b081f5ad6017708148eb3cd37663addf2b2375b.json",
+      "expected": "expected/637a87376c404306c6e545cb2b081f5ad6017708148eb3cd37663addf2b2375b.json",
+      "expected_sha256": "95a880d8e47ef7ce771ef14b24e69e5cd1fe069310c98b7780df33f2c7c5d860",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "667e038f4433e7b1836639d1e19e2365fd95918de0cb84ffe231a79ac546aa1d": {
+      "input": "inputs/667e038f4433e7b1836639d1e19e2365fd95918de0cb84ffe231a79ac546aa1d.json",
+      "expected": "expected/667e038f4433e7b1836639d1e19e2365fd95918de0cb84ffe231a79ac546aa1d.json",
+      "expected_sha256": "cf14d4894c913f5c5dbe353f819d55c0ddd1d170df1df154041f90c9b105adec",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "67230743260bbfc2354d698375d6a80fc42b6ffe8a0d518b125193cd7f9d9404": {
+      "input": "inputs/67230743260bbfc2354d698375d6a80fc42b6ffe8a0d518b125193cd7f9d9404.json",
+      "expected": "expected/67230743260bbfc2354d698375d6a80fc42b6ffe8a0d518b125193cd7f9d9404.json",
+      "expected_sha256": "c186fbc1297e9e84f21057e006d8dec5038640ca7a9cd2d14e32a9b44b2ef724",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "67f673f7b0b96f7ec1c15a3495ea388d4d46e9fb12d000a249ab5ed4ff734c65": {
+      "input": "inputs/67f673f7b0b96f7ec1c15a3495ea388d4d46e9fb12d000a249ab5ed4ff734c65.json",
+      "expected": "expected/67f673f7b0b96f7ec1c15a3495ea388d4d46e9fb12d000a249ab5ed4ff734c65.json",
+      "expected_sha256": "e022ed7809ef0d867ef0324338d916ca25ca5a5859efc22b1de4d6ae7325a4a6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "69684e92143310cde06511a5480daf1e70ccd41335e047cc3ab320e23f74294c": {
+      "input": "inputs/69684e92143310cde06511a5480daf1e70ccd41335e047cc3ab320e23f74294c.json",
+      "expected": "expected/69684e92143310cde06511a5480daf1e70ccd41335e047cc3ab320e23f74294c.json",
+      "expected_sha256": "27e046b6be41afe49ab2ec3cad787ec72704d7968a2ae35b54271bfbcc36c10e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "69d0caac45491510b2ba13370f34e522f71ac2e9f1927c7fe4ef7cde82639b0a": {
+      "input": "inputs/69d0caac45491510b2ba13370f34e522f71ac2e9f1927c7fe4ef7cde82639b0a.json",
+      "expected": "expected/69d0caac45491510b2ba13370f34e522f71ac2e9f1927c7fe4ef7cde82639b0a.json",
+      "expected_sha256": "ec4c7c78be5fc9477905d1633d8d9479586276541bf3e1797f215bb37cdc2e74",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "6c8ad1af08b488c350f0a7587b1d9fd63765c847dbd78a7b12d2e40527bda766": {
+      "input": "inputs/6c8ad1af08b488c350f0a7587b1d9fd63765c847dbd78a7b12d2e40527bda766.json",
+      "expected": "expected/6c8ad1af08b488c350f0a7587b1d9fd63765c847dbd78a7b12d2e40527bda766.json",
+      "expected_sha256": "5a86ce0280a8098f00d58e1ac5c0650f1e00b5470bb1d6685d31955d4a078090",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "6de963f23e287f9cafa58a4aca53927acad9764968aaa79e640eea5d9ebc24ab": {
+      "input": "inputs/6de963f23e287f9cafa58a4aca53927acad9764968aaa79e640eea5d9ebc24ab.json",
+      "expected": "expected/6de963f23e287f9cafa58a4aca53927acad9764968aaa79e640eea5d9ebc24ab.json",
+      "expected_sha256": "f7f0d07d80f319c1fc14fd3c6de52142c06f91b20f1c54604b6463971685ef5b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "6f083ef5f8e999d1ab172d2c400f36682ce7c87ef73ec145ae3278d167d628bb": {
+      "input": "inputs/6f083ef5f8e999d1ab172d2c400f36682ce7c87ef73ec145ae3278d167d628bb.json",
+      "expected": "expected/6f083ef5f8e999d1ab172d2c400f36682ce7c87ef73ec145ae3278d167d628bb.json",
+      "expected_sha256": "09d76456d67d195624f73cacc44484271b22a5b77291fcb0285c8f2d9df3cebf",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "6fd3d102d3e1ce0b4c6fc2b566f63a8d7dd817e448658ef92f044194b7cf05a6": {
+      "input": "inputs/6fd3d102d3e1ce0b4c6fc2b566f63a8d7dd817e448658ef92f044194b7cf05a6.json",
+      "expected": "expected/6fd3d102d3e1ce0b4c6fc2b566f63a8d7dd817e448658ef92f044194b7cf05a6.json",
+      "expected_sha256": "cae05a3b25af5ef404dc71e056574e877163c6d46069cbab99e9dd727ce4998e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7078459bd3fe82cbb3b356755c5b9277ca7a143eba97884833597d189632b3d8": {
+      "input": "inputs/7078459bd3fe82cbb3b356755c5b9277ca7a143eba97884833597d189632b3d8.json",
+      "expected": "expected/7078459bd3fe82cbb3b356755c5b9277ca7a143eba97884833597d189632b3d8.json",
+      "expected_sha256": "2285d64c24b48e8c4d7c9b35f62d8936f1cc829ff416fef182db362f50ae93da",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "70a037c0479729895ac496ef521a51c9b1ed5ecfc5077bf3c399b2ba3dbbd7f4": {
+      "input": "inputs/70a037c0479729895ac496ef521a51c9b1ed5ecfc5077bf3c399b2ba3dbbd7f4.json",
+      "expected": "expected/70a037c0479729895ac496ef521a51c9b1ed5ecfc5077bf3c399b2ba3dbbd7f4.json",
+      "expected_sha256": "c241e8c2475ae853e6c3cee82581308526d969616a5e4a2e52f130592face443",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "713da74134ca27f989667591cb18ce2bc45b4add48b8e7d59b54acb975281c31": {
+      "input": "inputs/713da74134ca27f989667591cb18ce2bc45b4add48b8e7d59b54acb975281c31.json",
+      "expected": "expected/713da74134ca27f989667591cb18ce2bc45b4add48b8e7d59b54acb975281c31.json",
+      "expected_sha256": "2c1a2d925d6dc3290c9dd0a52f805821ddf354bd23848a49751cc1c50244c46b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "719d601b969077b9b0ee0d147961a2c54ed7f479a1407dd0f8c2ee895e17b258": {
+      "input": "inputs/719d601b969077b9b0ee0d147961a2c54ed7f479a1407dd0f8c2ee895e17b258.json",
+      "expected": "expected/719d601b969077b9b0ee0d147961a2c54ed7f479a1407dd0f8c2ee895e17b258.json",
+      "expected_sha256": "c49954be747cd56d73a3a834b0ac3162082f94d1ffffb6e86bbc881f66fe52a1",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "71ae1ff3fe18b9ca999c5515e8f36730e1b8ef3cd6c0da58c44fd9ebae6ab125": {
+      "input": "inputs/71ae1ff3fe18b9ca999c5515e8f36730e1b8ef3cd6c0da58c44fd9ebae6ab125.json",
+      "expected": "expected/71ae1ff3fe18b9ca999c5515e8f36730e1b8ef3cd6c0da58c44fd9ebae6ab125.json",
+      "expected_sha256": "5b12ab9c8e8eae5004af4f8074e0eb92eb6156d16532367209bbe30368d32e94",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7462fce83166dd6921425e6acba8a58b76da21b8d92c59cd9be34299955fc719": {
+      "input": "inputs/7462fce83166dd6921425e6acba8a58b76da21b8d92c59cd9be34299955fc719.json",
+      "expected": "expected/7462fce83166dd6921425e6acba8a58b76da21b8d92c59cd9be34299955fc719.json",
+      "expected_sha256": "daa0fdd3dde4d7d3164a91775c01da227fa354bbb68b40730217ed163700f020",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7656d21354c58cea9d6735e95881bbc2392b3ad6f9ebe18e5301c6f71ab68506": {
+      "input": "inputs/7656d21354c58cea9d6735e95881bbc2392b3ad6f9ebe18e5301c6f71ab68506.json",
+      "expected": "expected/7656d21354c58cea9d6735e95881bbc2392b3ad6f9ebe18e5301c6f71ab68506.json",
+      "expected_sha256": "917daf91132118ab6693263430e3237c1beca45975fde06049790bc13197cef6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "766d2feb2155fc4d3e006a88f08c83f8b4fde8bf29aed9f936cc8479c5c358b2": {
+      "input": "inputs/766d2feb2155fc4d3e006a88f08c83f8b4fde8bf29aed9f936cc8479c5c358b2.json",
+      "expected": "expected/766d2feb2155fc4d3e006a88f08c83f8b4fde8bf29aed9f936cc8479c5c358b2.json",
+      "expected_sha256": "829675b1930c34651c0257ff2e0fbab1523708ef40d42d10d1f41f508cffab30",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "776367a8d1b96877adb74a84ce1bdf2a6fda6f9b79caf0664550e8840509f386": {
+      "input": "inputs/776367a8d1b96877adb74a84ce1bdf2a6fda6f9b79caf0664550e8840509f386.json",
+      "expected": "expected/776367a8d1b96877adb74a84ce1bdf2a6fda6f9b79caf0664550e8840509f386.json",
+      "expected_sha256": "4a9dcd38234637ba94251c4b552012d60fcc5dab0fcf4365eb703ed234959853",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "78d9cb32ae413ae08a5a9e05ebc75f9bde7f336df12c1e87481a156564c61bce": {
+      "input": "inputs/78d9cb32ae413ae08a5a9e05ebc75f9bde7f336df12c1e87481a156564c61bce.json",
+      "expected": "expected/78d9cb32ae413ae08a5a9e05ebc75f9bde7f336df12c1e87481a156564c61bce.json",
+      "expected_sha256": "55aa5589dcb3d2e1e9078fb281e4500c740323201defb2b59415a2ba184fb0fe",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "79117b44694ba7cb8e78876867b279ea320240e0043f53d95f8bc4c143f7cef5": {
+      "input": "inputs/79117b44694ba7cb8e78876867b279ea320240e0043f53d95f8bc4c143f7cef5.json",
+      "expected": "expected/79117b44694ba7cb8e78876867b279ea320240e0043f53d95f8bc4c143f7cef5.json",
+      "expected_sha256": "7c4ac6204db99c4529e876efbb99150b778c4d0608ce917e54f7ca9a3e6ca3b6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "79cd6ab6288459c3f9f119a15bb745fdbce85c8dc84965913eb630c8187fd3db": {
+      "input": "inputs/79cd6ab6288459c3f9f119a15bb745fdbce85c8dc84965913eb630c8187fd3db.json",
+      "expected": "expected/79cd6ab6288459c3f9f119a15bb745fdbce85c8dc84965913eb630c8187fd3db.json",
+      "expected_sha256": "a0b905741de22d39500a883beaa849e1609f0406751b59d743493b2b5c16dea7",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7a21e0176f61b46afa3061916f4e1bb806dda02e24199a6dbb761ee80e89e4ba": {
+      "input": "inputs/7a21e0176f61b46afa3061916f4e1bb806dda02e24199a6dbb761ee80e89e4ba.json",
+      "expected": "expected/7a21e0176f61b46afa3061916f4e1bb806dda02e24199a6dbb761ee80e89e4ba.json",
+      "expected_sha256": "7361442754817e7d096646ae8a9775dadceda37617b7034c68e05edd25e7192d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7a95c7b4d02819e77d113a4d819bafb9bfdb1a0309911fc4682d86a376eec44d": {
+      "input": "inputs/7a95c7b4d02819e77d113a4d819bafb9bfdb1a0309911fc4682d86a376eec44d.json",
+      "expected": "expected/7a95c7b4d02819e77d113a4d819bafb9bfdb1a0309911fc4682d86a376eec44d.json",
+      "expected_sha256": "11fa2abc17f4267ccc22bbe2b4ce8cf76f664169bf8c6dcedc60f32ee34aa5ae",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7b32b51179d177830983363fbff52289d4817104d8fd0e7524a522b07ea172f8": {
+      "input": "inputs/7b32b51179d177830983363fbff52289d4817104d8fd0e7524a522b07ea172f8.json",
+      "expected": "expected/7b32b51179d177830983363fbff52289d4817104d8fd0e7524a522b07ea172f8.json",
+      "expected_sha256": "c3b6a6e7928afd6924bfccce95266e91f5b3323d7a0078c52da19077e058b15b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7cea1513f164f9113bb426c062d9a145c34e0175f54494e76e0c3a69017635c9": {
+      "input": "inputs/7cea1513f164f9113bb426c062d9a145c34e0175f54494e76e0c3a69017635c9.json",
+      "expected": "expected/7cea1513f164f9113bb426c062d9a145c34e0175f54494e76e0c3a69017635c9.json",
+      "expected_sha256": "e8c47a46f74545f7d81b1fba60e7c1ece1ebecc6cf62441305eccd79552173e6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7cfd90e29056db3a1a4d2b45690869ff537734eb5d809ab5f1bb832e59a0bc67": {
+      "input": "inputs/7cfd90e29056db3a1a4d2b45690869ff537734eb5d809ab5f1bb832e59a0bc67.json",
+      "expected": "expected/7cfd90e29056db3a1a4d2b45690869ff537734eb5d809ab5f1bb832e59a0bc67.json",
+      "expected_sha256": "651b0e632346fe4bfb91cfbd48500f72eb824dc1f1394062fac0011052fa32a5",
+      "expected_source": "parallel-edge-order-and-zero-size-intersection-root-fix",
+      "oracle_status": "success",
+      "official_nonfinite_paths": [
+        "graph.height",
+        "nodes[0].y",
+        "nodes[1].y",
+        "nodes[2].y",
+        "nodes[3].y",
+        "nodes[4].y",
+        "nodes[5].y",
+        "nodes[6].y",
+        "nodes[7].y",
+        "nodes[7].height",
+        "nodes[8].y",
+        "nodes[9].y",
+        "edges[0].points[0].y",
+        "edges[0].points[1].y",
+        "edges[0].points[2].y",
+        "edges[0].points[3].y",
+        "edges[0].points[4].y",
+        "edges[0].y",
+        "edges[1].points[0].y",
+        "edges[1].points[1].y",
+        "edges[1].points[2].y",
+        "edges[1].points[3].y",
+        "edges[1].points[4].y",
+        "edges[1].y",
+        "edges[2].points[0].y",
+        "edges[2].points[1].y",
+        "edges[2].points[2].y",
+        "edges[2].points[3].y",
+        "edges[2].points[4].y",
+        "edges[2].y",
+        "edges[3].points[0].y",
+        "edges[3].points[1].y",
+        "edges[3].points[2].y",
+        "edges[3].points[3].y",
+        "edges[3].points[4].y",
+        "edges[3].y"
+      ]
+    },
+    "7e2e9b7476777c872112cf4e3f6fd8b0c9283c1f0ce5337c04e0ef308aa85e3a": {
+      "input": "inputs/7e2e9b7476777c872112cf4e3f6fd8b0c9283c1f0ce5337c04e0ef308aa85e3a.json",
+      "expected": "expected/7e2e9b7476777c872112cf4e3f6fd8b0c9283c1f0ce5337c04e0ef308aa85e3a.json",
+      "expected_sha256": "3e1f28b637d22f0ce9be357bc5e63ab62fe631d8330c568bb4ff2e4ab8799afe",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "7f4b17f6d695e6c5223239fd28c8b4c49b5a6b8b75623f5a2954dd1a49c4a547": {
+      "input": "inputs/7f4b17f6d695e6c5223239fd28c8b4c49b5a6b8b75623f5a2954dd1a49c4a547.json",
+      "expected": "expected/7f4b17f6d695e6c5223239fd28c8b4c49b5a6b8b75623f5a2954dd1a49c4a547.json",
+      "expected_sha256": "208ab4ae5dfc74a06c6715208b49863074e7e23eb0787cfd1442f277836e4eae",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "803c3b07a22b2b1f5a1cd51d1fac1931f274a6d7a1ef66af2f235d154b4468bf": {
+      "input": "inputs/803c3b07a22b2b1f5a1cd51d1fac1931f274a6d7a1ef66af2f235d154b4468bf.json",
+      "expected": "expected/803c3b07a22b2b1f5a1cd51d1fac1931f274a6d7a1ef66af2f235d154b4468bf.json",
+      "expected_sha256": "d9ab8783d052f0b61ab0f175219088240d9af644495edc0eb57dd16f0da4a8b9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "809391cd2e493191cdd7b14944035e92e77365f487674d48cf81dac1b1fa905e": {
+      "input": "inputs/809391cd2e493191cdd7b14944035e92e77365f487674d48cf81dac1b1fa905e.json",
+      "expected": "expected/809391cd2e493191cdd7b14944035e92e77365f487674d48cf81dac1b1fa905e.json",
+      "expected_sha256": "e61b985fd4857367ecf53dae685bb9883af169d91400eabdd40175486a6e50da",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "80fb6154569d359ded007a98b34b920bd71b55723706cefbea1debd9b14eecc4": {
+      "input": "inputs/80fb6154569d359ded007a98b34b920bd71b55723706cefbea1debd9b14eecc4.json",
+      "expected": "expected/80fb6154569d359ded007a98b34b920bd71b55723706cefbea1debd9b14eecc4.json",
+      "expected_sha256": "af02f5b4d9e1dc74a68d9c61d6fece8268966106db0fb9ff5b714541ecfe7a53",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8123e140f029b077822165e9da0aaf5f2d6742acc1c0d95fe6c4ea7f9058ede6": {
+      "input": "inputs/8123e140f029b077822165e9da0aaf5f2d6742acc1c0d95fe6c4ea7f9058ede6.json",
+      "expected": "expected/8123e140f029b077822165e9da0aaf5f2d6742acc1c0d95fe6c4ea7f9058ede6.json",
+      "expected_sha256": "7e10f8ddd967647790f657896f2bb40a6870182a0b72ddf7aa0426995a21f4c1",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "81c86eedeb478ef3880da67732272f871514b8a136e8acbd97a0df37da3a6d02": {
+      "input": "inputs/81c86eedeb478ef3880da67732272f871514b8a136e8acbd97a0df37da3a6d02.json",
+      "expected": "expected/81c86eedeb478ef3880da67732272f871514b8a136e8acbd97a0df37da3a6d02.json",
+      "expected_sha256": "1ad8780b7626967bff125648b970a2b675b49e03eba1229a85a670fe9a100a96",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8245c695dfcccf80ba323698120986402e25a3170a0811a2935019a52d52506a": {
+      "input": "inputs/8245c695dfcccf80ba323698120986402e25a3170a0811a2935019a52d52506a.json",
+      "expected": "expected/8245c695dfcccf80ba323698120986402e25a3170a0811a2935019a52d52506a.json",
+      "expected_sha256": "d478aa99cc38f177a73a2cae77ab35c30ffbca7d646b281e4779bb233a49c130",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "82f4bdb7640c41740bd1088976ec36152f6a4166e3f06b3854e20ee9ce587312": {
+      "input": "inputs/82f4bdb7640c41740bd1088976ec36152f6a4166e3f06b3854e20ee9ce587312.json",
+      "expected": "expected/82f4bdb7640c41740bd1088976ec36152f6a4166e3f06b3854e20ee9ce587312.json",
+      "expected_sha256": "be54551dce4dff938b2cd40aac2f34032c089243baa9292fb948687e3d112828",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "86c985c6c2a703f138d7392f7b8559e94faaedf6c7f72ac6f8c161a134513d32": {
+      "input": "inputs/86c985c6c2a703f138d7392f7b8559e94faaedf6c7f72ac6f8c161a134513d32.json",
+      "expected": "expected/86c985c6c2a703f138d7392f7b8559e94faaedf6c7f72ac6f8c161a134513d32.json",
+      "expected_sha256": "c5b8904a05707be16b34039d2384c8403ed4816025ca399040d93b2cdbcc5efb",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "884c645d3a39a3d9545c05c0eacf0460832a555730abc916a534045e6665ecf1": {
+      "input": "inputs/884c645d3a39a3d9545c05c0eacf0460832a555730abc916a534045e6665ecf1.json",
+      "expected": "expected/884c645d3a39a3d9545c05c0eacf0460832a555730abc916a534045e6665ecf1.json",
+      "expected_sha256": "b81cf016623620a099ab9ef1dc3fb55aaf2b04beefdfed2dd8b390ce0b1ff95b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "89444b03880e946fcc624045e95512ec564281bf630570014862bffbd7709fc7": {
+      "input": "inputs/89444b03880e946fcc624045e95512ec564281bf630570014862bffbd7709fc7.json",
+      "expected": "expected/89444b03880e946fcc624045e95512ec564281bf630570014862bffbd7709fc7.json",
+      "expected_sha256": "fcce1aa9ed343de9cfad0a1d41eafa70a37ad307f0903accbb77c0b5863e4605",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "89642cb1400e907def7f340e8429d73b58781a50f221167ea80b46e7a6c35d6a": {
+      "input": "inputs/89642cb1400e907def7f340e8429d73b58781a50f221167ea80b46e7a6c35d6a.json",
+      "expected": "expected/89642cb1400e907def7f340e8429d73b58781a50f221167ea80b46e7a6c35d6a.json",
+      "expected_sha256": "88b2abd721fa90a19aead0fcfd3a747921f48de24a93c3e8d33c913430bb2a88",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "899f6e7d813d60790ba06ae5e76595fea6bfd1ad92944bd817d29eb5344852db": {
+      "input": "inputs/899f6e7d813d60790ba06ae5e76595fea6bfd1ad92944bd817d29eb5344852db.json",
+      "expected": "expected/899f6e7d813d60790ba06ae5e76595fea6bfd1ad92944bd817d29eb5344852db.json",
+      "expected_sha256": "b40069c630a5f1602ab03e5f2c812bad88ad411058a60c1e71080bc90324747a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "89afcb18268c90ae77e277f46d116c61377e1aafa2b3cb7ecbc62492cc95417d": {
+      "input": "inputs/89afcb18268c90ae77e277f46d116c61377e1aafa2b3cb7ecbc62492cc95417d.json",
+      "expected": "expected/89afcb18268c90ae77e277f46d116c61377e1aafa2b3cb7ecbc62492cc95417d.json",
+      "expected_sha256": "424a15ab98276a6d9c355c91ad8f1e78a3d4b45a07dc1435df02258ff39d2415",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8a0c6807df0e33326a212da1507facd5af8357795132f86ffdd65d9954adeee8": {
+      "input": "inputs/8a0c6807df0e33326a212da1507facd5af8357795132f86ffdd65d9954adeee8.json",
+      "expected": "expected/8a0c6807df0e33326a212da1507facd5af8357795132f86ffdd65d9954adeee8.json",
+      "expected_sha256": "2b42f93d47ca923ce485ac21031998749196a48e9ab24b11ddb72a822fcd0990",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8a27219e3de4fc5b35d4b5db4025eb8dad1c23e5113e58b0cf874c13f848237c": {
+      "input": "inputs/8a27219e3de4fc5b35d4b5db4025eb8dad1c23e5113e58b0cf874c13f848237c.json",
+      "expected": "expected/8a27219e3de4fc5b35d4b5db4025eb8dad1c23e5113e58b0cf874c13f848237c.json",
+      "expected_sha256": "f1ea702d2e6701bd2c74d04c454415f4bd9bc0d41bfc4f33cdccc1683fc10858",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8aba3ca3d06ef1ba5fb49f672354d51a4215fc72dc385025446e52fcd7a919ce": {
+      "input": "inputs/8aba3ca3d06ef1ba5fb49f672354d51a4215fc72dc385025446e52fcd7a919ce.json",
+      "expected": "expected/8aba3ca3d06ef1ba5fb49f672354d51a4215fc72dc385025446e52fcd7a919ce.json",
+      "expected_sha256": "c41b467d4bca9af46e531bf64cadc914d7d1032fe6f32a401647553bcbbf07ab",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8b5e7a570f9161a3c7cca8b3278c01c7db267719b49749a9f600bbaf6b754548": {
+      "input": "inputs/8b5e7a570f9161a3c7cca8b3278c01c7db267719b49749a9f600bbaf6b754548.json",
+      "expected": "expected/8b5e7a570f9161a3c7cca8b3278c01c7db267719b49749a9f600bbaf6b754548.json",
+      "expected_sha256": "11a825827d508d78a1292580bc5c413a68092b1aaa5e664c8681a2d3d3a17629",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8b8e61bee24d1bb7a7e61ba3bf4573d8c1e2fe1afdd97e506ed60f1131afcb5c": {
+      "input": "inputs/8b8e61bee24d1bb7a7e61ba3bf4573d8c1e2fe1afdd97e506ed60f1131afcb5c.json",
+      "expected": "expected/8b8e61bee24d1bb7a7e61ba3bf4573d8c1e2fe1afdd97e506ed60f1131afcb5c.json",
+      "expected_sha256": "6d9badfa3ecd75952705f70ec3e12720aabde0996ba7a1308b7ef8d4c4fb4820",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8e0498419ebdb8159b0bb04a9fdbc1663ec9f20b3f11a8886f2653a11321ca71": {
+      "input": "inputs/8e0498419ebdb8159b0bb04a9fdbc1663ec9f20b3f11a8886f2653a11321ca71.json",
+      "expected": "expected/8e0498419ebdb8159b0bb04a9fdbc1663ec9f20b3f11a8886f2653a11321ca71.json",
+      "expected_sha256": "28d6fdb478c3bd3baf0a90ea84d66ce89172178c5d1ebb5437051b93584444c5",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "8e1dab4c8ac59d73f9b8f0d6f1b2f3bffa826bffaa24df5c5bd749740c21e8a7": {
+      "input": "inputs/8e1dab4c8ac59d73f9b8f0d6f1b2f3bffa826bffaa24df5c5bd749740c21e8a7.json",
+      "expected": "expected/8e1dab4c8ac59d73f9b8f0d6f1b2f3bffa826bffaa24df5c5bd749740c21e8a7.json",
+      "expected_sha256": "3322c7c8bc4af8ae05ebe3c9cfd1dfe6784073b6a49df890d9ae1cd80d54bc19",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "92f6061fd578b2e8cce32b2cf4e48799f4e7defa41f4a013fb7b67ea466949d4": {
+      "input": "inputs/92f6061fd578b2e8cce32b2cf4e48799f4e7defa41f4a013fb7b67ea466949d4.json",
+      "expected": "expected/92f6061fd578b2e8cce32b2cf4e48799f4e7defa41f4a013fb7b67ea466949d4.json",
+      "expected_sha256": "3651062995f7c48adf5bf3d8c010306cb967f5a5d241766fd4526a07bce9006d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "940bb73e9411e119c1abba454702d9e9a7994e4bca3a1b795b6c4bfcd1783abc": {
+      "input": "inputs/940bb73e9411e119c1abba454702d9e9a7994e4bca3a1b795b6c4bfcd1783abc.json",
+      "expected": "expected/940bb73e9411e119c1abba454702d9e9a7994e4bca3a1b795b6c4bfcd1783abc.json",
+      "expected_sha256": "1e908bde039bd4ac5a8bdf087d71a0eaa11297d2f241ad060803ec160953e67c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "941861f1305b0eaf3a34c060f93169735dcdde2505a77b5c3d4e653d9d2ef172": {
+      "input": "inputs/941861f1305b0eaf3a34c060f93169735dcdde2505a77b5c3d4e653d9d2ef172.json",
+      "expected": "expected/941861f1305b0eaf3a34c060f93169735dcdde2505a77b5c3d4e653d9d2ef172.json",
+      "expected_sha256": "962dd635c5f36e75752c72e39375f5dcaf27e7f501e5088d4de6ed3ccf270526",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "964a303502a9611488ae70d840abe405bbc30304116406772c7f35f6c7baaa0a": {
+      "input": "inputs/964a303502a9611488ae70d840abe405bbc30304116406772c7f35f6c7baaa0a.json",
+      "expected": "expected/964a303502a9611488ae70d840abe405bbc30304116406772c7f35f6c7baaa0a.json",
+      "expected_sha256": "f138b26211d70dab1607a6e2e3cc90599e1e9b1e5794f3324feecefedbe8bc76",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "971bddae2b0587709298e3e509c2ede87d05e2071f5dca69b0a0d9d0b344d720": {
+      "input": "inputs/971bddae2b0587709298e3e509c2ede87d05e2071f5dca69b0a0d9d0b344d720.json",
+      "expected": "expected/971bddae2b0587709298e3e509c2ede87d05e2071f5dca69b0a0d9d0b344d720.json",
+      "expected_sha256": "2d6d09d41d4cb6d89dd6990a07023aaf25781e33ca29d8d96eed895d16108636",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "97d3c8ca03d3faf82fc176436a4310d21504d3f1876d41d8add2dcbf6b5e6eb7": {
+      "input": "inputs/97d3c8ca03d3faf82fc176436a4310d21504d3f1876d41d8add2dcbf6b5e6eb7.json",
+      "expected": "expected/97d3c8ca03d3faf82fc176436a4310d21504d3f1876d41d8add2dcbf6b5e6eb7.json",
+      "expected_sha256": "f66951f14ad7a4a0230cbf8107a54ca74bcf5b400a044e5ae86940cffe96c68f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "97f04b349ce25bbc63cae3adf535a819587917c9c8222dfe0f43d3bafd2cdede": {
+      "input": "inputs/97f04b349ce25bbc63cae3adf535a819587917c9c8222dfe0f43d3bafd2cdede.json",
+      "expected": "expected/97f04b349ce25bbc63cae3adf535a819587917c9c8222dfe0f43d3bafd2cdede.json",
+      "expected_sha256": "1788cc545a174a6d1b0d2511533c1f25d8a343d34c90c34940ca613f514cfa28",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9a0cf6ae6a3e8b1b4a6fec0fd7f11a6d51965cacc5c441c6c8bcdce73af247fe": {
+      "input": "inputs/9a0cf6ae6a3e8b1b4a6fec0fd7f11a6d51965cacc5c441c6c8bcdce73af247fe.json",
+      "expected": "expected/9a0cf6ae6a3e8b1b4a6fec0fd7f11a6d51965cacc5c441c6c8bcdce73af247fe.json",
+      "expected_sha256": "c1560e15d93a59a487fe5e82a15c41cea5d66a4f71f6cfa5bc6ca3138a818941",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9a6e8f085c5824b65b0e69985e8ca690b0088e37b8bb5e99a44498b1724c0b32": {
+      "input": "inputs/9a6e8f085c5824b65b0e69985e8ca690b0088e37b8bb5e99a44498b1724c0b32.json",
+      "expected": "expected/9a6e8f085c5824b65b0e69985e8ca690b0088e37b8bb5e99a44498b1724c0b32.json",
+      "expected_sha256": "5ce6d53cfe8d1a969464354b43106f4ac78d6d43fec112b7023fc3cfe48aa6c8",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9abf797df19bfa344a5906e24da789bb2c32c76e329d50b61f578160b32b7c58": {
+      "input": "inputs/9abf797df19bfa344a5906e24da789bb2c32c76e329d50b61f578160b32b7c58.json",
+      "expected": "expected/9abf797df19bfa344a5906e24da789bb2c32c76e329d50b61f578160b32b7c58.json",
+      "expected_sha256": "54c1e199eb8cbfd96865b94e8dbf51af5bd1790f699ae320596ff3012f77735f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9ae379d5869de2a49720f1095b765d5a8e324610e8548985ae243cf8a33283d0": {
+      "input": "inputs/9ae379d5869de2a49720f1095b765d5a8e324610e8548985ae243cf8a33283d0.json",
+      "expected": "expected/9ae379d5869de2a49720f1095b765d5a8e324610e8548985ae243cf8a33283d0.json",
+      "expected_sha256": "a1b3f0e70099745e75aca17ff008607c89651a14e1f63b8a94f75ed2189588c6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9d4e006342098574efeaadabe086003b340fe62196b052db862f88de18e9c0bb": {
+      "input": "inputs/9d4e006342098574efeaadabe086003b340fe62196b052db862f88de18e9c0bb.json",
+      "expected": "expected/9d4e006342098574efeaadabe086003b340fe62196b052db862f88de18e9c0bb.json",
+      "expected_sha256": "fde48ad50d5899cbb269edbad915659963a42caa5da08e63d6780859e19fac61",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9f2205e4612009260e68a817264e355f671595d6253a6b73201d4aeeb90c5c67": {
+      "input": "inputs/9f2205e4612009260e68a817264e355f671595d6253a6b73201d4aeeb90c5c67.json",
+      "expected": "expected/9f2205e4612009260e68a817264e355f671595d6253a6b73201d4aeeb90c5c67.json",
+      "expected_sha256": "d725e0711639af4eb3081e96f75b1794528c1a0711b3d4580ead49dc2a383075",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "9ff87f65fe7d36c7931be0ad104f6f65ac3fff1c41cf9430ccf8f59db8685f64": {
+      "input": "inputs/9ff87f65fe7d36c7931be0ad104f6f65ac3fff1c41cf9430ccf8f59db8685f64.json",
+      "expected": "expected/9ff87f65fe7d36c7931be0ad104f6f65ac3fff1c41cf9430ccf8f59db8685f64.json",
+      "expected_sha256": "82557e4af8a313d3f3c1eb483e13b498590940fe7ee8ce69516892bac99d5149",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a022e5aab3072c4b743808ca1676ae2496118d54c15522a794ff935bb896e0d6": {
+      "input": "inputs/a022e5aab3072c4b743808ca1676ae2496118d54c15522a794ff935bb896e0d6.json",
+      "expected": "expected/a022e5aab3072c4b743808ca1676ae2496118d54c15522a794ff935bb896e0d6.json",
+      "expected_sha256": "19dc36aad09aa847d41984bd6ec31d8e48162ed4e92d1b824618405291c5a5c5",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a068bb7e90abba094e3d27ac78f9b526cf27f66d2957169a7b9e9f8f201caa52": {
+      "input": "inputs/a068bb7e90abba094e3d27ac78f9b526cf27f66d2957169a7b9e9f8f201caa52.json",
+      "expected": "expected/a068bb7e90abba094e3d27ac78f9b526cf27f66d2957169a7b9e9f8f201caa52.json",
+      "expected_sha256": "abf656f57a447ea68a72b55ffd7889a137625a43643c5b8e63dd8d841cd210fc",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a0eb14860a911e12d2135bc8d3b2ef3724c48fe46fbf3f8a860d73fc09d83397": {
+      "input": "inputs/a0eb14860a911e12d2135bc8d3b2ef3724c48fe46fbf3f8a860d73fc09d83397.json",
+      "expected": "expected/a0eb14860a911e12d2135bc8d3b2ef3724c48fe46fbf3f8a860d73fc09d83397.json",
+      "expected_sha256": "739f54dfc6b90afb7b13e84d6adb54a786ece089ca76e82c7dae925ae5ec4b9f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a2a90c23088565c3f24da96a2fee805e2ff24d2db5171546da2d886e1df4559c": {
+      "input": "inputs/a2a90c23088565c3f24da96a2fee805e2ff24d2db5171546da2d886e1df4559c.json",
+      "expected": "expected/a2a90c23088565c3f24da96a2fee805e2ff24d2db5171546da2d886e1df4559c.json",
+      "expected_sha256": "685f9fd98e4454ac2aeb0728140988f49c149fcd39159267ffb246e3854d40d8",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a3623ad0b65d1a164e26d92abaa12e7edf86243696eb2ba1853b8e7e724882d6": {
+      "input": "inputs/a3623ad0b65d1a164e26d92abaa12e7edf86243696eb2ba1853b8e7e724882d6.json",
+      "expected": "expected/a3623ad0b65d1a164e26d92abaa12e7edf86243696eb2ba1853b8e7e724882d6.json",
+      "expected_sha256": "2ee0bee78c0b925ab820a7d11546f6ec1c4baed4381ab19b53ef1d5097f687cf",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a3d0114e383143b81e33703f741ca55bb173ffbe45ac7479ba3c5f0c3715e024": {
+      "input": "inputs/a3d0114e383143b81e33703f741ca55bb173ffbe45ac7479ba3c5f0c3715e024.json",
+      "expected": "expected/a3d0114e383143b81e33703f741ca55bb173ffbe45ac7479ba3c5f0c3715e024.json",
+      "expected_sha256": "a541b3972a431e15ab2f359147148e2588bdd74c765c8eb4145ff848c86a9d7f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a4ccdcdd07fc5486d7484e97ca8634da644b7137a498cc13366f49af4e23d6a6": {
+      "input": "inputs/a4ccdcdd07fc5486d7484e97ca8634da644b7137a498cc13366f49af4e23d6a6.json",
+      "expected": "expected/a4ccdcdd07fc5486d7484e97ca8634da644b7137a498cc13366f49af4e23d6a6.json",
+      "expected_sha256": "42fa483ce48428d9a67ee2db8dbc51961d51db31d75992da9427e3f51657aafd",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a56d684f6b2b86aea01535962c88bd8df45427a9726be379aaa41fbe9bb5c31b": {
+      "input": "inputs/a56d684f6b2b86aea01535962c88bd8df45427a9726be379aaa41fbe9bb5c31b.json",
+      "expected": "expected/a56d684f6b2b86aea01535962c88bd8df45427a9726be379aaa41fbe9bb5c31b.json",
+      "expected_sha256": "c7768d5f994f97be4c77cd9d7e5dbb267b2bce355697546d2e421474f1bde6da",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a6eb6756d5f6c644a8b93f05785a31868055d2b9da30b8ef9509953c56a359f1": {
+      "input": "inputs/a6eb6756d5f6c644a8b93f05785a31868055d2b9da30b8ef9509953c56a359f1.json",
+      "expected": "expected/a6eb6756d5f6c644a8b93f05785a31868055d2b9da30b8ef9509953c56a359f1.json",
+      "expected_sha256": "99de6d36155ede87476021537e27cafe5df2a451ba055d1d3883299e521c5406",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a6f2ef86d741f49cb6ea11064ceb77fec5aad063a6a403f928006ce2d73899f3": {
+      "input": "inputs/a6f2ef86d741f49cb6ea11064ceb77fec5aad063a6a403f928006ce2d73899f3.json",
+      "expected": "expected/a6f2ef86d741f49cb6ea11064ceb77fec5aad063a6a403f928006ce2d73899f3.json",
+      "expected_sha256": "3a69607e1570d23f937f9367b73e3cfc9971a1b6426c14231e6854862f8c9eef",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a6fe7201574d8067b659fcc5ca49fa70421fd25378ba5073a196fcfbbde8a087": {
+      "input": "inputs/a6fe7201574d8067b659fcc5ca49fa70421fd25378ba5073a196fcfbbde8a087.json",
+      "expected": "expected/a6fe7201574d8067b659fcc5ca49fa70421fd25378ba5073a196fcfbbde8a087.json",
+      "expected_sha256": "75174a0767fb9202412d2977a22e2d6afb7868c3be6414de13489280eda4aa52",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a711a05e790f871379cd15b0322ec152e01687e458a97e569919b25b2b3faf17": {
+      "input": "inputs/a711a05e790f871379cd15b0322ec152e01687e458a97e569919b25b2b3faf17.json",
+      "expected": "expected/a711a05e790f871379cd15b0322ec152e01687e458a97e569919b25b2b3faf17.json",
+      "expected_sha256": "0393b65206557b32f9de4911aab2350ca6e6807917a6771d9df7935dfc01ce73",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a97df42ecf374e4298725ea7e3faea5a075ec16a19b533bcedd58abd841ecd73": {
+      "input": "inputs/a97df42ecf374e4298725ea7e3faea5a075ec16a19b533bcedd58abd841ecd73.json",
+      "expected": "expected/a97df42ecf374e4298725ea7e3faea5a075ec16a19b533bcedd58abd841ecd73.json",
+      "expected_sha256": "e21fd011e9d23ef2c39f454268d179c434fe966c0b1e4b4120a87c0a5b776daa",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "a9e488e6baa250f8d69104ccd3f5f15ecc29e9364977f5fe216e3f46dd812234": {
+      "input": "inputs/a9e488e6baa250f8d69104ccd3f5f15ecc29e9364977f5fe216e3f46dd812234.json",
+      "expected": "expected/a9e488e6baa250f8d69104ccd3f5f15ecc29e9364977f5fe216e3f46dd812234.json",
+      "expected_sha256": "951ad21e7a244d9aff25eae7da00774410001b41c968ea50d6f8f59e21e50225",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ab47120b3f7744180ffb79f73bed81743a7247d7f549a8f39910cdffeb31c8f3": {
+      "input": "inputs/ab47120b3f7744180ffb79f73bed81743a7247d7f549a8f39910cdffeb31c8f3.json",
+      "expected": "expected/ab47120b3f7744180ffb79f73bed81743a7247d7f549a8f39910cdffeb31c8f3.json",
+      "expected_sha256": "90968d09a8e66b99579ab0894c5be999e2730efa019c19eebcff1641d47b6492",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ab4db54247e815777f932f9ba282d85a3d9f7ff10517eda8168ff79bee2055ce": {
+      "input": "inputs/ab4db54247e815777f932f9ba282d85a3d9f7ff10517eda8168ff79bee2055ce.json",
+      "expected": "expected/ab4db54247e815777f932f9ba282d85a3d9f7ff10517eda8168ff79bee2055ce.json",
+      "expected_sha256": "f5b11598aa09a98654820192d2c34d434fe7f33378c027d765d952ff337b1f57",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "abfc0eee0996bba382ef2649cbff78b2da04d43d3ea91fde355eb9ed8a8bb78c": {
+      "input": "inputs/abfc0eee0996bba382ef2649cbff78b2da04d43d3ea91fde355eb9ed8a8bb78c.json",
+      "expected": "expected/abfc0eee0996bba382ef2649cbff78b2da04d43d3ea91fde355eb9ed8a8bb78c.json",
+      "expected_sha256": "5c0f3f3d407db4d9ca3852c7c9e224941cce08a7a82db252c8bc7af1d0d27266",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "acc3929608e5421c6125cc6f1b0efcfd7e1831eeec31d711b23ae34bd43cf1b2": {
+      "input": "inputs/acc3929608e5421c6125cc6f1b0efcfd7e1831eeec31d711b23ae34bd43cf1b2.json",
+      "expected": "expected/acc3929608e5421c6125cc6f1b0efcfd7e1831eeec31d711b23ae34bd43cf1b2.json",
+      "expected_sha256": "4594797a70d5c04b5a5212b5e017f1f53c75259e6a9f861751767ce65673d371",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "acfdcf9fcd5015922f082c820b43d88f335c415a252f6d3edeb7844356eda89e": {
+      "input": "inputs/acfdcf9fcd5015922f082c820b43d88f335c415a252f6d3edeb7844356eda89e.json",
+      "expected": "expected/acfdcf9fcd5015922f082c820b43d88f335c415a252f6d3edeb7844356eda89e.json",
+      "expected_sha256": "8fc67f83f67fa25559f6a2882d83d0892381e209700c7c16b5dc92a781261b20",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "adb136005e1759bfefc798ba34fdd134f5727d34dffb26db8e4db6f59e8b0ed8": {
+      "input": "inputs/adb136005e1759bfefc798ba34fdd134f5727d34dffb26db8e4db6f59e8b0ed8.json",
+      "expected": "expected/adb136005e1759bfefc798ba34fdd134f5727d34dffb26db8e4db6f59e8b0ed8.json",
+      "expected_sha256": "98c49c408894e8ab2ae70884165782b9e6073d12d6aa624d912757e8f900e2af",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ae6cc1e9f87b0a730a07f85b24fd771d283fb0bb69683846a6da3f2e8cb1defc": {
+      "input": "inputs/ae6cc1e9f87b0a730a07f85b24fd771d283fb0bb69683846a6da3f2e8cb1defc.json",
+      "expected": "expected/ae6cc1e9f87b0a730a07f85b24fd771d283fb0bb69683846a6da3f2e8cb1defc.json",
+      "expected_sha256": "79c434ddf41818cf9a67468409fd7648ce1f2a0ec56e5e875976e222cac2ef06",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "af3627d8138071f84d5bdbcbee48dc7ed23a757ca3f8830f3ee95ec1038fb276": {
+      "input": "inputs/af3627d8138071f84d5bdbcbee48dc7ed23a757ca3f8830f3ee95ec1038fb276.json",
+      "expected": "expected/af3627d8138071f84d5bdbcbee48dc7ed23a757ca3f8830f3ee95ec1038fb276.json",
+      "expected_sha256": "57f35062e2cd63f81fe0c7b152add24ea081e1b08b7f45e6c3b9f34a06d19b81",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "afaa805943da8d0affe85edf1c2a04b07d30c06560f601fa63a4adf0191db504": {
+      "input": "inputs/afaa805943da8d0affe85edf1c2a04b07d30c06560f601fa63a4adf0191db504.json",
+      "expected": "expected/afaa805943da8d0affe85edf1c2a04b07d30c06560f601fa63a4adf0191db504.json",
+      "expected_sha256": "afa617e8e01acd37848985a7fce754b43b383ece2d32eaaaa9754eef43b156c1",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b113141f50986fc1a36f08db6cecc452882af24ecb1ba42f949f62396e6686d2": {
+      "input": "inputs/b113141f50986fc1a36f08db6cecc452882af24ecb1ba42f949f62396e6686d2.json",
+      "expected": "expected/b113141f50986fc1a36f08db6cecc452882af24ecb1ba42f949f62396e6686d2.json",
+      "expected_sha256": "d9f7909acdbe72091a489ffb9643ad41ae7e8941e648259ab60d8f138374f961",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b1da03dd4b99b44db2d91fca4d8e2d55d724348851ddaa6c9dde9221d1ff28ee": {
+      "input": "inputs/b1da03dd4b99b44db2d91fca4d8e2d55d724348851ddaa6c9dde9221d1ff28ee.json",
+      "expected": "expected/b1da03dd4b99b44db2d91fca4d8e2d55d724348851ddaa6c9dde9221d1ff28ee.json",
+      "expected_sha256": "f3c40cc46a09bca4e461cdd53877a0bdebc3f55422d3dfe0355190041ef2e2c5",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b285998d5f4033847d56c0b46306bcec6b4bbfeeb1326a46eb12e8ac7385aff6": {
+      "input": "inputs/b285998d5f4033847d56c0b46306bcec6b4bbfeeb1326a46eb12e8ac7385aff6.json",
+      "expected": "expected/b285998d5f4033847d56c0b46306bcec6b4bbfeeb1326a46eb12e8ac7385aff6.json",
+      "expected_sha256": "a536ee32b87799bf5050e3edfcedde59fba1aaa1c918681d561f8acc61359a65",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b2be0c9b092fc5baf4af33298037d92ae6bc4e514aa66feabbaf2585561d0142": {
+      "input": "inputs/b2be0c9b092fc5baf4af33298037d92ae6bc4e514aa66feabbaf2585561d0142.json",
+      "expected": "expected/b2be0c9b092fc5baf4af33298037d92ae6bc4e514aa66feabbaf2585561d0142.json",
+      "expected_sha256": "9b350ea0d4ab90de729663e095ac232a5b88d45129efef4a0d0862ef9cceca80",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b44a68303e97c8a6099de4adb4cec14f97fd49d80b4a5799af3add50f3e3685a": {
+      "input": "inputs/b44a68303e97c8a6099de4adb4cec14f97fd49d80b4a5799af3add50f3e3685a.json",
+      "expected": "expected/b44a68303e97c8a6099de4adb4cec14f97fd49d80b4a5799af3add50f3e3685a.json",
+      "expected_sha256": "a06bc1ea1fa9b796681c4097fece54d08d7593dcba93f4f890d21afea69924ca",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b46877a489b2621efb19b4a9f1ae22a06c5f86a1cbd4113730b03d14256d34ba": {
+      "input": "inputs/b46877a489b2621efb19b4a9f1ae22a06c5f86a1cbd4113730b03d14256d34ba.json",
+      "expected": "expected/b46877a489b2621efb19b4a9f1ae22a06c5f86a1cbd4113730b03d14256d34ba.json",
+      "expected_sha256": "d2a4a3571d18580d5b2b161f2e9f41ff9037f477f025608b08713f66aeb1aa9c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b46f88bb5c2c70296ff344ac20aef9ba9e418a5adbe90a2fba17247df1bf0a3b": {
+      "input": "inputs/b46f88bb5c2c70296ff344ac20aef9ba9e418a5adbe90a2fba17247df1bf0a3b.json",
+      "expected": "expected/b46f88bb5c2c70296ff344ac20aef9ba9e418a5adbe90a2fba17247df1bf0a3b.json",
+      "expected_sha256": "2255253f46e50ffd3b3a38b3fb820b7b5eee4951773dc9a4b4044ac70b9dd270",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b60547966659b73bf74029a9ecaf2bc4078811354362e65befafe65dc548a6e3": {
+      "input": "inputs/b60547966659b73bf74029a9ecaf2bc4078811354362e65befafe65dc548a6e3.json",
+      "expected": "expected/b60547966659b73bf74029a9ecaf2bc4078811354362e65befafe65dc548a6e3.json",
+      "expected_sha256": "310135e420350648383ca65479c5466cf54b1ac1f470fc42431a60498bb4f790",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b62d7aafbe9bd8075c5e403cd73d575b5202943456c3c0f5e7196a3ee30a645a": {
+      "input": "inputs/b62d7aafbe9bd8075c5e403cd73d575b5202943456c3c0f5e7196a3ee30a645a.json",
+      "expected": "expected/b62d7aafbe9bd8075c5e403cd73d575b5202943456c3c0f5e7196a3ee30a645a.json",
+      "expected_sha256": "7052a481a209c6629983feb86af441678d95d6c5481eff269df5bb10a0f8ecff",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b68dca2c54625318231b94370e8edbafbacc9e6383aff4d75c100d06071e40a7": {
+      "input": "inputs/b68dca2c54625318231b94370e8edbafbacc9e6383aff4d75c100d06071e40a7.json",
+      "expected": "expected/b68dca2c54625318231b94370e8edbafbacc9e6383aff4d75c100d06071e40a7.json",
+      "expected_sha256": "d42a8289e6de5fe43ced06d74db0dbc847c64bafa306f7e177c381d3320acd84",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b88bfd8492ce95a3fd92cfbdfd15b141b08f9f060298a62afa6265794f8f717a": {
+      "input": "inputs/b88bfd8492ce95a3fd92cfbdfd15b141b08f9f060298a62afa6265794f8f717a.json",
+      "expected": "expected/b88bfd8492ce95a3fd92cfbdfd15b141b08f9f060298a62afa6265794f8f717a.json",
+      "expected_sha256": "565f10d830f213bc5d43c5d976ad5658b02e2c8a0fe278c731442de9563a1be9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b8a65b0d49018ee29186c63ff1e944934e64924ac09fe34ec3e956d3c4c0b4b8": {
+      "input": "inputs/b8a65b0d49018ee29186c63ff1e944934e64924ac09fe34ec3e956d3c4c0b4b8.json",
+      "expected": "expected/b8a65b0d49018ee29186c63ff1e944934e64924ac09fe34ec3e956d3c4c0b4b8.json",
+      "expected_sha256": "42e036cbc380d96131feee8e8fe33aea72b2f4029dfab56ff03296db273994ad",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b8ad0df4016a75cf643965a23fdfe674bd45c0bd5453b317f64b5b7d2bec859b": {
+      "input": "inputs/b8ad0df4016a75cf643965a23fdfe674bd45c0bd5453b317f64b5b7d2bec859b.json",
+      "expected": "expected/b8ad0df4016a75cf643965a23fdfe674bd45c0bd5453b317f64b5b7d2bec859b.json",
+      "expected_sha256": "b27c8f36946b128b45c886902d78a1d46a0abf766db2f8c0eabfecb362fd3c6d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b95beb8cfabccb1338f8abd9aa3363878de26ebdd57749fd371a004bcda15659": {
+      "input": "inputs/b95beb8cfabccb1338f8abd9aa3363878de26ebdd57749fd371a004bcda15659.json",
+      "expected": "expected/b95beb8cfabccb1338f8abd9aa3363878de26ebdd57749fd371a004bcda15659.json",
+      "expected_sha256": "07a3405a65ac9dbff5972ffbe5cf5423fa6239ced4646ba159ec782de4ca0889",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "b9d33a28dbd538c2d81c661a86bd3fd6f823a10f2b98b3e194bc9207f0947712": {
+      "input": "inputs/b9d33a28dbd538c2d81c661a86bd3fd6f823a10f2b98b3e194bc9207f0947712.json",
+      "expected": "expected/b9d33a28dbd538c2d81c661a86bd3fd6f823a10f2b98b3e194bc9207f0947712.json",
+      "expected_sha256": "fb8197218d0c7ac5c226aac3fa5221efba11868c374e2c4a7cda01b36b60474b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ba4247fe27269672a029779ee52c66c801623acd9e92ac6d2e62af733cd043a6": {
+      "input": "inputs/ba4247fe27269672a029779ee52c66c801623acd9e92ac6d2e62af733cd043a6.json",
+      "expected": "expected/ba4247fe27269672a029779ee52c66c801623acd9e92ac6d2e62af733cd043a6.json",
+      "expected_sha256": "41dc300d79090a2665383149ea370500858d0efc86696e2968e73900b959f9c9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "bbfab81fd3840c593e2219a7bebd4057bc04ec51a2fa30435ec37b9c0691cb9e": {
+      "input": "inputs/bbfab81fd3840c593e2219a7bebd4057bc04ec51a2fa30435ec37b9c0691cb9e.json",
+      "expected": "expected/bbfab81fd3840c593e2219a7bebd4057bc04ec51a2fa30435ec37b9c0691cb9e.json",
+      "expected_sha256": "9762fd651804a87fbe2dd14851de14d89b0601dd7b4a984c1ac3d72a4dae76d8",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "bd8d6f370c3b74629a7b08e14eed52ad009b5a0c6e3a7be45fc54d89e1846bf5": {
+      "input": "inputs/bd8d6f370c3b74629a7b08e14eed52ad009b5a0c6e3a7be45fc54d89e1846bf5.json",
+      "expected": "expected/bd8d6f370c3b74629a7b08e14eed52ad009b5a0c6e3a7be45fc54d89e1846bf5.json",
+      "expected_sha256": "a7adae07a71e8f1f052bc8df86bd9ec44f3b62d3d4c1ac22605b7867f0942b6f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "be198c31653a595edce517e9a65a32f797b073c7d4f8d17f07648aef1726fa62": {
+      "input": "inputs/be198c31653a595edce517e9a65a32f797b073c7d4f8d17f07648aef1726fa62.json",
+      "expected": "expected/be198c31653a595edce517e9a65a32f797b073c7d4f8d17f07648aef1726fa62.json",
+      "expected_sha256": "ea4666f29baae6588547b0d42da638a16cd087a53230b69814093fc0321fd0c6",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "be5128b1b3680e24662f5b64c1118c524054ead013bb83e39feb5f54052fbd43": {
+      "input": "inputs/be5128b1b3680e24662f5b64c1118c524054ead013bb83e39feb5f54052fbd43.json",
+      "expected": "expected/be5128b1b3680e24662f5b64c1118c524054ead013bb83e39feb5f54052fbd43.json",
+      "expected_sha256": "160ad7f4066ea246ac748bff9befaa7d5eb0efa260f7e3e2008c5bbeb6e820e9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c140b797f1d44682bfabb0a3e3983294ec1646bfee4b9050ce9434183ab4a2d2": {
+      "input": "inputs/c140b797f1d44682bfabb0a3e3983294ec1646bfee4b9050ce9434183ab4a2d2.json",
+      "expected": "expected/c140b797f1d44682bfabb0a3e3983294ec1646bfee4b9050ce9434183ab4a2d2.json",
+      "expected_sha256": "c7e4ff535598e6f3384b98e3a3ef62706c9717fad9b66ab9f5d9e2ffd7315864",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c1695b138d4ed07bb85d2c642802b4051e73e44fa5e636d1263577bd7ed64929": {
+      "input": "inputs/c1695b138d4ed07bb85d2c642802b4051e73e44fa5e636d1263577bd7ed64929.json",
+      "expected": "expected/c1695b138d4ed07bb85d2c642802b4051e73e44fa5e636d1263577bd7ed64929.json",
+      "expected_sha256": "2a588000f22818519b1607f0eb1c0336d2b2bf97776ecc54d5f93a4423ef985f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c5284c41638da9a3d3c94f4c33600fc11f0ad450e6e3391cb5a9020c3e8fd870": {
+      "input": "inputs/c5284c41638da9a3d3c94f4c33600fc11f0ad450e6e3391cb5a9020c3e8fd870.json",
+      "expected": "expected/c5284c41638da9a3d3c94f4c33600fc11f0ad450e6e3391cb5a9020c3e8fd870.json",
+      "expected_sha256": "4c215e75c1c6c269b7573350179996696470552fd1df9e3c1e657cf49f46f830",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c52ca72800d3dda8fce67d9c00ab962d20441538217ca2c10a4b5473b57d201c": {
+      "input": "inputs/c52ca72800d3dda8fce67d9c00ab962d20441538217ca2c10a4b5473b57d201c.json",
+      "expected": "expected/c52ca72800d3dda8fce67d9c00ab962d20441538217ca2c10a4b5473b57d201c.json",
+      "expected_sha256": "b6a642df8c0e17b092336d73bdb2eafb3ec6ddd3da2122181b527e58d45dfa4b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c65b97bb1c51d199ecdecba89edb423459298c644bd4e6924b823d27a5a1b405": {
+      "input": "inputs/c65b97bb1c51d199ecdecba89edb423459298c644bd4e6924b823d27a5a1b405.json",
+      "expected": "expected/c65b97bb1c51d199ecdecba89edb423459298c644bd4e6924b823d27a5a1b405.json",
+      "expected_sha256": "192d651edd6234e762f8868e752615d1dcac23b1ae51b274cf20347b9b50aad7",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c6d94b6a1f8d3a387ff29a41df1e964f538b316fa99fea73ffdeba5e14c04474": {
+      "input": "inputs/c6d94b6a1f8d3a387ff29a41df1e964f538b316fa99fea73ffdeba5e14c04474.json",
+      "expected": "expected/c6d94b6a1f8d3a387ff29a41df1e964f538b316fa99fea73ffdeba5e14c04474.json",
+      "expected_sha256": "3ebc6f5ae258f291c8db7118d6ac860472bc52368d2568702075afeac1196a01",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c6f8a8cfcf92190df138ceae82276f9cbde51e9266638d741e88ad1fd1219d83": {
+      "input": "inputs/c6f8a8cfcf92190df138ceae82276f9cbde51e9266638d741e88ad1fd1219d83.json",
+      "expected": "expected/c6f8a8cfcf92190df138ceae82276f9cbde51e9266638d741e88ad1fd1219d83.json",
+      "expected_sha256": "36fa88622ba0a66cd4c896996ac5d21eff041b88fe9bcad9e81af1d7531bfc62",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c749429f6079b7ca1842fc369760ba7bfdee0e27695e92efe0730255e3eab30d": {
+      "input": "inputs/c749429f6079b7ca1842fc369760ba7bfdee0e27695e92efe0730255e3eab30d.json",
+      "expected": "expected/c749429f6079b7ca1842fc369760ba7bfdee0e27695e92efe0730255e3eab30d.json",
+      "expected_sha256": "37701846caf13e41e6c33d9d03ed1dfad8475c429f892d7596104c45d3f28003",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c75706b4bf0f65c73095c90def4ecc9a6ee83eddc12cefc1b679c085221fc244": {
+      "input": "inputs/c75706b4bf0f65c73095c90def4ecc9a6ee83eddc12cefc1b679c085221fc244.json",
+      "expected": "expected/c75706b4bf0f65c73095c90def4ecc9a6ee83eddc12cefc1b679c085221fc244.json",
+      "expected_sha256": "bf7a3d00354f96da2df6e35cd997e4ace807f170d277467b0d9e383d8735e6ce",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c80f6d38eae8e7ac45471efd909b8ab727dd5cfa93371a02a0f60fdf80f5f1a7": {
+      "input": "inputs/c80f6d38eae8e7ac45471efd909b8ab727dd5cfa93371a02a0f60fdf80f5f1a7.json",
+      "expected": "expected/c80f6d38eae8e7ac45471efd909b8ab727dd5cfa93371a02a0f60fdf80f5f1a7.json",
+      "expected_sha256": "7a53f04570ae48ec367c25ed46cbc255976f622c09757fc273e61b191397cbc8",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c8affe4f4d25f185c802bd8c39f2c2204de04d28b6bcbbe297f15c1270295ac0": {
+      "input": "inputs/c8affe4f4d25f185c802bd8c39f2c2204de04d28b6bcbbe297f15c1270295ac0.json",
+      "expected": "expected/c8affe4f4d25f185c802bd8c39f2c2204de04d28b6bcbbe297f15c1270295ac0.json",
+      "expected_sha256": "db321585cc7ca00fe96769f737e7a42edea51db88c24f74cdddd121b48872219",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c8b96852e5dc0a7f8d2e0165b8cc5803b74046b0db797b7934056cdca0a9b48b": {
+      "input": "inputs/c8b96852e5dc0a7f8d2e0165b8cc5803b74046b0db797b7934056cdca0a9b48b.json",
+      "expected": "expected/c8b96852e5dc0a7f8d2e0165b8cc5803b74046b0db797b7934056cdca0a9b48b.json",
+      "expected_sha256": "a19167ebe7752c433ff562feace7d4007203e0db1d48b2c0a0d3cef9e2e51bf9",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c8d3c7918cd34615efa9c4726524db9202c39f9f8fa55e0114e271818839a587": {
+      "input": "inputs/c8d3c7918cd34615efa9c4726524db9202c39f9f8fa55e0114e271818839a587.json",
+      "expected": "expected/c8d3c7918cd34615efa9c4726524db9202c39f9f8fa55e0114e271818839a587.json",
+      "expected_sha256": "d80224b5fb9ecec06bb4d7acdba06c5351d638108a7aed08f05158612ee5114a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "c9ef758d217e6aa163edc37e78c27d936ee197b5decfc866fe0ad5e1979f5a67": {
+      "input": "inputs/c9ef758d217e6aa163edc37e78c27d936ee197b5decfc866fe0ad5e1979f5a67.json",
+      "expected": "expected/c9ef758d217e6aa163edc37e78c27d936ee197b5decfc866fe0ad5e1979f5a67.json",
+      "expected_sha256": "8de279a480bf07aa1880942e51f904e085a8a771d20e60ed20afa737686f9ad0",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "cd4ca4e420804736c515b30212f525bbc2923571a4d6e01da3cf614ff225e5bf": {
+      "input": "inputs/cd4ca4e420804736c515b30212f525bbc2923571a4d6e01da3cf614ff225e5bf.json",
+      "expected": "expected/cd4ca4e420804736c515b30212f525bbc2923571a4d6e01da3cf614ff225e5bf.json",
+      "expected_sha256": "6178d0612240403d42aa09ba2649be8836e42767a9b928de4c7c7efe743005fa",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "cdda85b5684af370a37abddf4c0999e9ba1149421b180fdf02b57e9dc8df9402": {
+      "input": "inputs/cdda85b5684af370a37abddf4c0999e9ba1149421b180fdf02b57e9dc8df9402.json",
+      "expected": "expected/cdda85b5684af370a37abddf4c0999e9ba1149421b180fdf02b57e9dc8df9402.json",
+      "expected_sha256": "0e472c36f42a3e068052b45c0df2ecf503952e04bbc484adcf7bf1f3aeb483ff",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "cde1542d418b72d73121e329c59ffb0ef39c97ee37d59931571e885cb41a08a6": {
+      "input": "inputs/cde1542d418b72d73121e329c59ffb0ef39c97ee37d59931571e885cb41a08a6.json",
+      "expected": "expected/cde1542d418b72d73121e329c59ffb0ef39c97ee37d59931571e885cb41a08a6.json",
+      "expected_sha256": "fd5ff6afaa7250ec4304d4ea58e4d9f3ac405565c9949c83e25b8449125e1c7a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ce6d1f6a0cf65f2b0545d2d94cd87d759c5363ab3f180e8cfcfaa3795a8f1aed": {
+      "input": "inputs/ce6d1f6a0cf65f2b0545d2d94cd87d759c5363ab3f180e8cfcfaa3795a8f1aed.json",
+      "expected": "expected/ce6d1f6a0cf65f2b0545d2d94cd87d759c5363ab3f180e8cfcfaa3795a8f1aed.json",
+      "expected_sha256": "2d078e2ef036fdad7dc016e0055814310cb64ee474d82a79681a7f816452057a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "cf468caa5a97d1db2e8fe23d758f63e50e7fd6df646f133936b2ea2c8c3322e6": {
+      "input": "inputs/cf468caa5a97d1db2e8fe23d758f63e50e7fd6df646f133936b2ea2c8c3322e6.json",
+      "expected": "expected/cf468caa5a97d1db2e8fe23d758f63e50e7fd6df646f133936b2ea2c8c3322e6.json",
+      "expected_sha256": "2a790b83f4fe40b4901bc4c7d5fd2e16f2c96d8796321b2cdcc33aeb8d892286",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "cfba085761daca694230c4508ce53d31984af312d49c426588cfaac923f74f68": {
+      "input": "inputs/cfba085761daca694230c4508ce53d31984af312d49c426588cfaac923f74f68.json",
+      "expected": "expected/cfba085761daca694230c4508ce53d31984af312d49c426588cfaac923f74f68.json",
+      "expected_sha256": "da1c7bcdb1221482da06d531e0aeaa9062b77f428e3d43b88668549eb5434a51",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d1dd239b73ece447db9173a7df216ee80c2761487d993ec4e82fd3331827f44e": {
+      "input": "inputs/d1dd239b73ece447db9173a7df216ee80c2761487d993ec4e82fd3331827f44e.json",
+      "expected": "expected/d1dd239b73ece447db9173a7df216ee80c2761487d993ec4e82fd3331827f44e.json",
+      "expected_sha256": "8dcda6315577804844b95c1d61717fe2c353f452b88d9032e45c6aa229a96c82",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d243f1eef328df0fe2d2c8a90f0e938120ac224c7c6f52c773586df7e6a6501f": {
+      "input": "inputs/d243f1eef328df0fe2d2c8a90f0e938120ac224c7c6f52c773586df7e6a6501f.json",
+      "expected": "expected/d243f1eef328df0fe2d2c8a90f0e938120ac224c7c6f52c773586df7e6a6501f.json",
+      "expected_sha256": "da4cb5112ee7d8f8f44d66d6fbafcf62336e1396902d7a10626823f5fbac1065",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d25fde5e32dd3077fbff18d65e1ec52e237342ae6bdd8ef4cb7c389a681ff96c": {
+      "input": "inputs/d25fde5e32dd3077fbff18d65e1ec52e237342ae6bdd8ef4cb7c389a681ff96c.json",
+      "expected": "expected/d25fde5e32dd3077fbff18d65e1ec52e237342ae6bdd8ef4cb7c389a681ff96c.json",
+      "expected_sha256": "9687deda6ce9aa30038943cc1409dc3d135d871ad2061337b89d684980936bdf",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d36f7ecee5f2e2334787cfa9e3c4c23726be9da3a55eb32efcc6d89ebbc5d735": {
+      "input": "inputs/d36f7ecee5f2e2334787cfa9e3c4c23726be9da3a55eb32efcc6d89ebbc5d735.json",
+      "expected": "expected/d36f7ecee5f2e2334787cfa9e3c4c23726be9da3a55eb32efcc6d89ebbc5d735.json",
+      "expected_sha256": "651e39fb80b3d671f6e4d60345212b2046d8a33a48a707a076499979fc9dec42",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d426d1d9a77250d4b41cbe55fff3cc2793b9f508f0fd4d5e0c1a288f567b22c1": {
+      "input": "inputs/d426d1d9a77250d4b41cbe55fff3cc2793b9f508f0fd4d5e0c1a288f567b22c1.json",
+      "expected": "expected/d426d1d9a77250d4b41cbe55fff3cc2793b9f508f0fd4d5e0c1a288f567b22c1.json",
+      "expected_sha256": "6e3397bbf71f54664487460589569864bfb736da31e6b3841a33464bcf075f3c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d457170bb398a8e2c105f7a3ea4150b6c4b84d43fd6ab95ffe087ecdf6f7b54a": {
+      "input": "inputs/d457170bb398a8e2c105f7a3ea4150b6c4b84d43fd6ab95ffe087ecdf6f7b54a.json",
+      "expected": "expected/d457170bb398a8e2c105f7a3ea4150b6c4b84d43fd6ab95ffe087ecdf6f7b54a.json",
+      "expected_sha256": "72a5509aa64f8a8ebf95251a00dbaa5b408d84f072146a8b6c8867b282467c5c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d4701ac64e2fa805493a37134a1e4cbdec939263deb89538915ff74e35f91b08": {
+      "input": "inputs/d4701ac64e2fa805493a37134a1e4cbdec939263deb89538915ff74e35f91b08.json",
+      "expected": "expected/d4701ac64e2fa805493a37134a1e4cbdec939263deb89538915ff74e35f91b08.json",
+      "expected_sha256": "5f1d3ba288776b5241480c3bbdd090a272fcf2f7cf165df88bcf43b8315a2634",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d5ba19e608c728f33d6f95b2c336f2f94fc2c8f2fcfbb5e1c5f16b0da9b432a8": {
+      "input": "inputs/d5ba19e608c728f33d6f95b2c336f2f94fc2c8f2fcfbb5e1c5f16b0da9b432a8.json",
+      "expected": "expected/d5ba19e608c728f33d6f95b2c336f2f94fc2c8f2fcfbb5e1c5f16b0da9b432a8.json",
+      "expected_sha256": "adcda3b64cd6b8bf2c52030e5d00efc32a732aa6f724278046808dddf25e87cd",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d6bc5e6ba0d25a6525092df76c566ee60fb92f874031ab4fded77845342a3d4c": {
+      "input": "inputs/d6bc5e6ba0d25a6525092df76c566ee60fb92f874031ab4fded77845342a3d4c.json",
+      "expected": "expected/d6bc5e6ba0d25a6525092df76c566ee60fb92f874031ab4fded77845342a3d4c.json",
+      "expected_sha256": "33803704b36888ccb5352b5c36a8691d35461369e537a1dc0811d0866574f420",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d6e9e4fbe22e5ff923b9a80c41ee17710bee145c0a091629aff16ce059976ab8": {
+      "input": "inputs/d6e9e4fbe22e5ff923b9a80c41ee17710bee145c0a091629aff16ce059976ab8.json",
+      "expected": "expected/d6e9e4fbe22e5ff923b9a80c41ee17710bee145c0a091629aff16ce059976ab8.json",
+      "expected_sha256": "bc23f39dda796d5ed515f53b5a73c2ceea5da6a1d5f134041045ed07dceaa852",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d7d01a0f741dd25dd5cfe62e62ee4c987ed7a7da9b646dfb214ed515aa576dc3": {
+      "input": "inputs/d7d01a0f741dd25dd5cfe62e62ee4c987ed7a7da9b646dfb214ed515aa576dc3.json",
+      "expected": "expected/d7d01a0f741dd25dd5cfe62e62ee4c987ed7a7da9b646dfb214ed515aa576dc3.json",
+      "expected_sha256": "46ca0cfb1fe798e46c27a0cfe65c6a0b6d7ad24b7f8c88b97a1e8122d9a2bb72",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "d9516af9551dce46e20bff38456dd42901c6711519866ca70525e42e6f5de281": {
+      "input": "inputs/d9516af9551dce46e20bff38456dd42901c6711519866ca70525e42e6f5de281.json",
+      "expected": "expected/d9516af9551dce46e20bff38456dd42901c6711519866ca70525e42e6f5de281.json",
+      "expected_sha256": "7361442754817e7d096646ae8a9775dadceda37617b7034c68e05edd25e7192d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "da5e7e9e8b791cd4d3bdf06ddd40ee45aa11160dd5ca1c1f0739b7f52eebd973": {
+      "input": "inputs/da5e7e9e8b791cd4d3bdf06ddd40ee45aa11160dd5ca1c1f0739b7f52eebd973.json",
+      "expected": "expected/da5e7e9e8b791cd4d3bdf06ddd40ee45aa11160dd5ca1c1f0739b7f52eebd973.json",
+      "expected_sha256": "40bbbd188fdaab2c85c29ad8158904f4d6f655bf261bda5bc3ab428c4c565bcc",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "dbb19b9fc06393baaa401842af82765ab376fde13b82b3f293bbbd9b009264c1": {
+      "input": "inputs/dbb19b9fc06393baaa401842af82765ab376fde13b82b3f293bbbd9b009264c1.json",
+      "expected": "expected/dbb19b9fc06393baaa401842af82765ab376fde13b82b3f293bbbd9b009264c1.json",
+      "expected_sha256": "5b7b81ee141da9b5075f3b6460f564f3867edee8d385982390f695c978339d72",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "dc13d778fe87a8da9c63b2de149776855227b63b1bfdfd98b345f22c4de36636": {
+      "input": "inputs/dc13d778fe87a8da9c63b2de149776855227b63b1bfdfd98b345f22c4de36636.json",
+      "expected": "expected/dc13d778fe87a8da9c63b2de149776855227b63b1bfdfd98b345f22c4de36636.json",
+      "expected_sha256": "26bcccb3ba0580cc7fa5248218d3aadc87fbcd1152b901a2ad0bda2d6ce51232",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ddf84c78135a2f046ec1dbf2280948f2b2b72614ebc2cfa4e62834780a8f5686": {
+      "input": "inputs/ddf84c78135a2f046ec1dbf2280948f2b2b72614ebc2cfa4e62834780a8f5686.json",
+      "expected": "expected/ddf84c78135a2f046ec1dbf2280948f2b2b72614ebc2cfa4e62834780a8f5686.json",
+      "expected_sha256": "e529cd167bd5f5b0f63910e2274e87f461d5eaa4a6b769c3a01b55fd1fea5f6c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "df0706f7c742ca85ac8ddbd05db2a756d37895f66071d98669bc270b7292edef": {
+      "input": "inputs/df0706f7c742ca85ac8ddbd05db2a756d37895f66071d98669bc270b7292edef.json",
+      "expected": "expected/df0706f7c742ca85ac8ddbd05db2a756d37895f66071d98669bc270b7292edef.json",
+      "expected_sha256": "853ef100263e6d549f1aa819902f5cd7308adff358022a7df318a0cda8214126",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88": {
+      "input": "inputs/e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88.json",
+      "expected": "expected/e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88.json",
+      "expected_sha256": "15052d4a0a8de6d20e75b0a37b41f4e2b19942efd6331e88958696a3675e3e36",
+      "expected_source": "parallel-edge-order-and-zero-size-intersection-root-fix",
+      "oracle_status": "error",
+      "official_error": "errors/e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88.txt"
+    },
+    "e1244a759141e86446410a633221487bc7a97724184b2c728e4b614fdae6200c": {
+      "input": "inputs/e1244a759141e86446410a633221487bc7a97724184b2c728e4b614fdae6200c.json",
+      "expected": "expected/e1244a759141e86446410a633221487bc7a97724184b2c728e4b614fdae6200c.json",
+      "expected_sha256": "3a5457b11749ce32d50abcbd297b57a1e44aae67c8c8f2ec55105b7492aef51e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e16ad9c5d1f2e647f490f23a6b86131b0b07f00afdac18cc01813273236f60c5": {
+      "input": "inputs/e16ad9c5d1f2e647f490f23a6b86131b0b07f00afdac18cc01813273236f60c5.json",
+      "expected": "expected/e16ad9c5d1f2e647f490f23a6b86131b0b07f00afdac18cc01813273236f60c5.json",
+      "expected_sha256": "353e1c7ca2e15748b76dd698ca32a08644da5cd63bb5204c24d78f009506ef20",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e18e8883ee1248e07db2657647f2fb305e8a1362ae9b9de352707d4b7d516513": {
+      "input": "inputs/e18e8883ee1248e07db2657647f2fb305e8a1362ae9b9de352707d4b7d516513.json",
+      "expected": "expected/e18e8883ee1248e07db2657647f2fb305e8a1362ae9b9de352707d4b7d516513.json",
+      "expected_sha256": "001edb1ed75276c143e233b70660926c0d85e781add951a699c40299a8c1730b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e1bb0cf9d3839f62ef42a9f298710f45f8c0edfc8dc356ea9190728ae692b21d": {
+      "input": "inputs/e1bb0cf9d3839f62ef42a9f298710f45f8c0edfc8dc356ea9190728ae692b21d.json",
+      "expected": "expected/e1bb0cf9d3839f62ef42a9f298710f45f8c0edfc8dc356ea9190728ae692b21d.json",
+      "expected_sha256": "d9196aefca4d53ad6b8daede8380864d9336bfe066acbdffd7a66fafb1e78c44",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e2a290685874389611203f7b2d25289659bdcf4839c98dc45aa53d13f333de38": {
+      "input": "inputs/e2a290685874389611203f7b2d25289659bdcf4839c98dc45aa53d13f333de38.json",
+      "expected": "expected/e2a290685874389611203f7b2d25289659bdcf4839c98dc45aa53d13f333de38.json",
+      "expected_sha256": "a627d9e0b8028bf4de7c3f760fd1c30ff742ad988975af1610a64d9ce28f1f54",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853": {
+      "input": "inputs/e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853.json",
+      "expected": "expected/e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853.json",
+      "expected_sha256": "5bcf5bbf72f49b459259ff7affc72d108ed0dd1444c7b62b69b14378323e8b26",
+      "expected_source": "parallel-edge-order-and-zero-size-intersection-root-fix",
+      "oracle_status": "error",
+      "official_error": "errors/e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853.txt"
+    },
+    "e32669f271b0d6704090895ac2f253fba6d67e8c6a1cb1208af1c956ef8e4acd": {
+      "input": "inputs/e32669f271b0d6704090895ac2f253fba6d67e8c6a1cb1208af1c956ef8e4acd.json",
+      "expected": "expected/e32669f271b0d6704090895ac2f253fba6d67e8c6a1cb1208af1c956ef8e4acd.json",
+      "expected_sha256": "aa329e5877df6f52ea5d0ac261466127ed67a029f370572832a77dee45443741",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e343d696fab696b8dbebefc35e180906d8ee107b81bea19e0b767d307948eb6b": {
+      "input": "inputs/e343d696fab696b8dbebefc35e180906d8ee107b81bea19e0b767d307948eb6b.json",
+      "expected": "expected/e343d696fab696b8dbebefc35e180906d8ee107b81bea19e0b767d307948eb6b.json",
+      "expected_sha256": "7255b2a59d42fdf16ebc3dbd638f2cf8c11b153ff08aae33913a30807fb5d20a",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e43c7bb37718386ad7aec0d393128a185afd681ca6d6e76f2a6c885b9494bebd": {
+      "input": "inputs/e43c7bb37718386ad7aec0d393128a185afd681ca6d6e76f2a6c885b9494bebd.json",
+      "expected": "expected/e43c7bb37718386ad7aec0d393128a185afd681ca6d6e76f2a6c885b9494bebd.json",
+      "expected_sha256": "f2418c158b397496257edd01e2c69dfc1b61e8e8e7534789b15e60cef7c728eb",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e49fee5c6dcc37af97df1d4611c6641d4b28c62290d919fc45582803cbaa5aff": {
+      "input": "inputs/e49fee5c6dcc37af97df1d4611c6641d4b28c62290d919fc45582803cbaa5aff.json",
+      "expected": "expected/e49fee5c6dcc37af97df1d4611c6641d4b28c62290d919fc45582803cbaa5aff.json",
+      "expected_sha256": "7156fed85c2b1327e0f319f331a49066112a83ebc73747456a50a1fe71de079b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e4a4b72edf19b473a2d719825eda3f6c7c64f42ef507cd3bd5fd02328124b6f3": {
+      "input": "inputs/e4a4b72edf19b473a2d719825eda3f6c7c64f42ef507cd3bd5fd02328124b6f3.json",
+      "expected": "expected/e4a4b72edf19b473a2d719825eda3f6c7c64f42ef507cd3bd5fd02328124b6f3.json",
+      "expected_sha256": "f817f3188b89094d6ff5da8329c886b00c542f19c9aead89092e60728f1c9cbf",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e538f95d836f9e1187f376b53de7de955ffea431d32e0e12835d4325276e0e4b": {
+      "input": "inputs/e538f95d836f9e1187f376b53de7de955ffea431d32e0e12835d4325276e0e4b.json",
+      "expected": "expected/e538f95d836f9e1187f376b53de7de955ffea431d32e0e12835d4325276e0e4b.json",
+      "expected_sha256": "eaea9ccc0b96a3e718e4ce0054cef9b0c2882ba49c796f8a17515628682d1c36",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e642b49f7af260292cb1ede4fe1a58c5bba2c1bb138b58868ed8725e9842c180": {
+      "input": "inputs/e642b49f7af260292cb1ede4fe1a58c5bba2c1bb138b58868ed8725e9842c180.json",
+      "expected": "expected/e642b49f7af260292cb1ede4fe1a58c5bba2c1bb138b58868ed8725e9842c180.json",
+      "expected_sha256": "dec1184bfc111931411c95d520d0c1a7dc1c6b45326962c9c2e0e128833b682b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e69ad7a133c8eb3b6f0c62cb0ba2fff8bb3ef1ea349fb1fb6360c008a79ad42a": {
+      "input": "inputs/e69ad7a133c8eb3b6f0c62cb0ba2fff8bb3ef1ea349fb1fb6360c008a79ad42a.json",
+      "expected": "expected/e69ad7a133c8eb3b6f0c62cb0ba2fff8bb3ef1ea349fb1fb6360c008a79ad42a.json",
+      "expected_sha256": "8201163b8debd73ecb12636d173a9df910d1973e65c3fab82ca772591ba94a13",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "e8a75009362bac50f8d6bb938b9b745e431e30ba804b0f4b1804f06b35383054": {
+      "input": "inputs/e8a75009362bac50f8d6bb938b9b745e431e30ba804b0f4b1804f06b35383054.json",
+      "expected": "expected/e8a75009362bac50f8d6bb938b9b745e431e30ba804b0f4b1804f06b35383054.json",
+      "expected_sha256": "716958a83d69301110766b56c4362c5d6f96b86d9a6f545f55be0c8e1255948b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "eb64355baeef60cbac1e59ab600511c82df4bc4b6fe48c2306c446f607f510e8": {
+      "input": "inputs/eb64355baeef60cbac1e59ab600511c82df4bc4b6fe48c2306c446f607f510e8.json",
+      "expected": "expected/eb64355baeef60cbac1e59ab600511c82df4bc4b6fe48c2306c446f607f510e8.json",
+      "expected_sha256": "afd00c810a220af3d6c43f87361bcd753102d8e30c96b08812ee5969ceb376e4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "eb8e30b22485bffe8c5a609fb55767d213500f5e0b003682b3150201afa856b6": {
+      "input": "inputs/eb8e30b22485bffe8c5a609fb55767d213500f5e0b003682b3150201afa856b6.json",
+      "expected": "expected/eb8e30b22485bffe8c5a609fb55767d213500f5e0b003682b3150201afa856b6.json",
+      "expected_sha256": "e6063a88620cb8241015cba73d55656250c0b8c2fd4b981a4547397becaa1150",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ebafbcab383167848c353358f8e2d773044f76d986a7180e59379ac99683a142": {
+      "input": "inputs/ebafbcab383167848c353358f8e2d773044f76d986a7180e59379ac99683a142.json",
+      "expected": "expected/ebafbcab383167848c353358f8e2d773044f76d986a7180e59379ac99683a142.json",
+      "expected_sha256": "17397591879f29d50f5eafd68d8561532f2451021b754192e13c958e67f476df",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ecc0efccbf69e8e2285fb6e4445cfde2fb3e52d4aeed1f1fe9494d2ca82a0d01": {
+      "input": "inputs/ecc0efccbf69e8e2285fb6e4445cfde2fb3e52d4aeed1f1fe9494d2ca82a0d01.json",
+      "expected": "expected/ecc0efccbf69e8e2285fb6e4445cfde2fb3e52d4aeed1f1fe9494d2ca82a0d01.json",
+      "expected_sha256": "5e7d34a4691c19fd03ec1cfad86c12593aecee70516b645088714a9c837d24f1",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ed41dddd73ffa198422664fdeaade28b72e5045ddd7b80c05f13411f92f20603": {
+      "input": "inputs/ed41dddd73ffa198422664fdeaade28b72e5045ddd7b80c05f13411f92f20603.json",
+      "expected": "expected/ed41dddd73ffa198422664fdeaade28b72e5045ddd7b80c05f13411f92f20603.json",
+      "expected_sha256": "1ab5284147be8cb6c23e71f2cd970e5a19abb5190628a7f94166c76f8ca7957c",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ed8091d7eb183fa89fb4c546deb1827be29627baa4ee425d75fc0b7e71fca654": {
+      "input": "inputs/ed8091d7eb183fa89fb4c546deb1827be29627baa4ee425d75fc0b7e71fca654.json",
+      "expected": "expected/ed8091d7eb183fa89fb4c546deb1827be29627baa4ee425d75fc0b7e71fca654.json",
+      "expected_sha256": "7d1667659896853c95109a8ebb2467ecd7a70cfd8c5c51eac47f748122394e7d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "edc031fe7b5afeb5a01a65bdbace603aec75fb2fc1226107fa5357f72589d289": {
+      "input": "inputs/edc031fe7b5afeb5a01a65bdbace603aec75fb2fc1226107fa5357f72589d289.json",
+      "expected": "expected/edc031fe7b5afeb5a01a65bdbace603aec75fb2fc1226107fa5357f72589d289.json",
+      "expected_sha256": "9dcd66cde4ec5422fd65af0d38ad75d72a8cd4016e7bf2dd80cf5c145261a6e8",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "ee6a5748b7d2c6ed9f5a2f32ff0e74f7abcacbb74c9660d412dbc02ee53b2442": {
+      "input": "inputs/ee6a5748b7d2c6ed9f5a2f32ff0e74f7abcacbb74c9660d412dbc02ee53b2442.json",
+      "expected": "expected/ee6a5748b7d2c6ed9f5a2f32ff0e74f7abcacbb74c9660d412dbc02ee53b2442.json",
+      "expected_sha256": "78c3647c2bf0e57d251f15b76b825e58a5dbecbf0ca69f2bb17658847929bf0f",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f02ff28b94d6e3a4f1ed704a4be43ec49a822bc59c9abaa4df5503348b71d39e": {
+      "input": "inputs/f02ff28b94d6e3a4f1ed704a4be43ec49a822bc59c9abaa4df5503348b71d39e.json",
+      "expected": "expected/f02ff28b94d6e3a4f1ed704a4be43ec49a822bc59c9abaa4df5503348b71d39e.json",
+      "expected_sha256": "062bd2858736a62cea7f7961bf250a9eba58dbb9bac32dc579b44e9ecefab024",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f05422a359747dd84b7adb179f41e5bbfd172556a0cfab09bbf6d7e968cb938f": {
+      "input": "inputs/f05422a359747dd84b7adb179f41e5bbfd172556a0cfab09bbf6d7e968cb938f.json",
+      "expected": "expected/f05422a359747dd84b7adb179f41e5bbfd172556a0cfab09bbf6d7e968cb938f.json",
+      "expected_sha256": "2ccb10dd66bd9369ef7998f730c31e8d61e0257b7ee402b912ac2877f1a98910",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f061fe1bcb993dbfefa54a71fbb0a91ca879a217e7407dd0f31d81829397ae98": {
+      "input": "inputs/f061fe1bcb993dbfefa54a71fbb0a91ca879a217e7407dd0f31d81829397ae98.json",
+      "expected": "expected/f061fe1bcb993dbfefa54a71fbb0a91ca879a217e7407dd0f31d81829397ae98.json",
+      "expected_sha256": "933604c3c4d2bc2361887af883ed851701b828b4bc1e9cc49cc326bba06a63ea",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f26913fcb9af652368702ef6916093e75b659be15ebb5bc9f3896e2583bc3863": {
+      "input": "inputs/f26913fcb9af652368702ef6916093e75b659be15ebb5bc9f3896e2583bc3863.json",
+      "expected": "expected/f26913fcb9af652368702ef6916093e75b659be15ebb5bc9f3896e2583bc3863.json",
+      "expected_sha256": "efe456f71af8d0a76f091a0f92ee02f7bfb00217bd972fe5f08ad5275a478ff4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f2d931215f19239af4ebea6dee1bd8bd9042ea8d8db93269efd48e304730acdb": {
+      "input": "inputs/f2d931215f19239af4ebea6dee1bd8bd9042ea8d8db93269efd48e304730acdb.json",
+      "expected": "expected/f2d931215f19239af4ebea6dee1bd8bd9042ea8d8db93269efd48e304730acdb.json",
+      "expected_sha256": "3b9cc374441b3c3ad0123979e53529139c7f8c5c6524abb9ef2a3d242afb61aa",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f330e8546350cf52efb0867218b173ca1a3688988a3fcc670984655f0cca133c": {
+      "input": "inputs/f330e8546350cf52efb0867218b173ca1a3688988a3fcc670984655f0cca133c.json",
+      "expected": "expected/f330e8546350cf52efb0867218b173ca1a3688988a3fcc670984655f0cca133c.json",
+      "expected_sha256": "d3c3ef002ceb4c2e7b2871ae529c9508e2e49a7ac2256e0a54c2ece0fa0230f4",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f3fca56bf2491a43ad3f46390b7a9000aa8f7f4cd8eceb4e07ed6e7ea9cfd088": {
+      "input": "inputs/f3fca56bf2491a43ad3f46390b7a9000aa8f7f4cd8eceb4e07ed6e7ea9cfd088.json",
+      "expected": "expected/f3fca56bf2491a43ad3f46390b7a9000aa8f7f4cd8eceb4e07ed6e7ea9cfd088.json",
+      "expected_sha256": "e5c57fbcb9d64cc63c26a57de0813505f1500441622b76de4dc8721337a4306b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f4c56599d1483009332d13dc4a08f537009ed235eb33e19f9b51059f1e274ef8": {
+      "input": "inputs/f4c56599d1483009332d13dc4a08f537009ed235eb33e19f9b51059f1e274ef8.json",
+      "expected": "expected/f4c56599d1483009332d13dc4a08f537009ed235eb33e19f9b51059f1e274ef8.json",
+      "expected_sha256": "6593a777c5d3f2f95afb97fecc479b216c566138825808db28cc8ac8a44b9b21",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f5ed1e5288ab8a9165f3aa9d7ab7b9fa970fc69e4bda25df57c8bd1be0ffa776": {
+      "input": "inputs/f5ed1e5288ab8a9165f3aa9d7ab7b9fa970fc69e4bda25df57c8bd1be0ffa776.json",
+      "expected": "expected/f5ed1e5288ab8a9165f3aa9d7ab7b9fa970fc69e4bda25df57c8bd1be0ffa776.json",
+      "expected_sha256": "728d3fc2abefdb5d7a4c8b016e8c5b724e83f81daa41dd14a03fabe17dc72ffd",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f6ba72aff2aba0f59f8538cd2a025e35397f1c98c30d025701abb9840b996b0b": {
+      "input": "inputs/f6ba72aff2aba0f59f8538cd2a025e35397f1c98c30d025701abb9840b996b0b.json",
+      "expected": "expected/f6ba72aff2aba0f59f8538cd2a025e35397f1c98c30d025701abb9840b996b0b.json",
+      "expected_sha256": "55b330d80e0d7de9720f40561459359d7dddd4aa58a05ae7f235d53e95fc9e78",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f7e116eb8a45729e4aa5b6b139b389a3b34729694d841b1aa3e3524bcd005088": {
+      "input": "inputs/f7e116eb8a45729e4aa5b6b139b389a3b34729694d841b1aa3e3524bcd005088.json",
+      "expected": "expected/f7e116eb8a45729e4aa5b6b139b389a3b34729694d841b1aa3e3524bcd005088.json",
+      "expected_sha256": "0c03100d92e7a6fc88b6f27b4acbb94bc95bf2253eb87aa261e79c03d330b38e",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f83a6b161f260ee35be1643974c0e7c6c204df179e32be2c452f99f94f01fce9": {
+      "input": "inputs/f83a6b161f260ee35be1643974c0e7c6c204df179e32be2c452f99f94f01fce9.json",
+      "expected": "expected/f83a6b161f260ee35be1643974c0e7c6c204df179e32be2c452f99f94f01fce9.json",
+      "expected_sha256": "aa3d38ea4d547f7a595f182a1181558ee4203a6d4e9349b6aa9a08efa99c3edb",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f8cf86a897c40339fcb08a0b183774f4daaa1cac71c1bcd34967c0d1a5178bc4": {
+      "input": "inputs/f8cf86a897c40339fcb08a0b183774f4daaa1cac71c1bcd34967c0d1a5178bc4.json",
+      "expected": "expected/f8cf86a897c40339fcb08a0b183774f4daaa1cac71c1bcd34967c0d1a5178bc4.json",
+      "expected_sha256": "c0f054e9326c44c85df835728226a4230f1323c9ef4aeb281bf50b5f7520d8c7",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "f9536347f459716d48dd13569f9636668a921d1ce7e60f0b1831ef6e8c46498a": {
+      "input": "inputs/f9536347f459716d48dd13569f9636668a921d1ce7e60f0b1831ef6e8c46498a.json",
+      "expected": "expected/f9536347f459716d48dd13569f9636668a921d1ce7e60f0b1831ef6e8c46498a.json",
+      "expected_sha256": "28b629b5cb753ad348b315574479175458a0f5206c908b28dab9b4abda5d48dd",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fb0ceb55b2db7ef8036dd1d5818e9763b6e051948ad3151c88c800ce4a86e264": {
+      "input": "inputs/fb0ceb55b2db7ef8036dd1d5818e9763b6e051948ad3151c88c800ce4a86e264.json",
+      "expected": "expected/fb0ceb55b2db7ef8036dd1d5818e9763b6e051948ad3151c88c800ce4a86e264.json",
+      "expected_sha256": "35dbcb539b9183ad83f567f968601c8e38284dd090ffe7c33428bb0a1f2f8352",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fb2233ff0265f9ee4e8666a001b0bf6ce01fdf7601e2eadd0ad86077dd113d2a": {
+      "input": "inputs/fb2233ff0265f9ee4e8666a001b0bf6ce01fdf7601e2eadd0ad86077dd113d2a.json",
+      "expected": "expected/fb2233ff0265f9ee4e8666a001b0bf6ce01fdf7601e2eadd0ad86077dd113d2a.json",
+      "expected_sha256": "a084c40c2e6acbdc8a57c135493a57aaf33eea32f824d479a0f866f50ad92cab",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fb688f81961a5d16cfeba105455c17540acd716bf1fdbb7983a388493c1cd0fe": {
+      "input": "inputs/fb688f81961a5d16cfeba105455c17540acd716bf1fdbb7983a388493c1cd0fe.json",
+      "expected": "expected/fb688f81961a5d16cfeba105455c17540acd716bf1fdbb7983a388493c1cd0fe.json",
+      "expected_sha256": "3b9483abf665be41ee9f82ef6abfc79a0455a3e3e91f6777a7134f061405f890",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fbd42da6c44f15c72cf6fcb8d09e9eb305c246b1a135fbaf56fef952e7716a24": {
+      "input": "inputs/fbd42da6c44f15c72cf6fcb8d09e9eb305c246b1a135fbaf56fef952e7716a24.json",
+      "expected": "expected/fbd42da6c44f15c72cf6fcb8d09e9eb305c246b1a135fbaf56fef952e7716a24.json",
+      "expected_sha256": "daf474a1f5bd5c6003ba305b048d464a03950c3bf8d0ead3369137bc65d9324b",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fbebfd27bdb6909a199bc418fc266fe9e5d34f3163a409730a2d2a47fd421fb3": {
+      "input": "inputs/fbebfd27bdb6909a199bc418fc266fe9e5d34f3163a409730a2d2a47fd421fb3.json",
+      "expected": "expected/fbebfd27bdb6909a199bc418fc266fe9e5d34f3163a409730a2d2a47fd421fb3.json",
+      "expected_sha256": "07305e652363a300c5341673eccc293f406bae3507102db263c8d2e5d7e1b8e8",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fc5397c55c2d2550b6a5d6be467297cf1dc33f75413f4db7ff396043a68d5590": {
+      "input": "inputs/fc5397c55c2d2550b6a5d6be467297cf1dc33f75413f4db7ff396043a68d5590.json",
+      "expected": "expected/fc5397c55c2d2550b6a5d6be467297cf1dc33f75413f4db7ff396043a68d5590.json",
+      "expected_sha256": "26fd2965bdaa057332a2b0252df597fdf0ed345663a9ce9b3bf53ceaf559ad56",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fdcba268f4fff5c8bac02650500584bffc87e93c215c30267e3ecb6247af50a7": {
+      "input": "inputs/fdcba268f4fff5c8bac02650500584bffc87e93c215c30267e3ecb6247af50a7.json",
+      "expected": "expected/fdcba268f4fff5c8bac02650500584bffc87e93c215c30267e3ecb6247af50a7.json",
+      "expected_sha256": "64f8f635f14fc65f8f075e3a7c496604ff5972bc40d4de6cc3f7d8967887663d",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    },
+    "fe09d34462ce4c326adae8036ca2a753c887534a3ec08e8f1eddc5bc29b417c2": {
+      "input": "inputs/fe09d34462ce4c326adae8036ca2a753c887534a3ec08e8f1eddc5bc29b417c2.json",
+      "expected": "expected/fe09d34462ce4c326adae8036ca2a753c887534a3ec08e8f1eddc5bc29b417c2.json",
+      "expected_sha256": "5a26e64c261220e03455ba06b07b23a287bbd007a4e20d13154be92598042eed",
+      "expected_source": "official-3.1.1-with-d2-json-bridge-normalization",
+      "oracle_status": "success",
+      "official_nonfinite_paths": []
+    }
+  }
+}

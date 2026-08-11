@@ -1,0 +1,104 @@
+{
+  "edges": [
+    {
+      "name": "(orders -> users)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 368.6046511627907,
+          "y": 291
+        },
+        {
+          "x": 301,
+          "y": 348
+        },
+        {
+          "x": 251,
+          "y": 348
+        }
+      ],
+      "v": "2",
+      "w": "0",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(orders -> products)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 368.6046511627907,
+          "y": 147
+        },
+        {
+          "x": 301,
+          "y": 90
+        },
+        {
+          "x": 229,
+          "y": 90
+        }
+      ],
+      "v": "2",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(shipments -> orders)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 657,
+          "y": 219
+        },
+        {
+          "x": 607,
+          "y": 219
+        },
+        {
+          "x": 557,
+          "y": 219
+        }
+      ],
+      "v": "3",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 456,
+    "width": 944
+  },
+  "nodes": [
+    {
+      "height": 216,
+      "id": "0",
+      "width": 251,
+      "x": 125.5,
+      "y": 348
+    },
+    {
+      "height": 180,
+      "id": "1",
+      "width": 207,
+      "x": 125.5,
+      "y": 90
+    },
+    {
+      "height": 144,
+      "id": "2",
+      "width": 206,
+      "x": 454,
+      "y": 219
+    },
+    {
+      "height": 180,
+      "id": "3",
+      "width": 287,
+      "x": 800.5,
+      "y": 219
+    }
+  ]
+}

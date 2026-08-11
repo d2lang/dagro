@@ -1,0 +1,11 @@
+{
+  "name": "dagro-differential-oracle",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pinned JavaScript oracle for Dagro compatibility tests",
+  "license": "MIT",
+  "dependencies": {
+    "@dagrejs/dagre": "3.1.1",
+    "@dagrejs/graphlib": "4.0.5"
+  }
+}

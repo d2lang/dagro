@@ -1,0 +1,46 @@
+diff --git a/lib/order/sort-subgraph.ts b/lib/order/sort-subgraph.ts
+index 00aea27..a5f0ab2 100644
+--- a/lib/order/sort-subgraph.ts
++++ b/lib/order/sort-subgraph.ts
+@@ -71,7 +71,8 @@ export default function sortSubgraph(
+ 
+                 if (nodeI.dummy === "edge" && nodeJ.dummy === "edge" &&
+                     nodeI.edgeObj?.v === nodeJ.edgeObj?.v &&
+-                    nodeI.edgeObj?.w === nodeJ.edgeObj?.w) {
++                    nodeI.edgeObj?.w === nodeJ.edgeObj?.w &&
++                    nodeI.edgeLabel.reversed !== nodeJ.edgeLabel.reversed) {
+                     if (nodeI.edgeLabel.reversed) {
+                         reversedPairs[nameJ] = entries[i]!;
+                         entries.splice(i, 1);
+diff --git a/lib/util.ts b/lib/util.ts
+index cd94a68..799faa0 100644
+--- a/lib/util.ts
++++ b/lib/util.ts
+@@ -123,11 +123,26 @@ function intersectRect(rect: NodeLabel, point: Point): Point {
+     let h: number = rect.height / 2;
+ 
+     if (!dx && !dy) {
++        if (w === 0 || h === 0) {
++            return {x, y};
++        }
+         throw new Error("Not possible to find intersection inside of the rectangle");
+     }
+ 
+     let sx: number, sy: number;
+-    if (Math.abs(dy) * w > Math.abs(dx) * h) {
++    if (!dx) {
++        if (dy < 0) {
++            h = -h;
++        }
++        sx = 0;
++        sy = h;
++    } else if (!dy) {
++        if (dx < 0) {
++            w = -w;
++        }
++        sx = w;
++        sy = 0;
++    } else if (Math.abs(dy) * w > Math.abs(dx) * h) {
+         // Intersection is top or bottom of rect.
+         if (dy < 0) {
+             h = -h;

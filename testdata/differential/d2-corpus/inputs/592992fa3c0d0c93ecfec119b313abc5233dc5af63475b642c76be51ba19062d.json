@@ -1,0 +1,1 @@
+{"options":{"compound":true,"directed":true,"multigraph":true},"graph":{"edgesep":20,"nodesep":60,"rankdir":"TB","ranksep":100},"nodes":[{"id":"0","attrs":{"height":66,"id":"0","width":53}},{"id":"1","attrs":{"height":66,"id":"1","width":54}}],"edges":[{"v":"0","w":"1","name":"(x -\u003e y)[0]","attrs":{"height":21,"labelpos":"c","width":47}}]}

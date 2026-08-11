@@ -1,0 +1,146 @@
+{
+  "edges": [
+    {
+      "name": "NETWORK.CELL TOWER.(satellites -> transmitter)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 197.3529900332226,
+          "y": 223
+        },
+        {
+          "x": 258.25,
+          "y": 340.5
+        },
+        {
+          "x": 197.3529900332226,
+          "y": 458
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 258.25,
+      "xPresent": true,
+      "y": 340.5,
+      "yPresent": true
+    },
+    {
+      "name": "NETWORK.CELL TOWER.(satellites -> transmitter)[1]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 180.25,
+          "y": 223
+        },
+        {
+          "x": 180.25,
+          "y": 340.5
+        },
+        {
+          "x": 180.25,
+          "y": 458
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 180.25,
+      "xPresent": true,
+      "y": 340.5,
+      "yPresent": true
+    },
+    {
+      "name": "NETWORK.CELL TOWER.(satellites -> transmitter)[2]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 163.1470099667774,
+          "y": 223
+        },
+        {
+          "x": 102.25,
+          "y": 340.5
+        },
+        {
+          "x": 163.1470099667774,
+          "y": 458
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 102.25,
+      "xPresent": true,
+      "y": 340.5,
+      "yPresent": true
+    },
+    {
+      "name": "(costumes -> monsters)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 547.5,
+          "y": 280
+        },
+        {
+          "x": 547.5,
+          "y": 340.5
+        },
+        {
+          "x": 547.5,
+          "y": 401
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 681,
+    "width": 694.5
+  },
+  "nodes": [
+    {
+      "height": 681,
+      "id": "0",
+      "width": 360.5,
+      "x": 180.25,
+      "y": 340.5
+    },
+    {
+      "height": 581,
+      "id": "1",
+      "width": 320.5,
+      "x": 180.25,
+      "y": 340.5
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 161,
+      "x": 180.25,
+      "y": 190
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 151,
+      "x": 180.25,
+      "y": 491
+    },
+    {
+      "height": 180,
+      "id": "4",
+      "width": 294,
+      "x": 547.5,
+      "y": 190
+    },
+    {
+      "height": 180,
+      "id": "5",
+      "width": 294,
+      "x": 547.5,
+      "y": 491
+    }
+  ]
+}

@@ -1,0 +1,90 @@
+{
+  "edges": [
+    {
+      "name": "(Data -- y)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 114,
+          "y": 421
+        },
+        {
+          "x": 114,
+          "y": 471
+        },
+        {
+          "x": 114,
+          "y": 521
+        },
+        {
+          "x": 114,
+          "y": 571
+        }
+      ],
+      "v": "3",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(x -- Data)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 114,
+          "y": 66
+        },
+        {
+          "x": 114,
+          "y": 116
+        },
+        {
+          "x": 114,
+          "y": 166
+        },
+        {
+          "x": 114,
+          "y": 216
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 637,
+    "width": 228
+  },
+  "nodes": [
+    {
+      "height": 305,
+      "id": "0",
+      "width": 228,
+      "x": 114,
+      "y": 318.5
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 54,
+      "x": 114,
+      "y": 604
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 53,
+      "x": 114,
+      "y": 33
+    },
+    {
+      "height": 205,
+      "id": "3",
+      "width": 148,
+      "x": 114,
+      "y": 318.5
+    }
+  ]
+}

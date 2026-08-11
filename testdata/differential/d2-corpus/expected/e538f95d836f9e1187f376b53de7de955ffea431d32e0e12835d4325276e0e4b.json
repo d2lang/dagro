@@ -1,0 +1,215 @@
+{
+  "edges": [
+    {
+      "name": "(top2.start -> a)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 112.38053097345133
+        },
+        {
+          "x": 284,
+          "y": 166
+        },
+        {
+          "x": 284,
+          "y": 216
+        },
+        {
+          "x": 284,
+          "y": 266
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(top2.start -> b)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 171,
+          "y": 116
+        },
+        {
+          "x": 171,
+          "y": 166
+        },
+        {
+          "x": 171,
+          "y": 216
+        },
+        {
+          "x": 171,
+          "y": 266
+        }
+      ],
+      "v": "1",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(top2.start -> c)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 131,
+          "y": 112.38053097345133
+        },
+        {
+          "x": 58,
+          "y": 166
+        },
+        {
+          "x": 58,
+          "y": 216
+        },
+        {
+          "x": 58,
+          "y": 266
+        }
+      ],
+      "v": "1",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(a -> bottom.end)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 284,
+          "y": 332
+        },
+        {
+          "x": 284,
+          "y": 382
+        },
+        {
+          "x": 284,
+          "y": 432
+        },
+        {
+          "x": 207,
+          "y": 488.5575221238938
+        }
+      ],
+      "v": "2",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(b -> bottom.end)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 171,
+          "y": 332
+        },
+        {
+          "x": 171,
+          "y": 382
+        },
+        {
+          "x": 171,
+          "y": 432
+        },
+        {
+          "x": 171,
+          "y": 482
+        }
+      ],
+      "v": "3",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(c -> bottom.end)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 58,
+          "y": 332
+        },
+        {
+          "x": 58,
+          "y": 382
+        },
+        {
+          "x": 58,
+          "y": 432
+        },
+        {
+          "x": 135,
+          "y": 488.5575221238938
+        }
+      ],
+      "v": "4",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 598,
+    "width": 332
+  },
+  "nodes": [
+    {
+      "height": 166,
+      "id": "0",
+      "width": 332,
+      "x": 166,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 80,
+      "x": 171,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 53,
+      "x": 284,
+      "y": 299
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 53,
+      "x": 171,
+      "y": 299
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 53,
+      "x": 58,
+      "y": 299
+    },
+    {
+      "height": 166,
+      "id": "5",
+      "width": 332,
+      "x": 166,
+      "y": 515
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 72,
+      "x": 171,
+      "y": 515
+    }
+  ]
+}

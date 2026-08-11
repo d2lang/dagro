@@ -1,0 +1,75 @@
+{
+  "edges": [
+    {
+      "name": "(class2 -> table)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 541,
+          "y": 92
+        },
+        {
+          "x": 541,
+          "y": 142
+        },
+        {
+          "x": 541,
+          "y": 192
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(table -> table with short col)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 541,
+          "y": 228
+        },
+        {
+          "x": 541,
+          "y": 278
+        },
+        {
+          "x": 541,
+          "y": 328
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 400,
+    "width": 1082
+  },
+  "nodes": [
+    {
+      "height": 92,
+      "id": "0",
+      "width": 1082,
+      "x": 541,
+      "y": 46
+    },
+    {
+      "height": 36,
+      "id": "1",
+      "width": 381,
+      "x": 541,
+      "y": 210
+    },
+    {
+      "height": 72,
+      "id": "2",
+      "width": 381,
+      "x": 541,
+      "y": 364
+    }
+  ]
+}

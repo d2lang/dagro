@@ -1,0 +1,304 @@
+{
+  "edges": [
+    {
+      "name": "build_workflow.(push -> GHA)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 175,
+          "y": 150
+        },
+        {
+          "x": 175,
+          "y": 236
+        },
+        {
+          "x": 175,
+          "y": 322
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "x": 175,
+      "xPresent": true,
+      "y": 236,
+      "yPresent": true
+    },
+    {
+      "name": "build_workflow.(GHA -> S3)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 175,
+          "y": 399
+        },
+        {
+          "x": 175,
+          "y": 525
+        },
+        {
+          "x": 175,
+          "y": 651
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 175,
+      "xPresent": true,
+      "y": 525,
+      "yPresent": true
+    },
+    {
+      "name": "build_workflow.(S3 <-> Terraform)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 175,
+          "y": 728
+        },
+        {
+          "x": 175,
+          "y": 801
+        },
+        {
+          "x": 175,
+          "y": 887
+        },
+        {
+          "x": 175,
+          "y": 973
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "x": 175,
+      "xPresent": true,
+      "y": 887,
+      "yPresent": true
+    },
+    {
+      "name": "build_workflow.(Terraform -> AWS)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 175,
+          "y": 1050
+        },
+        {
+          "x": 175,
+          "y": 1136
+        },
+        {
+          "x": 175,
+          "y": 1222
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "x": 175,
+      "xPresent": true,
+      "y": 1136,
+      "yPresent": true
+    },
+    {
+      "name": "deploy_workflow.(manual -> GHA)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 515.5,
+          "y": 150
+        },
+        {
+          "x": 515.5,
+          "y": 236
+        },
+        {
+          "x": 515.5,
+          "y": 322
+        }
+      ],
+      "v": "7",
+      "w": "8",
+      "x": 515.5,
+      "xPresent": true,
+      "y": 236,
+      "yPresent": true
+    },
+    {
+      "name": "deploy_workflow.(GHA -> AWS)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 515.5,
+          "y": 399
+        },
+        {
+          "x": 515.5,
+          "y": 525
+        },
+        {
+          "x": 515.5,
+          "y": 651
+        }
+      ],
+      "v": "8",
+      "w": "9",
+      "x": 515.5,
+      "xPresent": true,
+      "y": 525,
+      "yPresent": true
+    },
+    {
+      "name": "apollo_workflow.(apollo -> GHA)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 967.5,
+          "y": 150
+        },
+        {
+          "x": 967.5,
+          "y": 236
+        },
+        {
+          "x": 967.5,
+          "y": 322
+        }
+      ],
+      "v": "11",
+      "w": "12",
+      "x": 967.5,
+      "xPresent": true,
+      "y": 236,
+      "yPresent": true
+    },
+    {
+      "name": "apollo_workflow.(GHA -> AWS)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 967.5,
+          "y": 399
+        },
+        {
+          "x": 967.5,
+          "y": 525
+        },
+        {
+          "x": 967.5,
+          "y": 651
+        }
+      ],
+      "v": "12",
+      "w": "13",
+      "x": 967.5,
+      "xPresent": true,
+      "y": 525,
+      "yPresent": true
+    }
+  ],
+  "graph": {
+    "height": 1372,
+    "width": 1254
+  },
+  "nodes": [
+    {
+      "height": 1372,
+      "id": "0",
+      "width": 350,
+      "x": 175,
+      "y": 686
+    },
+    {
+      "height": 77,
+      "id": "1",
+      "width": 270,
+      "x": 175,
+      "y": 111.5
+    },
+    {
+      "height": 77,
+      "id": "2",
+      "width": 209,
+      "x": 175,
+      "y": 360.5
+    },
+    {
+      "height": 77,
+      "id": "3",
+      "width": 71,
+      "x": 175,
+      "y": 689.5
+    },
+    {
+      "height": 77,
+      "id": "4",
+      "width": 158,
+      "x": 175,
+      "y": 1011.5
+    },
+    {
+      "height": 77,
+      "id": "5",
+      "width": 95,
+      "x": 175,
+      "y": 1260.5
+    },
+    {
+      "height": 801,
+      "id": "6",
+      "width": 291,
+      "x": 515.5,
+      "y": 400.5
+    },
+    {
+      "height": 77,
+      "id": "7",
+      "width": 211,
+      "x": 515.5,
+      "y": 111.5
+    },
+    {
+      "height": 77,
+      "id": "8",
+      "width": 209,
+      "x": 515.5,
+      "y": 360.5
+    },
+    {
+      "height": 77,
+      "id": "9",
+      "width": 95,
+      "x": 515.5,
+      "y": 689.5
+    },
+    {
+      "height": 801,
+      "id": "10",
+      "width": 573,
+      "x": 967.5,
+      "y": 400.5
+    },
+    {
+      "height": 77,
+      "id": "11",
+      "width": 178,
+      "x": 967.5,
+      "y": 111.5
+    },
+    {
+      "height": 77,
+      "id": "12",
+      "width": 209,
+      "x": 967.5,
+      "y": 360.5
+    },
+    {
+      "height": 77,
+      "id": "13",
+      "width": 95,
+      "x": 967.5,
+      "y": 689.5
+    }
+  ]
+}

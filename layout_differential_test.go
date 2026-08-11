@@ -2,15 +2,17 @@ package dagro
 
 import (
 	"bytes"
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"math"
-	"math/rand"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strings"
+	"sync"
 	"testing"
 )
 
@@ -106,14 +108,13 @@ func TestLayoutModernDagreKeepsLastEqualCrossingSweep(t *testing.T) {
 func TestLayoutMatchesDagreJS(t *testing.T) {
 	dagreJS := os.Getenv("DAGRO_DAGRE_JS")
 	if dagreJS == "" {
-		t.Skip("set DAGRO_DAGRE_JS to the Dagre 0.8.5 bundle to run differential tests")
+		t.Skip("set DAGRO_DAGRE_JS to the pinned Dagre 3.1.1 CommonJS bundle to run differential tests")
 	}
 	node, err := exec.LookPath("node")
 	if err != nil {
 		t.Skip("node is not on PATH")
 	}
 	fixtures := differentialFixtures()
-	fixtures = append(fixtures, randomDifferentialFixtures(100, 805)...)
 	for _, fixture := range fixtures {
 		fixture := fixture
 		t.Run(fixture.name, func(t *testing.T) {
@@ -121,6 +122,7 @@ func TestLayoutMatchesDagreJS(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			goJSON := runDifferentialGo(t, fixture.input)
 			cmd := exec.Command(node, "testdata/differential/oracle.js")
 			cmd.Env = append(os.Environ(), "DAGRO_DAGRE_JS="+dagreJS)
 			cmd.Stdin = bytes.NewReader(inputJSON)
@@ -130,7 +132,6 @@ func TestLayoutMatchesDagreJS(t *testing.T) {
 			if err != nil {
 				t.Fatalf("JS oracle: %v: %s", err, stderr.String())
 			}
-			goJSON := runDifferentialGo(t, fixture.input)
 			var want, got any
 			if err := json.Unmarshal(jsJSON, &want); err != nil {
 				t.Fatalf("decode JS: %v\n%s", err, jsJSON)
@@ -143,19 +144,191 @@ func TestLayoutMatchesDagreJS(t *testing.T) {
 	}
 }
 
+func TestLayoutDagre311CompatibilityCases(t *testing.T) {
+	const compatibilityDir = "testdata/differential/compatibility"
+	type compatibilityCase struct {
+		Name               string `json:"name"`
+		ID                 string `json:"id"`
+		Input              string `json:"input"`
+		Expected           string `json:"expected"`
+		ExpectedSHA256     string `json:"expected_sha256"`
+		OfficialStatus     string `json:"official_status"`
+		OfficialNullValues int    `json:"official_null_values"`
+		OfficialError      string `json:"official_error"`
+		Reason             string `json:"reason"`
+	}
+	var manifest struct {
+		Source struct {
+			CompatibilityPatch       string `json:"compatibility_patch"`
+			CompatibilityPatchSHA256 string `json:"compatibility_patch_sha256"`
+		} `json:"source"`
+		Cases []compatibilityCase `json:"cases"`
+	}
+	manifestJSON, err := os.ReadFile(filepath.Join(compatibilityDir, "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(manifestJSON, &manifest); err != nil {
+		t.Fatal(err)
+	}
+	if len(manifest.Cases) != 3 {
+		t.Fatalf("compatibility cases = %d, want 3", len(manifest.Cases))
+	}
+	patchData, err := os.ReadFile(filepath.Join(compatibilityDir, manifest.Source.CompatibilityPatch))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if got := fmt.Sprintf("%x", sha256.Sum256(patchData)); got != manifest.Source.CompatibilityPatchSHA256 {
+		t.Fatalf("compatibility patch SHA-256 = %s, want %s", got, manifest.Source.CompatibilityPatchSHA256)
+	}
+
+	dagreJS := os.Getenv("DAGRO_DAGRE_JS")
+	node, nodeErr := exec.LookPath("node")
+	for _, testCase := range manifest.Cases {
+		testCase := testCase
+		t.Run(testCase.Name, func(t *testing.T) {
+			inputPath := filepath.Join(compatibilityDir, testCase.Input)
+			inputJSON, err := os.ReadFile(inputPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := fmt.Sprintf("%x", sha256.Sum256(inputJSON)); got != testCase.ID {
+				t.Fatalf("input SHA-256 = %s, want content-addressed ID %s", got, testCase.ID)
+			}
+			input := decodeDifferentialInput(t, inputPath)
+			gotJSON := runDifferentialGo(t, input)
+			wantJSON, err := os.ReadFile(filepath.Join(compatibilityDir, testCase.Expected))
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := fmt.Sprintf("%x", sha256.Sum256(wantJSON)); got != testCase.ExpectedSHA256 {
+				t.Fatalf("expected output SHA-256 = %s, want %s", got, testCase.ExpectedSHA256)
+			}
+			var want, got any
+			if err := json.Unmarshal(wantJSON, &want); err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal(gotJSON, &got); err != nil {
+				t.Fatal(err)
+			}
+			compareJSON(t, "$", want, got)
+			assertFiniteJSON(t, "$", got)
+
+			t.Run("official-3.1.1-behavior", func(t *testing.T) {
+				if dagreJS == "" {
+					t.Skip("DAGRO_DAGRE_JS is unset; CI supplies the pinned official 3.1.1 bundle")
+				}
+				if nodeErr != nil {
+					t.Skip("node is not on PATH; CI pins Node and runs this check")
+				}
+				inputJSON, err := json.Marshal(input)
+				if err != nil {
+					t.Fatal(err)
+				}
+				cmd := exec.Command(node, "testdata/differential/oracle.js")
+				cmd.Env = append(os.Environ(), "DAGRO_DAGRE_JS="+dagreJS)
+				cmd.Stdin = bytes.NewReader(inputJSON)
+				var stderr bytes.Buffer
+				cmd.Stderr = &stderr
+				jsJSON, err := cmd.Output()
+				switch testCase.OfficialStatus {
+				case "nonfinite":
+					if err != nil {
+						t.Fatalf("official oracle unexpectedly failed: %v: %s", err, stderr.String())
+					}
+					var official any
+					if err := json.Unmarshal(jsJSON, &official); err != nil {
+						t.Fatal(err)
+					}
+					if nulls := countJSONNulls(official); nulls != testCase.OfficialNullValues {
+						t.Fatalf("official null values = %d, want %d", nulls, testCase.OfficialNullValues)
+					}
+				case "error":
+					if err == nil {
+						t.Fatal("official oracle unexpectedly succeeded")
+					}
+					if !strings.Contains(stderr.String(), testCase.OfficialError) {
+						t.Fatalf("official error does not contain %q: %s", testCase.OfficialError, stderr.String())
+					}
+				default:
+					t.Fatalf("unknown official status %q", testCase.OfficialStatus)
+				}
+				t.Log(testCase.Reason)
+			})
+		})
+	}
+}
+
+func TestLayoutConcurrentDummyIDsAreDeterministic(t *testing.T) {
+	fixture := concurrentDummyIDFixture()
+	want, err := runDifferentialGoResult(fixture)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	const goroutines = 24
+	const iterations = 20
+	errCh := make(chan error, goroutines)
+	var wg sync.WaitGroup
+	wg.Add(goroutines)
+	for worker := 0; worker < goroutines; worker++ {
+		worker := worker
+		go func() {
+			defer wg.Done()
+			for iteration := 0; iteration < iterations; iteration++ {
+				got, err := runDifferentialGoResult(fixture)
+				if err != nil {
+					errCh <- fmt.Errorf("worker %d iteration %d: %w", worker, iteration, err)
+					return
+				}
+				if !bytes.Equal(want, got) {
+					errCh <- fmt.Errorf("worker %d iteration %d produced nondeterministic output\nwant %s\n got %s", worker, iteration, want, got)
+					return
+				}
+			}
+		}()
+	}
+	wg.Wait()
+	close(errCh)
+	for err := range errCh {
+		t.Error(err)
+	}
+}
+
 func TestLayoutMatchesD2Corpus(t *testing.T) {
 	corpusDir := os.Getenv("DAGRO_D2_CORPUS")
 	if corpusDir == "" {
-		t.Skip("set DAGRO_D2_CORPUS to the generated D2 Dagre corpus")
+		corpusDir = "testdata/differential/d2-corpus"
 	}
 
 	type corpusEntry struct {
-		Input          string `json:"input"`
-		Expected       string `json:"expected"`
-		ExpectedSource string `json:"expected_source"`
+		Input                  string   `json:"input"`
+		Expected               string   `json:"expected"`
+		ExpectedSHA256         string   `json:"expected_sha256"`
+		ExpectedSource         string   `json:"expected_source"`
+		OracleStatus           string   `json:"oracle_status"`
+		OfficialNonfinitePaths []string `json:"official_nonfinite_paths"`
 	}
 	var manifest struct {
-		Graphs map[string]corpusEntry `json:"graphs"`
+		Graphs                     map[string]corpusEntry `json:"graphs"`
+		CompatibilityRootFixInputs []string               `json:"compatibility_root_fix_inputs"`
+		D2                         struct {
+			Commit string `json:"commit"`
+		} `json:"d2"`
+		Oracle struct {
+			DagreVersion     string `json:"dagre_version"`
+			DagreGitHead     string `json:"dagre_git_head"`
+			DagreCJSHA256    string `json:"dagre_cjs_sha256"`
+			GraphlibVersion  string `json:"graphlib_version"`
+			GraphlibGitHead  string `json:"graphlib_git_head"`
+			GraphlibCJSHA256 string `json:"graphlib_cjs_sha256"`
+		} `json:"oracle"`
+		Counts struct {
+			UniqueInputs               int `json:"unique_inputs"`
+			OfficialSuccesses          int `json:"official_successes"`
+			OfficialErrors             int `json:"official_errors"`
+			CompatibilityRootFixInputs int `json:"compatibility_root_fix_inputs"`
+		} `json:"counts"`
 	}
 	manifestJSON, err := os.ReadFile(filepath.Join(corpusDir, "manifest.json"))
 	if err != nil {
@@ -163,6 +336,47 @@ func TestLayoutMatchesD2Corpus(t *testing.T) {
 	}
 	if err := json.Unmarshal(manifestJSON, &manifest); err != nil {
 		t.Fatal(err)
+	}
+	if manifest.D2.Commit != "1a60d69e4df9b9557923e61bf10f9aa3aa5422e1" {
+		t.Fatalf("D2 corpus commit = %q", manifest.D2.Commit)
+	}
+	if manifest.Oracle.DagreVersion != "3.1.1" || manifest.Oracle.DagreGitHead != "c3ed0802cd98de74c21cff1f754689ebbb0f8dae" || manifest.Oracle.DagreCJSHA256 != "70b9a4367932dd436075d98892a7968d65cf66ae83263f995e0531823b59b671" {
+		t.Fatalf("unexpected Dagre oracle provenance: %#v", manifest.Oracle)
+	}
+	if manifest.Oracle.GraphlibVersion != "4.0.5" || manifest.Oracle.GraphlibGitHead != "d3a0cf36f55ebd75f28b6acf7a436a54e1b990dc" || manifest.Oracle.GraphlibCJSHA256 != "271f39d50dbcf2f795808cb4f5b90fb42a096b5f84b4dd6bb672487b454011e7" {
+		t.Fatalf("unexpected Graphlib oracle provenance: %#v", manifest.Oracle)
+	}
+	if manifest.Counts.UniqueInputs != 311 || len(manifest.Graphs) != 311 {
+		t.Fatalf("corpus unique inputs = %d (graphs %d), want 311", manifest.Counts.UniqueInputs, len(manifest.Graphs))
+	}
+	if manifest.Counts.OfficialSuccesses != 309 || manifest.Counts.OfficialErrors != 2 || manifest.Counts.CompatibilityRootFixInputs != 3 {
+		t.Fatalf("corpus official successes/errors/compat = %d/%d/%d, want 309/2/3",
+			manifest.Counts.OfficialSuccesses, manifest.Counts.OfficialErrors, manifest.Counts.CompatibilityRootFixInputs)
+	}
+	officialFinite, compatibility := 0, 0
+	for _, entry := range manifest.Graphs {
+		if entry.OracleStatus == "success" && len(entry.OfficialNonfinitePaths) == 0 {
+			officialFinite++
+		}
+		switch entry.ExpectedSource {
+		case "official-3.1.1-with-d2-json-bridge-normalization":
+		case "parallel-edge-order-and-zero-size-intersection-root-fix":
+			compatibility++
+		default:
+			t.Fatalf("unexpected corpus expected_source %q", entry.ExpectedSource)
+		}
+	}
+	if officialFinite != 308 || compatibility != 3 || officialFinite+compatibility != len(manifest.Graphs) {
+		t.Fatalf("corpus oracle partition = %d official-finite + %d compatibility, want 308 + 3 = 311", officialFinite, compatibility)
+	}
+	wantCompatibilityIDs := []string{
+		"7cfd90e29056db3a1a4d2b45690869ff537734eb5d809ab5f1bb832e59a0bc67",
+		"e052b4c21cba3edb2df9b001d3f64058bf66eb4b30aeec321afa063278915d88",
+		"e2cfd977b7a3bf293fced2080851d9ce8e6bf5425153799b0f3efed58ac27853",
+	}
+	sort.Strings(manifest.CompatibilityRootFixInputs)
+	if !reflect.DeepEqual(manifest.CompatibilityRootFixInputs, wantCompatibilityIDs) {
+		t.Fatalf("compatibility input IDs = %v, want %v", manifest.CompatibilityRootFixInputs, wantCompatibilityIDs)
 	}
 
 	ids := make([]string, 0, len(manifest.Graphs))
@@ -173,11 +387,22 @@ func TestLayoutMatchesD2Corpus(t *testing.T) {
 	for _, id := range ids {
 		id, entry := id, manifest.Graphs[id]
 		t.Run(id[:12], func(t *testing.T) {
-			input := decodeDifferentialInput(t, filepath.Join(corpusDir, entry.Input))
+			inputPath := filepath.Join(corpusDir, entry.Input)
+			inputJSON, err := os.ReadFile(inputPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if got := fmt.Sprintf("%x", sha256.Sum256(inputJSON)); got != id {
+				t.Fatalf("input SHA-256 = %s, want content-addressed ID %s", got, id)
+			}
+			input := decodeDifferentialInput(t, inputPath)
 			gotJSON := runDifferentialGo(t, input)
 			wantJSON, err := os.ReadFile(filepath.Join(corpusDir, entry.Expected))
 			if err != nil {
 				t.Fatal(err)
+			}
+			if got := fmt.Sprintf("%x", sha256.Sum256(wantJSON)); got != entry.ExpectedSHA256 {
+				t.Fatalf("expected output SHA-256 = %s, want %s", got, entry.ExpectedSHA256)
 			}
 			var want, got any
 			if err := json.Unmarshal(wantJSON, &want); err != nil {
@@ -187,6 +412,7 @@ func TestLayoutMatchesD2Corpus(t *testing.T) {
 				t.Fatal(err)
 			}
 			compareJSON(t, "$", want, got)
+			assertFiniteJSON(t, "$", got)
 		})
 	}
 }
@@ -297,79 +523,43 @@ func differentialFixtures() []namedFixture {
 	return out
 }
 
-func randomDifferentialFixtures(count int, seed int64) []namedFixture {
-	rng := rand.New(rand.NewSource(seed))
-	directions := []string{"TB", "BT", "LR", "RL"}
-	rankers := []string{"network-simplex", "tight-tree", "longest-path"}
-	alignments := []string{"", "UL", "UR", "DL", "DR"}
-	labelPositions := []string{"c", "l", "r"}
-	fixtures := make([]namedFixture, 0, count)
-	for caseIndex := 0; caseIndex < count; caseIndex++ {
-		in := diffInput{
-			Options: GraphOptions{Compound: true, Multigraph: true},
-			Graph: Attrs{
-				"rankdir": directions[rng.Intn(len(directions))],
-				"ranker":  rankers[rng.Intn(len(rankers))],
-				"nodesep": float64(10 + rng.Intn(91)),
-				"edgesep": float64(5 + rng.Intn(46)),
-				"ranksep": float64(20 + rng.Intn(181)),
-			},
-		}
-		if rng.Intn(3) == 0 {
-			in.Graph["acyclicer"] = "greedy"
-		}
-		if align := alignments[rng.Intn(len(alignments))]; align != "" {
-			in.Graph["align"] = align
-		}
-		if rng.Intn(4) == 0 {
-			in.Graph["marginx"], in.Graph["marginy"] = float64(rng.Intn(20)), float64(rng.Intn(20))
-		}
-		n := 2 + rng.Intn(7)
-		compound := rng.Intn(3) == 0
-		if compound {
-			in.Nodes = append(in.Nodes, diffNodeInput{ID: "cluster", Attrs: Attrs{}})
-		}
-		ids := make([]string, n)
-		for i := range ids {
-			ids[i] = fmt.Sprintf("%d", i)
-		}
-		rng.Shuffle(len(ids), func(i, j int) { ids[i], ids[j] = ids[j], ids[i] })
-		for i, id := range ids {
-			node := diffNodeInput{
-				ID: id,
-				Attrs: Attrs{
-					"width":  float64(10+rng.Intn(111)) + float64(rng.Intn(4))/4,
-					"height": float64(10+rng.Intn(91)) + float64(rng.Intn(4))/4,
-				},
-			}
-			if compound && i < n/2 {
-				node.Parent = strptr("cluster")
-			}
-			in.Nodes = append(in.Nodes, node)
-		}
-		edgeCount := 1 + rng.Intn(n*2+1)
-		for i := 0; i < edgeCount; i++ {
-			v, w := ids[rng.Intn(n)], ids[rng.Intn(n)]
-			attrs := Attrs{
-				"minlen": float64(1 + rng.Intn(3)),
-				"weight": float64(1 + rng.Intn(4)),
-			}
-			if rng.Intn(2) == 0 {
-				attrs["width"] = float64(rng.Intn(61))
-				attrs["height"] = float64(rng.Intn(31))
-				attrs["labelpos"] = labelPositions[rng.Intn(len(labelPositions))]
-				attrs["labeloffset"] = float64(rng.Intn(21))
-			}
-			name := fmt.Sprintf("e%d", i)
-			in.Edges = append(in.Edges, diffEdgeInput{V: v, W: w, Name: &name, Attrs: attrs})
-		}
-		fixtures = append(fixtures, namedFixture{name: fmt.Sprintf("random-%03d", caseIndex), input: in})
+func concurrentDummyIDFixture() diffInput {
+	cluster := "cluster"
+	return diffInput{
+		Options: GraphOptions{Compound: true, Multigraph: true},
+		Graph:   Attrs{"rankdir": "LR", "nodesep": 31.0, "edgesep": 17.0, "ranksep": 77.0},
+		Nodes: []diffNodeInput{
+			{ID: "cluster", Attrs: Attrs{}},
+			{ID: "a", Attrs: Attrs{"width": 80.0, "height": 40.0}, Parent: &cluster},
+			{ID: "b", Attrs: Attrs{"width": 60.0, "height": 50.0}, Parent: &cluster},
+			{ID: "c", Attrs: Attrs{"width": 70.0, "height": 35.0}},
+			{ID: "_d", Attrs: Attrs{"width": 10.0, "height": 10.0}},
+			{ID: "_se", Attrs: Attrs{"width": 10.0, "height": 10.0}},
+			{ID: "_root", Attrs: Attrs{"width": 10.0, "height": 10.0}},
+			{ID: "_bt", Attrs: Attrs{"width": 10.0, "height": 10.0}},
+			{ID: "_bb", Attrs: Attrs{"width": 10.0, "height": 10.0}},
+		},
+		Edges: []diffEdgeInput{
+			{V: "a", W: "b", Name: strptr("rev1"), Attrs: Attrs{}},
+			{V: "a", W: "b", Name: strptr("parallel-a"), Attrs: Attrs{"width": 30.0, "height": 10.0, "labelpos": "c"}},
+			{V: "a", W: "b", Name: strptr("parallel-b"), Attrs: Attrs{"width": 20.0, "height": 15.0, "labelpos": "c"}},
+			{V: "b", W: "c", Name: strptr("out"), Attrs: Attrs{}},
+			{V: "c", W: "a", Name: strptr("back"), Attrs: Attrs{}},
+			{V: "a", W: "a", Name: strptr("self"), Attrs: Attrs{"width": 20.0, "height": 10.0}},
+		},
 	}
-	return fixtures
 }
 
 func runDifferentialGo(t *testing.T, input diffInput) []byte {
 	t.Helper()
+	b, err := runDifferentialGoResult(input)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return b
+}
+
+func runDifferentialGoResult(input diffInput) ([]byte, error) {
 	g := NewGraph(input.Options).SetGraph(cloneAttrs(input.Graph))
 	g.SetDefaultNodeLabel(func(string) any { return Attrs{} })
 	g.SetDefaultEdgeLabel(func(string, string, *string) any { return Attrs{} })
@@ -379,7 +569,7 @@ func runDifferentialGo(t *testing.T, input diffInput) []byte {
 	for _, node := range input.Nodes {
 		if node.Parent != nil {
 			if err := g.SetParent(node.ID, *node.Parent); err != nil {
-				t.Fatal(err)
+				return nil, err
 			}
 		}
 	}
@@ -391,7 +581,7 @@ func runDifferentialGo(t *testing.T, input diffInput) []byte {
 		}
 	}
 	if err := Layout(g); err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
 	output := map[string]any{
 		"graph": map[string]any{"width": num(asAttrs(g.Graph()), "width"), "height": num(asAttrs(g.Graph()), "height")},
@@ -420,9 +610,50 @@ func runDifferentialGo(t *testing.T, input diffInput) []byte {
 	output["edges"] = edges
 	b, err := json.Marshal(output)
 	if err != nil {
-		t.Fatal(err)
+		return nil, err
 	}
-	return b
+	return b, nil
+}
+
+func assertFiniteJSON(t *testing.T, path string, value any) {
+	t.Helper()
+	switch value := value.(type) {
+	case float64:
+		if math.IsNaN(value) || math.IsInf(value, 0) {
+			t.Errorf("%s: non-finite value %v", path, value)
+		}
+	case nil:
+		t.Errorf("%s: null numeric output", path)
+	case []any:
+		for i, child := range value {
+			assertFiniteJSON(t, fmt.Sprintf("%s[%d]", path, i), child)
+		}
+	case map[string]any:
+		for key, child := range value {
+			assertFiniteJSON(t, path+"."+key, child)
+		}
+	}
+}
+
+func countJSONNulls(value any) int {
+	switch value := value.(type) {
+	case nil:
+		return 1
+	case []any:
+		count := 0
+		for _, child := range value {
+			count += countJSONNulls(child)
+		}
+		return count
+	case map[string]any:
+		count := 0
+		for _, child := range value {
+			count += countJSONNulls(child)
+		}
+		return count
+	default:
+		return 0
+	}
 }
 
 func compareJSON(t *testing.T, path string, want, got any) {

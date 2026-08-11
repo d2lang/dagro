@@ -1,0 +1,140 @@
+{
+  "edges": [
+    {
+      "name": "(find contractors -> solicit quotes)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 505.5,
+          "y": 116
+        },
+        {
+          "x": 505.5,
+          "y": 166
+        },
+        {
+          "x": 505.5,
+          "y": 216
+        },
+        {
+          "x": 505.5,
+          "y": 266
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(obtain quotes -> negotiate)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 712.5,
+          "y": 116
+        },
+        {
+          "x": 712.5,
+          "y": 166
+        },
+        {
+          "x": 712.5,
+          "y": 216
+        },
+        {
+          "x": 712.5,
+          "y": 266
+        }
+      ],
+      "v": "5",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(negotiate -> book the best bid)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 712.5,
+          "y": 332
+        },
+        {
+          "x": 712.5,
+          "y": 382
+        },
+        {
+          "x": 712.5,
+          "y": 432
+        }
+      ],
+      "v": "6",
+      "w": "7",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 498,
+    "width": 796
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 200,
+      "x": 100,
+      "y": 83
+    },
+    {
+      "height": 166,
+      "id": "1",
+      "width": 361,
+      "x": 420.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 110,
+      "x": 335,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 111,
+      "x": 505.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 140,
+      "x": 505.5,
+      "y": 299
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 143,
+      "x": 712.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 112,
+      "x": 712.5,
+      "y": 299
+    },
+    {
+      "height": 66,
+      "id": "7",
+      "width": 167,
+      "x": 712.5,
+      "y": 465
+    }
+  ]
+}

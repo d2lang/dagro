@@ -1,0 +1,1 @@
+{"options":{"compound":true,"directed":true,"multigraph":true},"graph":{"edgesep":20,"nodesep":60,"rankdir":"TB","ranksep":100},"nodes":[{"id":"0","attrs":{"height":112,"id":"0","width":199}},{"id":"1","attrs":{"height":16,"id":"1","width":69},"parent":"0"}],"edges":null}

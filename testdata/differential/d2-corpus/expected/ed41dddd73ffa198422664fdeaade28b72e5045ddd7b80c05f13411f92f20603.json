@@ -1,0 +1,16 @@
+{
+  "edges": [],
+  "graph": {
+    "height": 66,
+    "width": 200
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 200,
+      "x": 100,
+      "y": 33
+    }
+  ]
+}

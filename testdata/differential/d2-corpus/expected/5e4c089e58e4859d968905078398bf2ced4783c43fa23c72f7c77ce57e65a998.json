@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "name": "(x -> y)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 123,
+          "y": 46
+        },
+        {
+          "x": 173,
+          "y": 46
+        },
+        {
+          "x": 223,
+          "y": 46
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 92,
+    "width": 341
+  },
+  "nodes": [
+    {
+      "height": 92,
+      "id": "0",
+      "width": 123,
+      "x": 61.5,
+      "y": 46
+    },
+    {
+      "height": 92,
+      "id": "1",
+      "width": 118,
+      "x": 282,
+      "y": 46
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "edges": [
+    {
+      "name": "(hexagon -> square)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 64,
+          "y": 69
+        },
+        {
+          "x": 64,
+          "y": 119
+        },
+        {
+          "x": 64,
+          "y": 169
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(square -> rect)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 64,
+          "y": 263
+        },
+        {
+          "x": 64,
+          "y": 313
+        },
+        {
+          "x": 64,
+          "y": 363
+        }
+      ],
+      "v": "2",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 429,
+    "width": 128
+  },
+  "nodes": [
+    {
+      "height": 69,
+      "id": "0",
+      "width": 128,
+      "x": 64,
+      "y": 34.5
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 73,
+      "x": 64,
+      "y": 396
+    },
+    {
+      "height": 94,
+      "id": "2",
+      "width": 94,
+      "x": 64,
+      "y": 216
+    }
+  ]
+}

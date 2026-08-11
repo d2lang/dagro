@@ -1,0 +1,125 @@
+{
+  "edges": [
+    {
+      "name": "(\"a\\\\yode\" -> there)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 820,
+          "y": 74
+        },
+        {
+          "x": 820,
+          "y": 132
+        },
+        {
+          "x": 707.5,
+          "y": 192.63311688311688
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "('a\\\"ode' -> there)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 666,
+          "y": 74
+        },
+        {
+          "x": 666,
+          "y": 132
+        },
+        {
+          "x": 666,
+          "y": 182
+        }
+      ],
+      "v": "5",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(\"a\\\\node\" -> there)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 511.5,
+          "y": 74
+        },
+        {
+          "x": 511.5,
+          "y": 132
+        },
+        {
+          "x": 624.5,
+          "y": 192.70550161812298
+        }
+      ],
+      "v": "6",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 248,
+    "width": 867
+  },
+  "nodes": [
+    {
+      "height": 82,
+      "id": "0",
+      "width": 91,
+      "x": 45.5,
+      "y": 41
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 91,
+      "x": 196.5,
+      "y": 41
+    },
+    {
+      "height": 82,
+      "id": "2",
+      "width": 102,
+      "x": 353,
+      "y": 41
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 94,
+      "x": 820,
+      "y": 41
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 83,
+      "x": 666,
+      "y": 215
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 94,
+      "x": 666,
+      "y": 41
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 95,
+      "x": 511.5,
+      "y": 41
+    }
+  ]
+}

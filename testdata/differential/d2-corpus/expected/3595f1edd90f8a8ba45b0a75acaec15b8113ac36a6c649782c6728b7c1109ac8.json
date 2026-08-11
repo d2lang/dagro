@@ -1,0 +1,53 @@
+{
+  "edges": [
+    {
+      "name": "ok.(dog1 -> dog3)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 88.5,
+          "y": 147
+        },
+        {
+          "x": 88.5,
+          "y": 197
+        },
+        {
+          "x": 88.5,
+          "y": 247
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 363,
+    "width": 177
+  },
+  "nodes": [
+    {
+      "height": 363,
+      "id": "0",
+      "width": 177,
+      "x": 88.5,
+      "y": 181.5
+    },
+    {
+      "height": 97,
+      "id": "1",
+      "width": 97,
+      "x": 88.5,
+      "y": 98.5
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 80,
+      "x": 88.5,
+      "y": 280
+    }
+  ]
+}

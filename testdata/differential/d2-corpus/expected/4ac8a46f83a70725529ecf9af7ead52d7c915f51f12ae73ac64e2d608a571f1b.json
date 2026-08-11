@@ -1,0 +1,572 @@
+{
+  "edges": [
+    {
+      "name": "(a -> tree)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 255,
+          "y": 116
+        },
+        {
+          "x": 255,
+          "y": 166
+        },
+        {
+          "x": 255,
+          "y": 216
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(a -> and)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 228.5,
+          "y": 93.30210772833723
+        },
+        {
+          "x": 41.5,
+          "y": 166
+        },
+        {
+          "x": 41.5,
+          "y": 216
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(a -> nodes)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 281.5,
+          "y": 98.65480427046263
+        },
+        {
+          "x": 395.5,
+          "y": 166
+        },
+        {
+          "x": 395.5,
+          "y": 216
+        }
+      ],
+      "v": "0",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(and -> some)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 41.5,
+          "y": 282
+        },
+        {
+          "x": 41.5,
+          "y": 332
+        },
+        {
+          "x": 41.5,
+          "y": 382
+        }
+      ],
+      "v": "2",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(tree -> more)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 226.5722891566265,
+          "y": 282
+        },
+        {
+          "x": 183.5,
+          "y": 332
+        },
+        {
+          "x": 183.5,
+          "y": 382
+        }
+      ],
+      "v": "1",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(tree -> many)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 283.52710843373495,
+          "y": 282
+        },
+        {
+          "x": 326.75,
+          "y": 332
+        },
+        {
+          "x": 326.75,
+          "y": 382
+        }
+      ],
+      "v": "1",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(then -> here)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 543.0240963855422,
+          "y": 116
+        },
+        {
+          "x": 537,
+          "y": 166
+        },
+        {
+          "x": 537,
+          "y": 216
+        }
+      ],
+      "v": "7",
+      "w": "8",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(here -> you)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 537,
+          "y": 282
+        },
+        {
+          "x": 537,
+          "y": 332
+        },
+        {
+          "x": 537,
+          "y": 382
+        }
+      ],
+      "v": "8",
+      "w": "9",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(have -> hierarchy)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 703.25,
+          "y": 116
+        },
+        {
+          "x": 703.25,
+          "y": 166
+        },
+        {
+          "x": 697.2259036144578,
+          "y": 216
+        }
+      ],
+      "v": "10",
+      "w": "11",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(then -> hierarchy)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 577.7138554216867,
+          "y": 116
+        },
+        {
+          "x": 624.25,
+          "y": 166
+        },
+        {
+          "x": 665.816265060241,
+          "y": 216
+        }
+      ],
+      "v": "7",
+      "w": "11",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(finally -> another)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 876.2680722891566,
+          "y": 614
+        },
+        {
+          "x": 859.25,
+          "y": 664
+        },
+        {
+          "x": 859.25,
+          "y": 714
+        },
+        {
+          "x": 859.25,
+          "y": 764
+        }
+      ],
+      "v": "20",
+      "w": "13",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(another -> of)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 859.25,
+          "y": 830
+        },
+        {
+          "x": 859.25,
+          "y": 880
+        },
+        {
+          "x": 859.25,
+          "y": 930
+        }
+      ],
+      "v": "13",
+      "w": "14",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(nesting -> trees)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1191.75,
+          "y": 614
+        },
+        {
+          "x": 1191.75,
+          "y": 664
+        },
+        {
+          "x": 1191.75,
+          "y": 714
+        },
+        {
+          "x": 1158.9186746987953,
+          "y": 764
+        }
+      ],
+      "v": "15",
+      "w": "16",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(finally -> trees)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 925.6686746987951,
+          "y": 614
+        },
+        {
+          "x": 983.5,
+          "y": 664
+        },
+        {
+          "x": 983.5,
+          "y": 714
+        },
+        {
+          "x": 1096.25,
+          "y": 774.8666666666667
+        }
+      ],
+      "v": "20",
+      "w": "16",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "finally.(a -> tree)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 928.25,
+          "y": 281.70631970260223
+        },
+        {
+          "x": 887.5,
+          "y": 332
+        },
+        {
+          "x": 887.5,
+          "y": 382
+        }
+      ],
+      "v": "17",
+      "w": "18",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "finally.(inside -> a)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 954.75,
+          "y": 116
+        },
+        {
+          "x": 954.75,
+          "y": 166
+        },
+        {
+          "x": 954.75,
+          "y": 216
+        }
+      ],
+      "v": "19",
+      "w": "17",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "finally.(tree -> hierarchy)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 887.5,
+          "y": 448
+        },
+        {
+          "x": 887.5,
+          "y": 498
+        },
+        {
+          "x": 887.5,
+          "y": 548
+        }
+      ],
+      "v": "18",
+      "w": "20",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "finally.(a -> root)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 981.25,
+          "y": 281.70631970260223
+        },
+        {
+          "x": 1022,
+          "y": 332
+        },
+        {
+          "x": 1022,
+          "y": 382
+        }
+      ],
+      "v": "17",
+      "w": "21",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 996,
+    "width": 1240.75
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 53,
+      "x": 255,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 74,
+      "x": 255,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 72,
+      "x": 41.5,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 87,
+      "x": 395.5,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 83,
+      "x": 41.5,
+      "y": 415
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 81,
+      "x": 183.5,
+      "y": 415
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 85,
+      "x": 326.75,
+      "y": 415
+    },
+    {
+      "height": 66,
+      "id": "7",
+      "width": 78,
+      "x": 547,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "8",
+      "width": 76,
+      "x": 537,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "9",
+      "width": 72,
+      "x": 537,
+      "y": 415
+    },
+    {
+      "height": 66,
+      "id": "10",
+      "width": 78,
+      "x": 703.25,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "11",
+      "width": 113,
+      "x": 693.25,
+      "y": 249
+    },
+    {
+      "height": 664,
+      "id": "12",
+      "width": 311.75,
+      "x": 946.875,
+      "y": 332
+    },
+    {
+      "height": 66,
+      "id": "13",
+      "width": 103,
+      "x": 859.25,
+      "y": 797
+    },
+    {
+      "height": 66,
+      "id": "14",
+      "width": 60,
+      "x": 859.25,
+      "y": 963
+    },
+    {
+      "height": 66,
+      "id": "15",
+      "width": 98,
+      "x": 1191.75,
+      "y": 581
+    },
+    {
+      "height": 66,
+      "id": "16",
+      "width": 82,
+      "x": 1137.25,
+      "y": 797
+    },
+    {
+      "height": 66,
+      "id": "17",
+      "width": 53,
+      "x": 954.75,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "18",
+      "width": 74,
+      "x": 887.5,
+      "y": 415
+    },
+    {
+      "height": 66,
+      "id": "19",
+      "width": 88,
+      "x": 954.75,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "20",
+      "width": 113,
+      "x": 887.5,
+      "y": 581
+    },
+    {
+      "height": 66,
+      "id": "21",
+      "width": 75,
+      "x": 1022,
+      "y": 415
+    }
+  ]
+}

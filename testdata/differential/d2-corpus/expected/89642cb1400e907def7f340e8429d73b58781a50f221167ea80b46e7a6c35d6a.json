@@ -1,0 +1,113 @@
+{
+  "edges": [
+    {
+      "name": "(a -> b)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 81.5,
+          "y": 33
+        },
+        {
+          "x": 176.5,
+          "y": 33
+        },
+        {
+          "x": 274.5,
+          "y": 33
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "x": 176.5,
+      "xPresent": true,
+      "y": 33,
+      "yPresent": true
+    },
+    {
+      "name": "(b -> c)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 327.5,
+          "y": 33
+        },
+        {
+          "x": 409,
+          "y": 33
+        },
+        {
+          "x": 459,
+          "y": 33
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(producer -> consumer)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 110,
+          "y": 159
+        },
+        {
+          "x": 176.5,
+          "y": 159
+        },
+        {
+          "x": 243,
+          "y": 159
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 192,
+    "width": 512
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 53,
+      "x": 55,
+      "y": 33
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 53,
+      "x": 301,
+      "y": 33
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 53,
+      "x": 485.5,
+      "y": 33
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 110,
+      "x": 55,
+      "y": 159
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 116,
+      "x": 301,
+      "y": 159
+    }
+  ]
+}

@@ -1,0 +1,89 @@
+{
+  "edges": [
+    {
+      "name": "x.(a -> b)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 66.5,
+          "y": 116
+        },
+        {
+          "x": 66.5,
+          "y": 166
+        },
+        {
+          "x": 66.5,
+          "y": 216
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "x.(c -> d)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 180,
+          "y": 116
+        },
+        {
+          "x": 180,
+          "y": 166
+        },
+        {
+          "x": 180,
+          "y": 216
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 332,
+    "width": 247
+  },
+  "nodes": [
+    {
+      "height": 332,
+      "id": "0",
+      "width": 247,
+      "x": 123.5,
+      "y": 166
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 53,
+      "x": 66.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 53,
+      "x": 66.5,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 53,
+      "x": 180,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 54,
+      "x": 180,
+      "y": 249
+    }
+  ]
+}
