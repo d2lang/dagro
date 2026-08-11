@@ -8,6 +8,7 @@ import (
 	"math/rand"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"testing"
@@ -83,6 +84,25 @@ func TestLayoutUpstreamExamples(t *testing.T) {
 	})
 }
 
+func TestLayoutModernDagreKeepsLastEqualCrossingSweep(t *testing.T) {
+	g := NewGraph(GraphOptions{Compound: true, Multigraph: true}).SetGraph(Attrs{
+		"rankdir": "LR", "nodesep": 31.0, "edgesep": 17.0, "ranksep": 77.0,
+	})
+	g.SetNode("0", Attrs{"width": 80.0, "height": 40.0})
+	g.SetNode("1", Attrs{"width": 60.0, "height": 50.0})
+	g.SetEdge("0", "1", Attrs{"width": 30.0, "height": 10.0, "labelpos": "c"}, "edge-a")
+	g.SetEdge("0", "1", Attrs{"width": 20.0, "height": 15.0, "labelpos": "c"}, "edge-b")
+
+	if err := Layout(g); err != nil {
+		t.Fatal(err)
+	}
+
+	// Dagre 3.1.1 keeps the final solution when crossing counts tie. This
+	// places edge-a below edge-b; Dagre 0.8.5 retained the opposite sweep.
+	assertNear(t, num(asAttrs(g.EdgeByArgs("0", "1", "edge-a")), "y"), 39.75)
+	assertNear(t, num(asAttrs(g.EdgeByArgs("0", "1", "edge-b")), "y"), 10.25)
+}
+
 func TestLayoutMatchesDagreJS(t *testing.T) {
 	dagreJS := os.Getenv("DAGRO_DAGRE_JS")
 	if dagreJS == "" {
@@ -120,6 +140,78 @@ func TestLayoutMatchesDagreJS(t *testing.T) {
 			}
 			compareJSON(t, "$", want, got)
 		})
+	}
+}
+
+func TestLayoutMatchesD2Corpus(t *testing.T) {
+	corpusDir := os.Getenv("DAGRO_D2_CORPUS")
+	if corpusDir == "" {
+		t.Skip("set DAGRO_D2_CORPUS to the generated D2 Dagre corpus")
+	}
+
+	type corpusEntry struct {
+		Input          string `json:"input"`
+		Expected       string `json:"expected"`
+		ExpectedSource string `json:"expected_source"`
+	}
+	var manifest struct {
+		Graphs map[string]corpusEntry `json:"graphs"`
+	}
+	manifestJSON, err := os.ReadFile(filepath.Join(corpusDir, "manifest.json"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(manifestJSON, &manifest); err != nil {
+		t.Fatal(err)
+	}
+
+	ids := make([]string, 0, len(manifest.Graphs))
+	for id := range manifest.Graphs {
+		ids = append(ids, id)
+	}
+	sort.Strings(ids)
+	for _, id := range ids {
+		id, entry := id, manifest.Graphs[id]
+		t.Run(id[:12], func(t *testing.T) {
+			input := decodeDifferentialInput(t, filepath.Join(corpusDir, entry.Input))
+			gotJSON := runDifferentialGo(t, input)
+			wantJSON, err := os.ReadFile(filepath.Join(corpusDir, entry.Expected))
+			if err != nil {
+				t.Fatal(err)
+			}
+			var want, got any
+			if err := json.Unmarshal(wantJSON, &want); err != nil {
+				t.Fatal(err)
+			}
+			if err := json.Unmarshal(gotJSON, &got); err != nil {
+				t.Fatal(err)
+			}
+			compareJSON(t, "$", want, got)
+		})
+	}
+}
+
+func decodeDifferentialInput(t *testing.T, path string) diffInput {
+	t.Helper()
+	var wire struct {
+		Options map[string]bool `json:"options"`
+		Graph   Attrs           `json:"graph"`
+		Nodes   []diffNodeInput `json:"nodes"`
+		Edges   []diffEdgeInput `json:"edges"`
+	}
+	data, err := os.ReadFile(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := json.Unmarshal(data, &wire); err != nil {
+		t.Fatal(err)
+	}
+	return diffInput{
+		Options: GraphOptions{
+			Directed: wire.Options["directed"], Undirected: !wire.Options["directed"],
+			Multigraph: wire.Options["multigraph"], Compound: wire.Options["compound"],
+		},
+		Graph: wire.Graph, Nodes: wire.Nodes, Edges: wire.Edges,
 	}
 }
 
@@ -338,7 +430,7 @@ func compareJSON(t *testing.T, path string, want, got any) {
 	switch w := want.(type) {
 	case float64:
 		g, ok := got.(float64)
-		if !ok || math.Abs(w-g) > 1e-9+1e-12*math.Max(math.Abs(w), math.Abs(g)) {
+		if !ok || math.Float64bits(w) != math.Float64bits(g) {
 			t.Errorf("%s: want %.17g, got %#v", path, w, got)
 		}
 	case []any:

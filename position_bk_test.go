@@ -124,6 +124,18 @@ func TestFindType2ConflictsFavorsBorderSegments(t *testing.T) {
 	})
 }
 
+func TestFindType2ConflictsStartsNorthBoundaryAtMinusOne(t *testing.T) {
+	g := newBKTestGraph()
+	g.SetNode("north", Attrs{"dummy": true, "order": float64(-2)})
+	g.SetNode("south", Attrs{"dummy": true, "order": float64(0)})
+	g.SetEdge("north", "south")
+
+	conflicts := findType2Conflicts(g, [][]string{{"north"}, {"south"}})
+	if !hasConflict(conflicts, "north", "south") {
+		t.Fatalf("missing conflict with modern -1 north boundary: %#v", conflicts)
+	}
+}
+
 func TestPositionConflictsAreOrientationIndependentAndComposable(t *testing.T) {
 	conflicts := positionConflicts{}
 	addConflict(conflicts, "b", "a")
@@ -133,6 +145,22 @@ func TestPositionConflictsAreOrientationIndependentAndComposable(t *testing.T) {
 	addConflict(conflicts, "a", "c")
 	if !hasConflict(conflicts, "a", "b") || !hasConflict(conflicts, "a", "c") {
 		t.Fatal("multiple conflicts with one node were not retained")
+	}
+}
+
+func TestPositionConflictMergeUsesModernShallowOverwrite(t *testing.T) {
+	got := shallowMergePositionConflicts(
+		positionConflicts{
+			"a": {"b": true, "c": true},
+			"e": {"f": true},
+		},
+		positionConflicts{"a": {"d": true}},
+	)
+	if hasConflict(got, "a", "b") || hasConflict(got, "a", "c") || !hasConflict(got, "a", "d") {
+		t.Fatalf("colliding conflict key was not replaced: %#v", got)
+	}
+	if !hasConflict(got, "e", "f") {
+		t.Fatalf("non-colliding conflict key was lost: %#v", got)
 	}
 }
 

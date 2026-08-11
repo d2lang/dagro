@@ -17,7 +17,16 @@ func runAcyclic(g *Graph) {
 		g.RemoveEdge(e)
 		label["forwardName"] = edgeNameState{name: e.Name, present: e.HasName}
 		label["reversed"] = true
-		g.SetEdge(e.W, e.V, label, g.uniqueID("rev"))
+		g.SetEdge(e.W, e.V, label, nextReversedEdgeName(g, e.W, e.V))
+	}
+}
+
+func nextReversedEdgeName(g *Graph, v, w string) string {
+	for {
+		name := g.uniqueID("rev")
+		if !g.HasEdge(v, w, name) {
+			return name
+		}
 	}
 }
 
@@ -38,6 +47,12 @@ func dfsFAS(g *Graph) []Edge {
 			}
 		}
 		delete(stack, v)
+	}
+	// Modern Dagre starts DFS from sources before visiting any remaining
+	// components. This makes cycle breaking deterministic when a source feeds
+	// into a strongly connected component whose nodes were inserted earlier.
+	for _, v := range g.Sources() {
+		dfs(v)
 	}
 	for _, v := range g.Nodes() {
 		dfs(v)

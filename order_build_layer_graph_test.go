@@ -175,7 +175,9 @@ func TestBuildLayerGraphsRankBucketsMatchPerRankFiltering(t *testing.T) {
 			gotSource, wantSource := newGraph(), newGraph()
 			buckets := buildLayerNodeBuckets(gotSource, gotSource.Nodes(), 3)
 			for rank := 0; rank <= 3; rank++ {
+				counter := uniqueIDCounter.Load()
 				got := buildLayerGraphNodes(gotSource, rank, relationship, buckets[rank])
+				uniqueIDCounter.Store(counter)
 				want := buildLayerGraph(wantSource, rank, relationship)
 				assertLayerGraphsEqual(t, got, want)
 			}

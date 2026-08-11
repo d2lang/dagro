@@ -19,6 +19,7 @@ type orderResult struct {
 	Barycenter    float64
 	Weight        float64
 	HasBarycenter bool
+	UsedBias      bool
 }
 
 // order applies Dagre 0.8.5's four-way sweeping heuristic and writes the best
@@ -59,6 +60,10 @@ func order(g *Graph) {
 			lastBest = 0
 			best = cloneLayering(layering)
 			bestCC = cc
+		} else if cc == bestCC {
+			// Modern Dagre intentionally keeps the last equally good
+			// ordering found by the sweep heuristic.
+			best = cloneLayering(layering)
 		}
 	}
 
@@ -127,11 +132,15 @@ func buildLayerNodeBuckets(g *Graph, nodes []string, maxRank int) [][]string {
 	return buckets
 }
 
-func sweepLayerGraphs(layerGraphs []*Graph, biasRight bool) {
+func sweepLayerGraphs(layerGraphs []*Graph, switchBias bool) {
+	biasRight := true
 	cg := NewGraph()
 	for _, lg := range layerGraphs {
 		root := stringValue(asAttrs(lg.Graph()), "root")
 		sorted := sortSubgraph(lg, root, cg, biasRight)
+		if switchBias && sorted.UsedBias {
+			biasRight = !biasRight
+		}
 		for i, v := range sorted.VS {
 			asAttrs(lg.Node(v))["order"] = float64(i)
 		}

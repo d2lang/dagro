@@ -3,6 +3,7 @@ package dagro
 import (
 	"reflect"
 	"sort"
+	"strconv"
 	"testing"
 )
 
@@ -108,6 +109,41 @@ func TestGreedyAcyclicPrefersLowWeightEdge(t *testing.T) {
 	runAcyclic(g)
 	if graphHasDirectedCycle(g) || g.HasEdge("c", "d") {
 		t.Fatalf("greedy did not reverse low-weight edge: %#v", sortedEdgeStrings(g.Edges()))
+	}
+}
+
+func TestDFSFASVisitsSourcesFirst(t *testing.T) {
+	g := newAcyclicTestGraph("dfs")
+	// Insert the cycle before its external source. A node-order-first DFS
+	// reverses c -> a; modern Dagre starts at s and reverses a -> b.
+	g.SetNodes([]string{"a", "b", "c", "s"})
+	g.SetEdge("a", "b")
+	g.SetEdge("b", "c")
+	g.SetEdge("c", "a")
+	g.SetEdge("s", "b")
+
+	fas := dfsFAS(g)
+	if len(fas) != 1 || fas[0].V != "a" || fas[0].W != "b" {
+		t.Fatalf("dfsFAS = %#v, want a -> b", fas)
+	}
+}
+
+func TestAcyclicReversedEdgeNameDoesNotOverwriteCallerEdge(t *testing.T) {
+	callerName := "rev" + strconv.FormatUint(uniqueIDCounter.Load()+1, 10)
+	g := newAcyclicTestGraph("dfs")
+	g.SetEdge("a", "b", Attrs{"minlen": 1.0, "weight": 1.0}, callerName)
+	g.SetEdge("b", "a", Attrs{"minlen": 1.0, "weight": 1.0}, "back")
+
+	runAcyclic(g)
+	if graphHasDirectedCycle(g) || g.EdgeCount() != 2 {
+		t.Fatalf("cycle remains=%v edge count=%d edges=%#v", graphHasDirectedCycle(g), g.EdgeCount(), g.Edges())
+	}
+	if !g.HasEdge("a", "b", callerName) {
+		t.Fatalf("caller edge %q was overwritten: %#v", callerName, g.Edges())
+	}
+	undoAcyclic(g)
+	if g.EdgeCount() != 2 || !g.HasEdge("a", "b", callerName) || !g.HasEdge("b", "a", "back") {
+		t.Fatalf("undo identities = %#v", g.Edges())
 	}
 }
 

@@ -178,7 +178,61 @@ func TestLayoutUpstreamSelfLoops(t *testing.T) {
 					t.Errorf("point %#v is outside the expected lower side of node %#v", point, node)
 				}
 			}
+			if rankdir == "RL" {
+				assertLayoutPoints(t, points, []Point{
+					{X: 100, Y: 242.5},
+					{X: 100, Y: 242.5},
+					{X: 50, Y: 192.5},
+					{X: 0, Y: 142.5},
+					{X: 0, Y: 142.5},
+					{X: 50, Y: 192.5},
+					{X: 50, Y: 192.5},
+				})
+			}
 		})
+	}
+}
+
+func TestInsertSelfEdgesSeedsModernSpline(t *testing.T) {
+	g := newOrderTestGraph(false)
+	edge := Edge{V: "a", W: "a", Name: "loop", HasName: true}
+	label := Attrs{"width": 20.0, "height": 10.0}
+	g.SetNode("a", Attrs{
+		"rank": float64(0), "order": float64(0),
+		"selfEdges": []selfEdgeRecord{{e: edge, label: label}},
+	})
+
+	insertSelfEdges(g)
+
+	dummy := asAttrs(g.Node("_se"))
+	dummyLabel, ok := dummy["edgeLabel"].(Attrs)
+	if stringValue(dummy, "dummy") != "selfedge" || !ok || num(dummyLabel, "width") != 20 || has(dummy, "label") {
+		t.Fatalf("self-edge dummy = %#v", dummy)
+	}
+	points, ok := label["points"].([]Point)
+	if !ok || len(points) != 7 {
+		t.Fatalf("seeded self-edge points = %#v, want seven points", label["points"])
+	}
+}
+
+func TestPositionSelfEdgesUsesFiniteFallbacks(t *testing.T) {
+	g := NewGraph(GraphOptions{Multigraph: true})
+	edge := Edge{V: "a", W: "a", Name: "loop", HasName: true}
+	label := Attrs{}
+	g.SetNode("a", Attrs{
+		"x": math.NaN(), "y": math.Inf(1), "width": math.Inf(-1), "height": math.NaN(),
+	})
+	g.SetNode("_se", Attrs{
+		"dummy": "selfedge", "e": edge, "edgeLabel": label,
+		"x": math.Inf(1), "y": math.NaN(),
+	})
+
+	positionSelfEdges(g)
+
+	points := layoutEdgePoints(t, asAttrs(g.Edge(edge)))
+	assertLayoutPoints(t, points, []Point{{}, {}, {}, {}, {}, {}, {}})
+	if num(label, "x") != 0 || num(label, "y") != 0 {
+		t.Fatalf("self-edge label fallback = (%v,%v), want (0,0)", num(label, "x"), num(label, "y"))
 	}
 }
 

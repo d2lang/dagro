@@ -3,7 +3,6 @@ package dagro
 import (
 	"fmt"
 	"sort"
-	"strconv"
 	"unicode/utf16"
 )
 
@@ -153,7 +152,6 @@ type Graph struct {
 	preds, sucs                    map[string]*orderedCounter
 	edgeObjs                       *edgeMap
 	edgeLabels                     map[string]any
-	nextID                         uint64
 }
 
 // NewGraph constructs a graph. Graphs are directed by default, matching
@@ -564,8 +562,7 @@ func (g *Graph) ensureEdgeEndpointMaps(v, w string) {
 }
 
 func (g *Graph) uniqueID(prefix string) string {
-	g.nextID++
-	return prefix + strconv.FormatUint(g.nextID, 10)
+	return uniqueID(prefix)
 }
 
 func (g *Graph) Edge(e Edge) any { return g.edgeLabels[edgeObjToID(g.directed, e)] }

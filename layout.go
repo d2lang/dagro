@@ -110,7 +110,7 @@ var edgeAttrs = []string{"labelpos"}
 func buildLayoutGraph(inputGraph *Graph) *Graph {
 	g := NewGraph(GraphOptions{Multigraph: true, Compound: true})
 	graph := canonicalize(inputGraph.Graph())
-	graphLabel := Attrs{"ranksep": float64(50), "edgesep": float64(20), "nodesep": float64(50), "rankdir": "tb"}
+	graphLabel := Attrs{"ranksep": float64(50), "edgesep": float64(20), "nodesep": float64(50), "rankdir": "TB"}
 	mergeNumberAttrs(graphLabel, graph, graphNumAttrs)
 	mergeAttrs(graphLabel, graph, graphAttrs)
 	g.SetGraph(graphLabel)
@@ -274,6 +274,11 @@ func translateGraph(g *Graph) {
 
 func assignNodeIntersects(g *Graph) error {
 	for _, e := range g.Edges() {
+		if e.V == e.W {
+			// positionSelfEdges already produced the complete seven-point
+			// spline for a self-loop.
+			continue
+		}
 		edge := asAttrs(g.Edge(e))
 		nodeV, nodeW := asAttrs(g.Node(e.V)), asAttrs(g.Node(e.W))
 		points, exists := edge["points"].([]Point)
@@ -386,6 +391,9 @@ func insertSelfEdges(g *Graph) {
 		orderShift := 0
 		for i, v := range layer {
 			node := asAttrs(g.Node(v))
+			if _, ok := typedNumber(node["rank"]); !ok {
+				node["rank"] = float64(0)
+			}
 			node["order"] = float64(i + orderShift)
 			selfEdges, _ := node["selfEdges"].([]selfEdgeRecord)
 			for _, selfEdge := range selfEdges {
@@ -393,8 +401,19 @@ func insertSelfEdges(g *Graph) {
 				addDummyNode(g, "selfedge", Attrs{
 					"width": num(selfEdge.label, "width"), "height": num(selfEdge.label, "height"),
 					"rank": num(node, "rank"), "order": float64(i + orderShift),
-					"e": selfEdge.e, "label": selfEdge.label,
+					"e": selfEdge.e, "edgeLabel": selfEdge.label,
 				}, "_se")
+				if points, ok := selfEdge.label["points"].([]Point); !ok || len(points) != 7 {
+					selfEdge.label["points"] = []Point{
+						{X: 0, Y: -10},
+						{X: 0, Y: -10},
+						{X: 0, Y: 0},
+						{X: 0, Y: 10},
+						{X: 0, Y: 10},
+						{X: 0, Y: 0},
+						{X: 0, Y: 0},
+					}
+				}
 			}
 			delete(node, "selfEdges")
 		}
@@ -404,23 +423,68 @@ func insertSelfEdges(g *Graph) {
 func positionSelfEdges(g *Graph) {
 	for _, v := range g.Nodes() {
 		node := asAttrs(g.Node(v))
-		if stringValue(node, "dummy") != "selfedge" {
+		if stringValue(node, "dummy") == "selfedge" {
+			e := node["e"].(Edge)
+			label := node["edgeLabel"].(Attrs)
+			selfNode := asAttrs(g.Node(e.V))
+			x := finiteAttrOr(selfNode, "x", 0)
+			y := finiteAttrOr(selfNode, "y", 0)
+			width := finiteAttrOr(selfNode, "width", 0)
+			height := finiteAttrOr(selfNode, "height", 0)
+			nodeX := finiteAttrOr(node, "x", x)
+			nodeY := finiteAttrOr(node, "y", y)
+			dx, dy := width/2, height/2
+			label["points"] = centeredSelfEdgePoints(nodeX, nodeY, dx, dy)
+			label["x"], label["y"] = nodeX, nodeY
+			g.SetEdgeObject(e, label)
+			g.RemoveNode(v)
 			continue
 		}
-		e := node["e"].(Edge)
-		label := node["label"].(Attrs)
-		selfNode := asAttrs(g.Node(e.V))
-		x, y := num(selfNode, "x")+num(selfNode, "width")/2, num(selfNode, "y")
-		dx, dy := num(node, "x")-x, num(selfNode, "height")/2
-		g.SetEdgeObject(e, label)
-		g.RemoveNode(v)
-		label["points"] = []Point{
-			{X: x + 2*dx/3, Y: y - dy},
-			{X: x + 5*dx/6, Y: y - dy},
-			{X: x + dx, Y: y},
-			{X: x + 5*dx/6, Y: y + dy},
-			{X: x + 2*dx/3, Y: y + dy},
+
+		selfEdges, ok := node["selfEdges"].([]selfEdgeRecord)
+		if !ok {
+			continue
 		}
-		label["x"], label["y"] = num(node, "x"), num(node, "y")
+		for _, selfEdge := range selfEdges {
+			if points, ok := selfEdge.label["points"].([]Point); ok && len(points) == 7 {
+				continue
+			}
+			x := finiteAttrOr(node, "x", 0)
+			y := finiteAttrOr(node, "y", 0)
+			dx := finiteAttrOr(node, "width", 0) / 2
+			dy := finiteAttrOr(node, "height", 0) / 2
+			selfEdge.label["points"] = centeredSelfEdgePoints(x, y, dx, dy)
+		}
+	}
+}
+
+func finiteAttrOr(attrs Attrs, key string, fallback float64) float64 {
+	value, ok := typedNumber(attrs[key])
+	if !ok || math.IsNaN(value) || math.IsInf(value, 0) {
+		return fallback
+	}
+	return value
+}
+
+func typedNumber(value any) (float64, bool) {
+	switch value.(type) {
+	case float64, float32,
+		int, int8, int16, int32, int64,
+		uint, uint8, uint16, uint32, uint64:
+		return number(value), true
+	default:
+		return 0, false
+	}
+}
+
+func centeredSelfEdgePoints(x, y, dx, dy float64) []Point {
+	return []Point{
+		{X: x + dx, Y: y - dy},
+		{X: x + dx, Y: y - dy},
+		{X: x, Y: y},
+		{X: x - dx, Y: y + dy},
+		{X: x - dx, Y: y + dy},
+		{X: x, Y: y},
+		{X: x, Y: y},
 	}
 }

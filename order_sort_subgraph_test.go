@@ -52,11 +52,61 @@ func TestSortSubgraph(t *testing.T) {
 		g.SetEdge("1", "x")
 		g.SetEdge("1", "y")
 		setOrderTestParents(t, g, []string{"x", "y"}, "movable")
-		if got, want := sortSubgraph(g, "movable", cg, false).VS, []string{"x", "y"}; !reflect.DeepEqual(got, want) {
+		left := sortSubgraph(g, "movable", cg, false)
+		if got, want := left.VS, []string{"x", "y"}; !reflect.DeepEqual(got, want) {
 			t.Fatalf("left-biased sort = %v, want %v", got, want)
 		}
-		if got, want := sortSubgraph(g, "movable", cg, true).VS, []string{"y", "x"}; !reflect.DeepEqual(got, want) {
+		if !left.UsedBias {
+			t.Fatal("equal non-edge barycenters did not report bias use")
+		}
+		right := sortSubgraph(g, "movable", cg, true)
+		if got, want := right.VS, []string{"y", "x"}; !reflect.DeepEqual(got, want) {
 			t.Fatalf("right-biased sort = %v, want %v", got, want)
+		}
+		if !right.UsedBias {
+			t.Fatal("equal non-edge barycenters did not report bias use")
+		}
+	})
+
+	t.Run("keeps reversed parallel edge dummies together", func(t *testing.T) {
+		g, cg := newSortSubgraphTestGraph(t)
+		edge := Edge{V: "a", W: "b", Name: "parallel", HasName: true}
+		g.SetNode("x", Attrs{
+			"dummy": "edge", "edgeObj": edge, "edgeLabel": Attrs{},
+		})
+		g.SetNode("y", Attrs{
+			"dummy": "edge", "edgeObj": edge, "edgeLabel": Attrs{"reversed": true},
+		})
+		g.SetEdge("1", "x")
+		g.SetEdge("1", "y")
+		setOrderTestParents(t, g, []string{"x", "y"}, "movable")
+
+		got := sortSubgraph(g, "movable", cg, true)
+		if want := []string{"x", "y"}; !reflect.DeepEqual(got.VS, want) {
+			t.Fatalf("reversed-pair sort = %v, want %v", got.VS, want)
+		}
+		if got.UsedBias {
+			t.Fatal("reversed edge pair incorrectly reported bias use")
+		}
+	})
+
+	t.Run("preserves three same-direction parallel dummies", func(t *testing.T) {
+		g, cg := newSortSubgraphTestGraph(t)
+		edge := Edge{V: "a", W: "b", Name: "parallel", HasName: true}
+		for _, v := range []string{"x", "y", "z"} {
+			g.SetNode(v, Attrs{
+				"dummy": "edge", "edgeObj": edge, "edgeLabel": Attrs{},
+			})
+			g.SetEdge("1", v)
+		}
+		setOrderTestParents(t, g, []string{"x", "y", "z"}, "movable")
+
+		got := sortSubgraph(g, "movable", cg, true)
+		if want := []string{"z", "y", "x"}; !reflect.DeepEqual(got.VS, want) {
+			t.Fatalf("three-parallel sort = %v, want %v", got.VS, want)
+		}
+		if !got.UsedBias {
+			t.Fatal("same-direction parallel tie did not report bias use")
 		}
 	})
 

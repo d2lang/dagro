@@ -48,6 +48,21 @@ func TestPositionUsesLargestHeightInEachRankWithRankSep(t *testing.T) {
 	}
 }
 
+func TestPositionYAdvancesAcrossEmptyRanks(t *testing.T) {
+	g := newPositionTestGraph()
+	g.SetNode("a", Attrs{"height": float64(20), "rank": float64(0), "order": float64(0)})
+	g.SetNode("b", Attrs{"height": float64(10), "rank": float64(2), "order": float64(0)})
+
+	positionY(g)
+
+	if got, want := num(asAttrs(g.Node("a")), "y"), float64(10); got != want {
+		t.Fatalf("a.y = %v, want %v", got, want)
+	}
+	if got, want := num(asAttrs(g.Node("b")), "y"), float64(125); got != want {
+		t.Fatalf("b.y = %v, want %v", got, want)
+	}
+}
+
 func TestPositionRespectsNodeSep(t *testing.T) {
 	g := newPositionTestGraph()
 	asAttrs(g.Graph())["nodesep"] = float64(1000)
