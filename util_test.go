@@ -220,6 +220,23 @@ func TestRemoveEmptyRanks(t *testing.T) {
 		}
 		requireRank(t, g, "too-large", 4294967295)
 	})
+
+	t.Run("compound parent without a rank", func(t *testing.T) {
+		g := NewGraph(GraphOptions{Compound: true}).
+			SetGraph(Attrs{"nodeRankFactor": float64(3)}).
+			SetNode("a", Attrs{"rank": float64(0)}).
+			SetNode("b", Attrs{"rank": float64(6)}).
+			SetNode("sg", Attrs{})
+		_ = g.SetParent("a", "sg")
+
+		removeEmptyRanks(g)
+
+		requireRank(t, g, "a", 0)
+		requireRank(t, g, "b", 2)
+		if has(asAttrs(g.Node("sg")), "rank") {
+			t.Fatalf("removeEmptyRanks assigned compound rank: %#v", g.Node("sg"))
+		}
+	})
 }
 
 func TestIntersectRectTreatsNaNAsFalsy(t *testing.T) {
@@ -232,14 +249,51 @@ func TestIntersectRectTreatsNaNAsFalsy(t *testing.T) {
 	}
 }
 
-func TestDummyIDsAreGraphLocalAndAvoidCollisions(t *testing.T) {
-	first := NewGraph().SetNode("_d1", Attrs{})
-	id := addDummyNode(first, "edge", Attrs{}, "_d")
-	if id != "_d2" {
-		t.Fatalf("collision-skipping dummy id = %q, want _d2", id)
+func TestIntersectRectKeepsDegenerateRectanglesFinite(t *testing.T) {
+	for _, test := range []struct {
+		name  string
+		rect  Attrs
+		point Point
+		want  Point
+	}{
+		{
+			name:  "zero width at center",
+			rect:  Attrs{"x": 3.0, "y": 4.0, "width": 0.0, "height": 10.0},
+			point: Point{X: 3, Y: 4}, want: Point{X: 3, Y: 4},
+		},
+		{
+			name:  "zero width vertical ray",
+			rect:  Attrs{"x": 3.0, "y": 4.0, "width": 0.0, "height": 10.0},
+			point: Point{X: 3, Y: 20}, want: Point{X: 3, Y: 9},
+		},
+		{
+			name:  "zero height horizontal ray",
+			rect:  Attrs{"x": 3.0, "y": 4.0, "width": 10.0, "height": 0.0},
+			point: Point{X: -20, Y: 4}, want: Point{X: -2, Y: 4},
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			got, err := intersectRect(test.rect, test.point)
+			if err != nil || got != test.want {
+				t.Fatalf("intersectRect = %#v, %v; want %#v", got, err, test.want)
+			}
+		})
 	}
-	second := NewGraph()
-	if got := addDummyNode(second, "edge", Attrs{}, "_d"); got != "_d1" {
-		t.Fatalf("second graph did not reset ids: %q", got)
-	}
+}
+
+func TestDummyIDsMatchModernDagre(t *testing.T) {
+	t.Run("uses the requested name when available", func(t *testing.T) {
+		g := NewGraph()
+		if got := addDummyNode(g, "edge", Attrs{}, "_d"); got != "_d" {
+			t.Fatalf("dummy id = %q, want _d", got)
+		}
+	})
+
+	t.Run("uses the module counter after a collision", func(t *testing.T) {
+		g := NewGraph().SetNode("_d", Attrs{})
+		got := addDummyNode(g, "edge", Attrs{}, "_d")
+		if got == "_d" || !g.HasNode(got) {
+			t.Fatalf("collision-skipping dummy id = %q", got)
+		}
+	})
 }

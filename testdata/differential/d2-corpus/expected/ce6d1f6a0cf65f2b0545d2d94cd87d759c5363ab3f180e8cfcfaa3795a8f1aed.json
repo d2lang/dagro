@@ -1,0 +1,75 @@
+{
+  "edges": [
+    {
+      "name": "(class2 -> users)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 368
+        },
+        {
+          "x": 211,
+          "y": 418
+        },
+        {
+          "x": 211,
+          "y": 468
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(users -> code)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 654
+        },
+        {
+          "x": 211,
+          "y": 704
+        },
+        {
+          "x": 211,
+          "y": 754
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 832,
+    "width": 422
+  },
+  "nodes": [
+    {
+      "height": 368,
+      "id": "0",
+      "width": 422,
+      "x": 211,
+      "y": 184
+    },
+    {
+      "height": 186,
+      "id": "1",
+      "width": 208,
+      "x": 211,
+      "y": 561
+    },
+    {
+      "height": 78,
+      "id": "2",
+      "width": 199,
+      "x": 211,
+      "y": 793
+    }
+  ]
+}

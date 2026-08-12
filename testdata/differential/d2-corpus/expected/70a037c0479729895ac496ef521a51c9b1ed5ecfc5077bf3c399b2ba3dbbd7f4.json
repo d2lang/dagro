@@ -1,0 +1,71 @@
+{
+  "edges": [
+    {
+      "name": "(softwareSystem -> externalSystem)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 375.5,
+          "y": 116
+        },
+        {
+          "x": 375.5,
+          "y": 166
+        },
+        {
+          "x": 375.5,
+          "y": 216
+        },
+        {
+          "x": 375.5,
+          "y": 266
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 332,
+    "width": 468
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 77,
+      "x": 38.5,
+      "y": 83
+    },
+    {
+      "height": 166,
+      "id": "1",
+      "width": 351,
+      "x": 292.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 106,
+      "x": 210,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 105,
+      "x": 375.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 157,
+      "x": 375.5,
+      "y": 299
+    }
+  ]
+}

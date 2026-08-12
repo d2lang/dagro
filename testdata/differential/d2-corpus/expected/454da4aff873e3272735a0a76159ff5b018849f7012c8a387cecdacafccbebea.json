@@ -1,0 +1,400 @@
+{
+  "edges": [
+    {
+      "name": "(OEM Factory -> OEM Warehouse)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 185,
+          "y": 402.468085106383
+        },
+        {
+          "x": 235,
+          "y": 418
+        },
+        {
+          "x": 285,
+          "y": 418
+        },
+        {
+          "x": 357.5,
+          "y": 418
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(OEM Factory -> Distributor Warehouse)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 160.8240223463687,
+          "y": 348.5
+        },
+        {
+          "x": 235,
+          "y": 292
+        },
+        {
+          "x": 285,
+          "y": 292
+        },
+        {
+          "x": 335,
+          "y": 292
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(OEM Factory -> Gos Warehouse)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 152.91095890410958,
+          "y": 414.5
+        },
+        {
+          "x": 235,
+          "y": 491
+        },
+        {
+          "x": 285,
+          "y": 491
+        },
+        {
+          "x": 437,
+          "y": 491
+        },
+        {
+          "x": 589,
+          "y": 491
+        },
+        {
+          "x": 639,
+          "y": 491
+        },
+        {
+          "x": 712.4632352941177,
+          "y": 388
+        }
+      ],
+      "v": "0",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "Gos Warehouse.(Master -> Regional-1)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 756.3885350318471,
+          "y": 322
+        },
+        {
+          "x": 833,
+          "y": 198
+        },
+        {
+          "x": 883,
+          "y": 198
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "Gos Warehouse.(Master -> Regional-2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 779.2567567567568,
+          "y": 322
+        },
+        {
+          "x": 833,
+          "y": 281
+        },
+        {
+          "x": 943,
+          "y": 281
+        },
+        {
+          "x": 1053,
+          "y": 281
+        },
+        {
+          "x": 1103,
+          "y": 276.45454545454544
+        }
+      ],
+      "v": "4",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "Gos Warehouse.(Master -> Regional-N)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 768.1708542713568,
+          "y": 388
+        },
+        {
+          "x": 833,
+          "y": 454.5
+        },
+        {
+          "x": 943,
+          "y": 454.5
+        },
+        {
+          "x": 1053,
+          "y": 454.5
+        },
+        {
+          "x": 1163,
+          "y": 454.5
+        },
+        {
+          "x": 1273,
+          "y": 454.5
+        },
+        {
+          "x": 1370.7154471544716,
+          "y": 303
+        }
+      ],
+      "v": "4",
+      "w": "7",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "Gos Warehouse.(Regional-1 -> Regional-2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1003,
+          "y": 217.9090909090909
+        },
+        {
+          "x": 1053,
+          "y": 234.5
+        },
+        {
+          "x": 1103,
+          "y": 251.0909090909091
+        }
+      ],
+      "v": "5",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "Gos Warehouse.(Regional-2 -> Regional-N)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1223,
+          "y": 271
+        },
+        {
+          "x": 1273,
+          "y": 271
+        },
+        {
+          "x": 1331,
+          "y": 270.5126050420168
+        }
+      ],
+      "v": "6",
+      "w": "7",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "Gos Warehouse.(Regional-N -> Regional-1)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1352.1319796954315,
+          "y": 237
+        },
+        {
+          "x": 1273,
+          "y": 171.5
+        },
+        {
+          "x": 1163,
+          "y": 171.5
+        },
+        {
+          "x": 1053,
+          "y": 171.5
+        },
+        {
+          "x": 1003,
+          "y": 183.54545454545453
+        }
+      ],
+      "v": "7",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(OEM Warehouse -> Gos Warehouse)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 516.5,
+          "y": 418
+        },
+        {
+          "x": 589,
+          "y": 418
+        },
+        {
+          "x": 639,
+          "y": 418
+        },
+        {
+          "x": 689,
+          "y": 385.5257731958763
+        }
+      ],
+      "v": "1",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(Distributor Warehouse -> Gos Warehouse)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 539,
+          "y": 292
+        },
+        {
+          "x": 589,
+          "y": 292
+        },
+        {
+          "x": 639,
+          "y": 292
+        },
+        {
+          "x": 689,
+          "y": 324.4742268041237
+        }
+      ],
+      "v": "2",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 511,
+    "width": 1511
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 135,
+      "x": 117.5,
+      "y": 381.5
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 159,
+      "x": 437,
+      "y": 418
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 204,
+      "x": 437,
+      "y": 292
+    },
+    {
+      "height": 386,
+      "id": "3",
+      "width": 872,
+      "x": 1075,
+      "y": 318
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 94,
+      "x": 736,
+      "y": 355
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 120,
+      "x": 943,
+      "y": 198
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 120,
+      "x": 1163,
+      "y": 271
+    },
+    {
+      "height": 66,
+      "id": "7",
+      "width": 122,
+      "x": 1392,
+      "y": 270
+    },
+    {
+      "height": 108,
+      "id": "8",
+      "width": 138,
+      "x": 1392,
+      "y": 417
+    },
+    {
+      "height": 272,
+      "id": "9",
+      "width": 235,
+      "x": 117.5,
+      "y": 136
+    },
+    {
+      "height": 66,
+      "id": "10",
+      "width": 126,
+      "x": 117.5,
+      "y": 73
+    },
+    {
+      "height": 66,
+      "id": "11",
+      "width": 103,
+      "x": 117.5,
+      "y": 199
+    }
+  ]
+}

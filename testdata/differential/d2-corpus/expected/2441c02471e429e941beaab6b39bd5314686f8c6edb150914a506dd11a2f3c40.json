@@ -1,0 +1,242 @@
+{
+  "edges": [
+    {
+      "name": "(OEM Factory -> company Warehouse)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 209.5,
+          "y": 66
+        },
+        {
+          "x": 209.5,
+          "y": 116
+        },
+        {
+          "x": 209.5,
+          "y": 166
+        },
+        {
+          "x": 209.5,
+          "y": 216
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "company Warehouse.(Master -> Regional-1)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 165.96385542168673,
+          "y": 282
+        },
+        {
+          "x": 100,
+          "y": 332
+        },
+        {
+          "x": 100,
+          "y": 382
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "company Warehouse.(Master -> Regional-2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 212.48192771084337,
+          "y": 282
+        },
+        {
+          "x": 217,
+          "y": 332
+        },
+        {
+          "x": 217,
+          "y": 415
+        },
+        {
+          "x": 217,
+          "y": 498
+        },
+        {
+          "x": 206.75903614457832,
+          "y": 548
+        }
+      ],
+      "v": "2",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "company Warehouse.(Master -> Regional-N)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 245.48192771084337,
+          "y": 282
+        },
+        {
+          "x": 300,
+          "y": 332
+        },
+        {
+          "x": 300,
+          "y": 415
+        },
+        {
+          "x": 300,
+          "y": 498
+        },
+        {
+          "x": 300,
+          "y": 581
+        },
+        {
+          "x": 300,
+          "y": 664
+        },
+        {
+          "x": 239.75903614457832,
+          "y": 714
+        }
+      ],
+      "v": "2",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "company Warehouse.(Regional-1 -> Regional-2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 119.87951807228916,
+          "y": 448
+        },
+        {
+          "x": 150,
+          "y": 498
+        },
+        {
+          "x": 180.12048192771084,
+          "y": 548
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "company Warehouse.(Regional-2 -> Regional-N)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 200,
+          "y": 614
+        },
+        {
+          "x": 200,
+          "y": 664
+        },
+        {
+          "x": 200,
+          "y": 714
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "company Warehouse.(Regional-N -> Regional-1)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 144.33734939759034,
+          "y": 714
+        },
+        {
+          "x": 60,
+          "y": 664
+        },
+        {
+          "x": 60,
+          "y": 581
+        },
+        {
+          "x": 60,
+          "y": 498
+        },
+        {
+          "x": 84.09638554216868,
+          "y": 448
+        }
+      ],
+      "v": "5",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 830,
+    "width": 353.5
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 135,
+      "x": 209.5,
+      "y": 33
+    },
+    {
+      "height": 664,
+      "id": "1",
+      "width": 353.5,
+      "x": 176.75,
+      "y": 498
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 94,
+      "x": 209.5,
+      "y": 249
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 120,
+      "x": 100,
+      "y": 415
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 120,
+      "x": 200,
+      "y": 581
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 122,
+      "x": 200,
+      "y": 747
+    }
+  ]
+}

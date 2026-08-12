@@ -1,0 +1,110 @@
+{
+  "edges": [
+    {
+      "name": "NETWORK.CELL TOWER.(satellites -> transmitter)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 207.77941176470588,
+          "y": 166
+        },
+        {
+          "x": 258.25,
+          "y": 226.5
+        },
+        {
+          "x": 207.77941176470588,
+          "y": 287
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 258.25,
+      "xPresent": true,
+      "y": 226.5,
+      "yPresent": true
+    },
+    {
+      "name": "NETWORK.CELL TOWER.(satellites -> transmitter)[1]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 180.25,
+          "y": 166
+        },
+        {
+          "x": 180.25,
+          "y": 226.5
+        },
+        {
+          "x": 180.25,
+          "y": 287
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 180.25,
+      "xPresent": true,
+      "y": 226.5,
+      "yPresent": true
+    },
+    {
+      "name": "NETWORK.CELL TOWER.(satellites -> transmitter)[2]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 152.72058823529412,
+          "y": 166
+        },
+        {
+          "x": 102.25,
+          "y": 226.5
+        },
+        {
+          "x": 152.72058823529412,
+          "y": 287
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 102.25,
+      "xPresent": true,
+      "y": 226.5,
+      "yPresent": true
+    }
+  ],
+  "graph": {
+    "height": 453,
+    "width": 360.5
+  },
+  "nodes": [
+    {
+      "height": 453,
+      "id": "0",
+      "width": 360.5,
+      "x": 180.25,
+      "y": 226.5
+    },
+    {
+      "height": 353,
+      "id": "1",
+      "width": 320.5,
+      "x": 180.25,
+      "y": 226.5
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 161,
+      "x": 180.25,
+      "y": 133
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 151,
+      "x": 180.25,
+      "y": 320
+    }
+  ]
+}

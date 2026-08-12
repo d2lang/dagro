@@ -6,8 +6,8 @@ import (
 	"strings"
 )
 
-// The horizontal coordinate assignment below is a direct port of Dagre
-// 0.8.5's Brandes-Kopf implementation in lib/position/bk.js.
+// The horizontal coordinate assignment below ports Dagre 3.1.1's
+// Brandes-Kopf implementation in lib/position/bk.ts.
 
 type positionConflicts map[string]map[string]bool
 
@@ -65,7 +65,7 @@ func findType1Conflicts(g *Graph, layering [][]string) positionConflicts {
 }
 
 // findType2Conflicts finds crossings between inner segments, favoring border
-// segments. The scan placement intentionally mirrors Dagre 0.8.5, including
+// segments. The scan placement intentionally mirrors Dagre, including
 // its repeated tail scan inside the south-layer loop.
 func findType2Conflicts(g *Graph, layering [][]string) positionConflicts {
 	conflicts := positionConflicts{}
@@ -91,9 +91,7 @@ func findType2Conflicts(g *Graph, layering [][]string) positionConflicts {
 		north := layering[layerIndex-1]
 		south := layering[layerIndex]
 		prevNorthPos := float64(-1)
-		// Undefined in the original until a border predecessor is found. NaN
-		// has the same false-for-both-comparisons behavior here.
-		nextNorthPos := math.NaN()
+		nextNorthPos := float64(-1)
 		southPos := 0
 
 		for southLookahead, v := range south {
@@ -176,11 +174,18 @@ func verticalAlignment(
 			mp := float64(len(ws)-1) / 2
 			for i, last := int(math.Floor(mp)), int(math.Ceil(mp)); i <= last; i++ {
 				w := ws[i]
-				if align[v] == v && prevIdx < pos[w] && !hasConflict(conflicts, v, w) {
+				wPos, ok := pos[w]
+				if !ok {
+					// In JavaScript, comparing an index with undefined is false. A
+					// missing Go map entry is zero, so an unchecked lookup can instead
+					// create an alignment rooted at the empty string and panic later.
+					continue
+				}
+				if align[v] == v && prevIdx < wPos && !hasConflict(conflicts, v, w) {
 					align[w] = v
 					root[v] = root[w]
 					align[v] = root[v]
-					prevIdx = pos[w]
+					prevIdx = wPos
 				}
 			}
 		}
@@ -338,15 +343,10 @@ func balance(xss positionAlignments, align string) map[string]float64 {
 
 func positionX(g *Graph) map[string]float64 {
 	layering := buildLayerMatrix(g)
-	conflicts := findType1Conflicts(g, layering)
-	for v, ws := range findType2Conflicts(g, layering) {
-		if conflicts[v] == nil {
-			conflicts[v] = map[string]bool{}
-		}
-		for w := range ws {
-			conflicts[v][w] = true
-		}
-	}
+	conflicts := shallowMergePositionConflicts(
+		findType1Conflicts(g, layering),
+		findType2Conflicts(g, layering),
+	)
 
 	xss := positionAlignments{}
 	for _, vert := range []string{"u", "d"} {
@@ -379,6 +379,19 @@ func positionX(g *Graph) map[string]float64 {
 	smallestWidth := findSmallestWidthAlignment(g, xss)
 	alignCoordinates(xss, smallestWidth)
 	return balance(xss, stringValue(asAttrs(g.Graph()), "align"))
+}
+
+func shallowMergePositionConflicts(first, second positionConflicts) positionConflicts {
+	merged := make(positionConflicts, len(first)+len(second))
+	for v, conflicts := range first {
+		merged[v] = conflicts
+	}
+	for v, conflicts := range second {
+		// Object.assign in modern Dagre replaces the entire nested conflict
+		// set when the type-2 result has the same top-level node key.
+		merged[v] = conflicts
+	}
+	return merged
 }
 
 func positionSep(g *Graph, v, w string, nodeSep, edgeSep float64, reverseSep bool) float64 {

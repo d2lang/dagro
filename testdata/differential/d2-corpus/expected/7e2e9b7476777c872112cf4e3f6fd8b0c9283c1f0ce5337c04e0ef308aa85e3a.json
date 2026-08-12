@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "name": "(x -> my_table)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 100,
+          "y": 66
+        },
+        {
+          "x": 100,
+          "y": 116
+        },
+        {
+          "x": 100,
+          "y": 166
+        }
+      ],
+      "v": "1",
+      "w": "0",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 366,
+    "width": 200
+  },
+  "nodes": [
+    {
+      "height": 200,
+      "id": "0",
+      "width": 200,
+      "x": 100,
+      "y": 266
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 53,
+      "x": 100,
+      "y": 33
+    }
+  ]
+}

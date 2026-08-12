@@ -1,6 +1,6 @@
 package dagro
 
-// rank selects one of Dagre 0.8.5's three rankers. Unknown and absent values
+// rank selects one of Dagre's three rankers. Unknown and absent values
 // intentionally fall back to network simplex.
 func rank(g *Graph) {
 	ranker := ""

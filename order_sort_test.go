@@ -82,3 +82,23 @@ func TestSortOrderEntries(t *testing.T) {
 		})
 	}
 }
+
+func TestSortOrderEntriesRestoresEveryReversedPartner(t *testing.T) {
+	entry := func(v string, i int, barycenter float64) orderEntry {
+		return orderEntry{
+			VS: []string{v}, I: i, Barycenter: barycenter, Weight: 1, HasBarycenter: true,
+		}
+	}
+	got := sortOrderEntriesWithReversedPairs(
+		[]orderEntry{entry("forward", 0, 1), entry("other", 3, 2)},
+		[]reversedOrderPair{
+			{key: "forward", entry: entry("reverse-1", 1, 1)},
+			{key: "forward", entry: entry("reverse-2", 2, 1)},
+		},
+		false,
+	)
+	want := []string{"forward", "reverse-1", "reverse-2", "other"}
+	if !reflect.DeepEqual(got.VS, want) {
+		t.Fatalf("reversed partners = %v, want %v", got.VS, want)
+	}
+}

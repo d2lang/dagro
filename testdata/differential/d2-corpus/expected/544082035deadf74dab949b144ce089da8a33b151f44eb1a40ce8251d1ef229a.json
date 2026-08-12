@@ -1,0 +1,202 @@
+{
+  "edges": [
+    {
+      "name": "(outer-grid -> outer-container)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 554,
+          "y": 540.5
+        },
+        {
+          "x": 604,
+          "y": 540.5
+        },
+        {
+          "x": 654,
+          "y": 540.5
+        },
+        {
+          "x": 704,
+          "y": 540.5
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "outer-container.(grid -> container)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1062,
+          "y": 540.5
+        },
+        {
+          "x": 1112,
+          "y": 540.5
+        },
+        {
+          "x": 1162,
+          "y": 540.5
+        },
+        {
+          "x": 1212,
+          "y": 540.5
+        }
+      ],
+      "v": "2",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "outer-container.container.(4 -> 5)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1266,
+          "y": 540.5
+        },
+        {
+          "x": 1316,
+          "y": 540.5
+        },
+        {
+          "x": 1366,
+          "y": 540.5
+        },
+        {
+          "x": 1416,
+          "y": 540.5
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "outer-container.container.(5 -> 6)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1469,
+          "y": 540.5
+        },
+        {
+          "x": 1519,
+          "y": 540.5
+        },
+        {
+          "x": 1569,
+          "y": 540.5
+        }
+      ],
+      "v": "5",
+      "w": "6",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "outer-container.container.nested container.(7 -> 8)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1469,
+          "y": 394.5
+        },
+        {
+          "x": 1519,
+          "y": 394.5
+        },
+        {
+          "x": 1569,
+          "y": 394.5
+        }
+      ],
+      "v": "8",
+      "w": "9",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 1081,
+    "width": 1772
+  },
+  "nodes": [
+    {
+      "height": 1081,
+      "id": "0",
+      "width": 554,
+      "x": 277,
+      "y": 540.5
+    },
+    {
+      "height": 392,
+      "id": "1",
+      "width": 1118,
+      "x": 1213,
+      "y": 477.5
+    },
+    {
+      "height": 186,
+      "id": "2",
+      "width": 358,
+      "x": 883,
+      "y": 540.5
+    },
+    {
+      "height": 312,
+      "id": "3",
+      "width": 560,
+      "x": 1442,
+      "y": 457.5
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 54,
+      "x": 1239,
+      "y": 540.5
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 53,
+      "x": 1442.5,
+      "y": 540.5
+    },
+    {
+      "height": 66,
+      "id": "6",
+      "width": 53,
+      "x": 1595.5,
+      "y": 540.5
+    },
+    {
+      "height": 146,
+      "id": "7",
+      "width": 306,
+      "x": 1519,
+      "y": 394.5
+    },
+    {
+      "height": 66,
+      "id": "8",
+      "width": 53,
+      "x": 1442.5,
+      "y": 394.5
+    },
+    {
+      "height": 66,
+      "id": "9",
+      "width": 53,
+      "x": 1595.5,
+      "y": 394.5
+    }
+  ]
+}

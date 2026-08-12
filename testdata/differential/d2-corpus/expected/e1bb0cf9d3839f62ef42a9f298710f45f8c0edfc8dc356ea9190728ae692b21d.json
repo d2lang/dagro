@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "name": "(r1 <-> r2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 32,
+          "y": 16
+        },
+        {
+          "x": 82,
+          "y": 16
+        },
+        {
+          "x": 132,
+          "y": 16
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 32,
+    "width": 164
+  },
+  "nodes": [
+    {
+      "height": 32,
+      "id": "0",
+      "width": 32,
+      "x": 16,
+      "y": 16
+    },
+    {
+      "height": 32,
+      "id": "1",
+      "width": 32,
+      "x": 148,
+      "y": 16
+    }
+  ]
+}

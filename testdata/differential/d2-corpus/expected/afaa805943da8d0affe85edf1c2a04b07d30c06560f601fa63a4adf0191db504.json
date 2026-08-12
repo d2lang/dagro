@@ -1,0 +1,57 @@
+{
+  "edges": [
+    {
+      "name": "(container -> no container)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 146,
+          "y": 308
+        },
+        {
+          "x": 146,
+          "y": 358
+        },
+        {
+          "x": 146,
+          "y": 408
+        },
+        {
+          "x": 146,
+          "y": 458
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 482,
+    "width": 292
+  },
+  "nodes": [
+    {
+      "height": 358,
+      "id": "0",
+      "width": 292,
+      "x": 146,
+      "y": 179
+    },
+    {
+      "height": 258,
+      "id": "1",
+      "width": 212,
+      "x": 146,
+      "y": 179
+    },
+    {
+      "height": 24,
+      "id": "2",
+      "width": 118,
+      "x": 146,
+      "y": 470
+    }
+  ]
+}

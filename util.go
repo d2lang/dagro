@@ -3,8 +3,19 @@ package dagro
 import (
 	"fmt"
 	"math"
+	"strconv"
+	"sync/atomic"
 	"time"
 )
+
+var uniqueIDCounter atomic.Uint64
+
+// uniqueID matches Dagre's module-scoped uniqueId helper. The counter is
+// process-wide rather than graph-local; atomic increment keeps the Go port
+// race-clean when independent layouts run concurrently.
+func uniqueID(prefix string) string {
+	return prefix + strconv.FormatUint(uniqueIDCounter.Add(1), 10)
+}
 
 // Time evaluates fn and logs its elapsed wall time, matching Dagre's public
 // util.time helper. The deferred log preserves the upstream finally behavior.
@@ -20,12 +31,9 @@ func Time(name string, fn any) (result any) {
 func NoTime(_ string, fn any) any { return callCallable(fn) }
 
 func addDummyNode(g *Graph, typ string, attrs Attrs, name string) string {
-	var v string
-	for {
-		v = g.uniqueID(name)
-		if !g.HasNode(v) {
-			break
-		}
+	v := name
+	for g.HasNode(v) {
+		v = uniqueID(name)
 	}
 	attrs["dummy"] = typ
 	g.SetNode(v, attrs)
@@ -93,10 +101,23 @@ func intersectRect(rect Attrs, point Point) (Point, error) {
 	dx, dy := point.X-x, point.Y-y
 	w, h := num(rect, "width")/2, num(rect, "height")/2
 	if !jsTruthyNumber(dx) && !jsTruthyNumber(dy) {
+		if w == 0 || h == 0 {
+			return Point{X: x, Y: y}, nil
+		}
 		return Point{}, fmt.Errorf("not possible to find intersection inside of the rectangle")
 	}
 	var sx, sy float64
-	if math.Abs(dy)*w > math.Abs(dx)*h {
+	if !jsTruthyNumber(dx) {
+		if dy < 0 {
+			h = -h
+		}
+		sx, sy = 0, h
+	} else if !jsTruthyNumber(dy) {
+		if dx < 0 {
+			w = -w
+		}
+		sx, sy = w, 0
+	} else if math.Abs(dy)*w > math.Abs(dx)*h {
 		if dy < 0 {
 			h = -h
 		}

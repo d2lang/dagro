@@ -1,7 +1,7 @@
 package dagro
 
 // addSubgraphConstraints records ordering constraints between non-contiguous
-// sibling subgraphs. The traversal and early return mirror Dagre 0.8.5.
+// sibling subgraphs. The traversal and early return mirror Dagre 3.1.1.
 func addSubgraphConstraints(g, cg *Graph, vs []string) {
 	prev := map[string]string{}
 	rootPrev := ""

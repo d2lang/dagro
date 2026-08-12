@@ -1,0 +1,163 @@
+{
+  "edges": [
+    {
+      "name": "(p1 -> p3)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 97.74074074074073,
+          "y": 116
+        },
+        {
+          "x": 107,
+          "y": 166
+        },
+        {
+          "x": 95.8268156424581,
+          "y": 216
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(p2 -> p3)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 87,
+          "y": 395
+        },
+        {
+          "x": 87,
+          "y": 345
+        },
+        {
+          "x": 87,
+          "y": 295
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(p1 -> p3)[1]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 87,
+          "y": 116
+        },
+        {
+          "x": 87,
+          "y": 166
+        },
+        {
+          "x": 87,
+          "y": 216
+        }
+      ],
+      "v": "0",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(p2 -> p3)[1]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 76.7560975609756,
+          "y": 395
+        },
+        {
+          "x": 67,
+          "y": 345
+        },
+        {
+          "x": 78.1731843575419,
+          "y": 295
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(p3 -> p2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 95.8268156424581,
+          "y": 295
+        },
+        {
+          "x": 107,
+          "y": 345
+        },
+        {
+          "x": 97.2439024390244,
+          "y": 395
+        }
+      ],
+      "v": "2",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(p3 -> p1)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 78.1731843575419,
+          "y": 216
+        },
+        {
+          "x": 67,
+          "y": 166
+        },
+        {
+          "x": 76.25925925925927,
+          "y": 116
+        }
+      ],
+      "v": "2",
+      "w": "0",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 500,
+    "width": 174
+  },
+  "nodes": [
+    {
+      "height": 116,
+      "id": "0",
+      "width": 174,
+      "x": 87,
+      "y": 58
+    },
+    {
+      "height": 105,
+      "id": "1",
+      "width": 157,
+      "x": 87,
+      "y": 447.5
+    },
+    {
+      "height": 79,
+      "id": "2",
+      "width": 118,
+      "x": 87,
+      "y": 255.5
+    }
+  ]
+}

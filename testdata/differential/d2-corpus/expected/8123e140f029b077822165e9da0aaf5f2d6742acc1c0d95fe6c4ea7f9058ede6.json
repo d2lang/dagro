@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "name": "(foo -> foobar)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 137,
+          "y": 306
+        },
+        {
+          "x": 137,
+          "y": 356
+        },
+        {
+          "x": 137,
+          "y": 406
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 712,
+    "width": 274
+  },
+  "nodes": [
+    {
+      "height": 306,
+      "id": "0",
+      "width": 274,
+      "x": 137,
+      "y": 153
+    },
+    {
+      "height": 306,
+      "id": "1",
+      "width": 274,
+      "x": 137,
+      "y": 559
+    }
+  ]
+}

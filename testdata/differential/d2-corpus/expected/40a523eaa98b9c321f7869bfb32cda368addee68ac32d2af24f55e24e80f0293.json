@@ -1,0 +1,148 @@
+{
+  "edges": [
+    {
+      "name": "build_workflow.(push -> GHA)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 374.5,
+          "y": 78.5
+        },
+        {
+          "x": 506,
+          "y": 78.5
+        },
+        {
+          "x": 637.5,
+          "y": 78.5
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "x": 506,
+      "xPresent": true,
+      "y": 78.5,
+      "yPresent": true
+    },
+    {
+      "name": "build_workflow.(GHA -> S3)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 846.5,
+          "y": 78.5
+        },
+        {
+          "x": 1020,
+          "y": 78.5
+        },
+        {
+          "x": 1193.5,
+          "y": 78.5
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "x": 1020,
+      "xPresent": true,
+      "y": 78.5,
+      "yPresent": true
+    },
+    {
+      "name": "build_workflow.(S3 <-> Terraform)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1264.5,
+          "y": 78.5
+        },
+        {
+          "x": 1428.5,
+          "y": 78.5
+        },
+        {
+          "x": 1592.5,
+          "y": 78.5
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "x": 1428.5,
+      "xPresent": true,
+      "y": 78.5,
+      "yPresent": true
+    },
+    {
+      "name": "build_workflow.(Terraform -> AWS)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1750.5,
+          "y": 78.5
+        },
+        {
+          "x": 1939.5,
+          "y": 78.5
+        },
+        {
+          "x": 2128.5,
+          "y": 78.5
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "x": 1939.5,
+      "xPresent": true,
+      "y": 78.5,
+      "yPresent": true
+    }
+  ],
+  "graph": {
+    "height": 157,
+    "width": 2328
+  },
+  "nodes": [
+    {
+      "height": 157,
+      "id": "0",
+      "width": 2328,
+      "x": 1164,
+      "y": 78.5
+    },
+    {
+      "height": 77,
+      "id": "1",
+      "width": 270,
+      "x": 239.5,
+      "y": 78.5
+    },
+    {
+      "height": 77,
+      "id": "2",
+      "width": 209,
+      "x": 742,
+      "y": 78.5
+    },
+    {
+      "height": 77,
+      "id": "3",
+      "width": 71,
+      "x": 1229,
+      "y": 78.5
+    },
+    {
+      "height": 77,
+      "id": "4",
+      "width": 158,
+      "x": 1671.5,
+      "y": 78.5
+    },
+    {
+      "height": 77,
+      "id": "5",
+      "width": 95,
+      "x": 2176,
+      "y": 78.5
+    }
+  ]
+}

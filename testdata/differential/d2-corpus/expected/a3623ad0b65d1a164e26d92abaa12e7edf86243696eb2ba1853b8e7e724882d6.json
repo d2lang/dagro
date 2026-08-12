@@ -1,0 +1,133 @@
+{
+  "edges": [
+    {
+      "name": "(class2 -> users)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 256,
+          "y": 368
+        },
+        {
+          "x": 256,
+          "y": 418
+        },
+        {
+          "x": 256,
+          "y": 468
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(users -> code)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 256,
+          "y": 654
+        },
+        {
+          "x": 256,
+          "y": 704
+        },
+        {
+          "x": 256,
+          "y": 754
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(code -> package)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 256,
+          "y": 832
+        },
+        {
+          "x": 256,
+          "y": 882
+        },
+        {
+          "x": 256,
+          "y": 932
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(package -> no width)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 256,
+          "y": 1032
+        },
+        {
+          "x": 256,
+          "y": 1082
+        },
+        {
+          "x": 256,
+          "y": 1132
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 1232,
+    "width": 512
+  },
+  "nodes": [
+    {
+      "height": 368,
+      "id": "0",
+      "width": 512,
+      "x": 256,
+      "y": 184
+    },
+    {
+      "height": 186,
+      "id": "1",
+      "width": 512,
+      "x": 256,
+      "y": 561
+    },
+    {
+      "height": 78,
+      "id": "2",
+      "width": 512,
+      "x": 256,
+      "y": 793
+    },
+    {
+      "height": 100,
+      "id": "3",
+      "width": 512,
+      "x": 256,
+      "y": 982
+    },
+    {
+      "height": 100,
+      "id": "4",
+      "width": 100,
+      "x": 256,
+      "y": 1182
+    }
+  ]
+}

@@ -1,0 +1,150 @@
+{
+  "edges": [
+    {
+      "name": "(regular_person -> c4mdperson)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 438,
+          "y": 399.5
+        },
+        {
+          "x": 438,
+          "y": 457
+        },
+        {
+          "x": 438,
+          "y": 507
+        }
+      ],
+      "v": "2",
+      "w": "0",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(c4person -> regular_person)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 346,
+          "y": 120.43808049535605
+        },
+        {
+          "x": 438,
+          "y": 192.5
+        },
+        {
+          "x": 438,
+          "y": 253
+        },
+        {
+          "x": 438,
+          "y": 310.5
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "x": 438,
+      "xPresent": true,
+      "y": 192.5,
+      "yPresent": true
+    },
+    {
+      "name": "(c4person -> styling.c4styled)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 207,
+          "y": 120.43808049535605
+        },
+        {
+          "x": 115,
+          "y": 192.5
+        },
+        {
+          "x": 115,
+          "y": 253
+        },
+        {
+          "x": 115,
+          "y": 303
+        }
+      ],
+      "v": "1",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "styling.(c4styled -> c4sized)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 115,
+          "y": 407
+        },
+        {
+          "x": 115,
+          "y": 457
+        },
+        {
+          "x": 115,
+          "y": 588
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 899,
+    "width": 606
+  },
+  "nodes": [
+    {
+      "height": 342,
+      "id": "0",
+      "width": 336,
+      "x": 438,
+      "y": 678
+    },
+    {
+      "height": 132,
+      "id": "1",
+      "width": 139,
+      "x": 276.5,
+      "y": 66
+    },
+    {
+      "height": 89,
+      "id": "2",
+      "width": 134,
+      "x": 438,
+      "y": 355
+    },
+    {
+      "height": 646,
+      "id": "3",
+      "width": 230,
+      "x": 115,
+      "y": 576
+    },
+    {
+      "height": 104,
+      "id": "4",
+      "width": 84,
+      "x": 115,
+      "y": 355
+    },
+    {
+      "height": 180,
+      "id": "5",
+      "width": 150,
+      "x": 115,
+      "y": 678
+    }
+  ]
+}

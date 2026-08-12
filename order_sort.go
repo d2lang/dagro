@@ -3,6 +3,15 @@ package dagro
 import gosort "sort"
 
 func sortOrderEntries(entries []orderEntry, biasRight bool) orderResult {
+	return sortOrderEntriesWithReversedPairs(entries, nil, biasRight)
+}
+
+type reversedOrderPair struct {
+	key   string
+	entry orderEntry
+}
+
+func sortOrderEntriesWithReversedPairs(entries []orderEntry, reversedPairs []reversedOrderPair, biasRight bool) orderResult {
 	sortable := make([]orderEntry, 0, len(entries))
 	unsortable := make([]orderEntry, 0, len(entries))
 	for _, entry := range entries {
@@ -27,6 +36,26 @@ func sortOrderEntries(entries []orderEntry, biasRight bool) orderResult {
 		}
 		return entryV.I > entryW.I
 	})
+
+	// Keep a reversed edge dummy immediately after its parallel counterpart.
+	// The pair slice preserves encounter order, including multiple reversed
+	// dummies paired with the same forward dummy. Upstream's single object value
+	// silently overwrites all but the last partner in that case.
+	insertedAfter := map[string]int{}
+	for _, pair := range reversedPairs {
+		keyIndex := -1
+		for i := range sortable {
+			if len(sortable[i].VS) != 0 && sortable[i].VS[0] == pair.key {
+				keyIndex = i
+				break
+			}
+		}
+		insertAt := keyIndex + 1 + insertedAfter[pair.key]
+		sortable = append(sortable, orderEntry{})
+		copy(sortable[insertAt+1:], sortable[insertAt:])
+		sortable[insertAt] = pair.entry
+		insertedAfter[pair.key]++
+	}
 
 	vs := make([]string, 0)
 	sum := 0.0

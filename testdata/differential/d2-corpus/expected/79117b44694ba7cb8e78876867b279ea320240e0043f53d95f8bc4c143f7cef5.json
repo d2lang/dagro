@@ -1,0 +1,103 @@
+{
+  "edges": [
+    {
+      "name": "(student -> committee chair)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 234.86764705882354,
+          "y": 66
+        },
+        {
+          "x": 296.5,
+          "y": 126.5
+        },
+        {
+          "x": 234.86764705882354,
+          "y": 187
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "x": 296.5,
+      "xPresent": true,
+      "y": 126.5,
+      "yPresent": true
+    },
+    {
+      "name": "(student <- committee chair)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 167.63235294117646,
+          "y": 187
+        },
+        {
+          "x": 106,
+          "y": 126.5
+        },
+        {
+          "x": 167.63235294117646,
+          "y": 66
+        }
+      ],
+      "v": "1",
+      "w": "0",
+      "x": 106,
+      "xPresent": true,
+      "y": 126.5,
+      "yPresent": true
+    },
+    {
+      "name": "(committee chair -> committee)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 201.25,
+          "y": 253
+        },
+        {
+          "x": 201.25,
+          "y": 313.5
+        },
+        {
+          "x": 201.25,
+          "y": 374
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "x": 201.25,
+      "xPresent": true,
+      "y": 313.5,
+      "yPresent": true
+    }
+  ],
+  "graph": {
+    "height": 440,
+    "width": 361
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 100,
+      "x": 201.25,
+      "y": 33
+    },
+    {
+      "height": 66,
+      "id": "1",
+      "width": 162,
+      "x": 201.25,
+      "y": 220
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 122,
+      "x": 201.25,
+      "y": 407
+    }
+  ]
+}

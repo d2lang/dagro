@@ -1,14 +1,23 @@
 # Dagro
 
-Dagro is a native Go port of [Dagre](https://github.com/dagrejs/dagre), the
-directed graph layout engine. It intentionally replicates Dagre **0.8.5** and
-the Graphlib **2.1.8** behavior used by that release, including layout order,
-compound graphs, named multiedges, self-loops, and edge-label routing.
+Dagro is a native Go implementation of the [Dagre](https://github.com/dagrejs/dagre)
+layout behavior used by D2. Its behavioral source target is Dagre **3.1.1** and
+the D2-used subset of Graphlib **4.0.5**. Dagro has no JavaScript runtime or
+third-party Go dependency in production.
 
-Dagro targets the exact Dagre 0.8.5 behavior embedded by D2. Later Dagre
-releases retain the same broad layout pipeline but include behavior-changing
-ordering, positioning, compound-layout, API, and dependency changes, so
-compatibility is measured against 0.8.5.
+The compatibility boundary is D2's default Dagre adapter profile:
+
+- directed, compound, named-multiedge graphs;
+- graph `rankdir`, `nodesep`, `edgesep`, and `ranksep` attributes;
+- node IDs, parent relationships, width, and height;
+- named edge endpoints, width, height, and `labelpos`;
+- graph bounds, node coordinates, edge-label coordinates, and ordered routes.
+
+The public graph operations already exposed by Dagro remain available. This is
+not a claim to implement every Dagre 3.1.1 or Graphlib 4.0.5 feature. In
+particular, dynamic remembered layout state, per-cluster direction, manual or
+custom ranking and ordering, constraints, and the `rankalign` option are
+outside the verified D2 profile.
 
 ## Usage
 
@@ -45,38 +54,65 @@ func main() {
 
 The API uses `Attrs` maps because Dagre and Graphlib labels are open JavaScript
 objects. Recognized numeric layout attributes accept Go numeric types and are
-coerced to `float64` in the internal layout graph for JavaScript `Number`
-compatibility; arbitrary label values are preserved as supplied.
+coerced to `float64` for JavaScript `Number` compatibility; arbitrary label
+values are preserved.
 
 ## Compatibility and tests
 
-The Go source follows the Dagre 0.8.5 module boundaries:
+The checked-in D2 corpus contains 311 unique layouts captured at D2 commit
+`1a60d69e4df9b9557923e61bf10f9aa3aa5422e1`:
 
-- cycle removal and greedy feedback-arc selection;
-- compound nesting, normalization, and dummy-chain parenting;
-- longest-path, tight-tree, and network-simplex ranking;
-- weighted crossing minimization;
-- Brandes-Köpf coordinate assignment;
-- self-edge, label, border, direction, and translation passes.
+- 308 finite outputs match official Dagre 3.1.1 bit-for-bit after the D2 JSON
+  bridge normalization;
+- three named layouts use a pinned compatibility result because official
+  Dagre 3.1.1 either emits non-finite geometry or throws.
 
-The normal suite contains direct Go ports of the upstream tests. An optional
-differential suite replays ordered fixtures through both implementations and
-compares topology, point order, attribute presence, and all numeric output:
+The compatibility correction only pairs parallel dummy nodes when exactly one
+edge is reversed, preserves every reversed partner when several map to the
+same forward dummy, and keeps degenerate zero-size rectangle intersections
+finite. Dagro also collision-checks generated reversed-edge names so a caller
+edge such as `rev1` cannot be overwritten. The first three changes are
+recorded as a reviewable source patch in
+`testdata/differential/dagre-3.1.1-d2-compat.patch`.
+
+A fourth synthetic compatibility case minimizes the multiple-reversed-partner
+failure using only D2-profile inputs. It is separate from the 311 captured
+layouts and pins the finite result of the source patch.
+
+The normal Go suite runs the complete 311-input corpus. CI additionally
+installs the exact JavaScript oracle from `package-lock.json`, checks ordinary
+fixtures against official Dagre 3.1.1 using exact `float64` bits, and verifies
+the three captured upstream failures plus the minimized synthetic divergence:
 
 ```sh
-DAGRO_DAGRE_JS=/absolute/path/to/dagre-0.8.5.js go test ./...
+cd testdata/differential
+npm ci --ignore-scripts
+cd ../..
+DAGRO_DAGRE_JS="$PWD/testdata/differential/node_modules/@dagrejs/dagre/dist/dagre.cjs" go test ./...
+
+./testdata/differential/build-dagre-3.1.1-d2-compat.sh /tmp/dagre-3.1.1-d2-compat.cjs
+DAGRO_DAGRE_JS_COMPAT=/tmp/dagre-3.1.1-d2-compat.cjs \
+  go test -run '^TestD2ProfileRandomLayoutsMatchCompatibilityOracle$' -count=1 .
 ```
 
-The differential test uses `node` only as a test oracle. Dagro itself has no
-JavaScript runtime or third-party Go dependencies.
+The compatibility builder fetches the exact upstream commit, verifies its
+lockfile and the source patch, builds with the upstream-pinned toolchain, and
+checks the final CommonJS SHA-256 before writing it. No JavaScript bundle is
+checked into Dagro or used in production.
+
+See [UPSTREAM.md](UPSTREAM.md) for source pins, hashes, the port map, and the
+precise compatibility boundary.
 
 ## Versioning
 
-`Version` reports the replicated Dagre version (`0.8.5`). Until the first
-tagged release, consumers developing Dagro and D2 together can use a Go
-workspace or a temporary local `replace` directive.
+`Version` identifies the Dagre behavioral source (`3.1.1`) and
+`GraphlibVersion` identifies the Graphlib behavioral source (`4.0.5`). They do
+not expand the verified API surface beyond the D2 profile above.
 
 ## License
 
-MIT. See [LICENSE](LICENSE) and [NOTICE](NOTICE) for upstream attribution and
-the exact compatibility revisions.
+Dagro source is MIT. D2-derived corpus JSON retains D2's MPL-2.0 coverage;
+expected files additionally contain generated layout geometry from the MIT
+oracle.
+See [LICENSE](LICENSE), [NOTICE](NOTICE), and
+[`testdata/differential/D2-CORPUS-NOTICE.md`](testdata/differential/D2-CORPUS-NOTICE.md).

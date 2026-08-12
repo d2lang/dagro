@@ -1,0 +1,133 @@
+{
+  "edges": [
+    {
+      "name": "(class2 -> users)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 512
+        },
+        {
+          "x": 211,
+          "y": 562
+        },
+        {
+          "x": 211,
+          "y": 612
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(users -> code)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 1124
+        },
+        {
+          "x": 211,
+          "y": 1174
+        },
+        {
+          "x": 211,
+          "y": 1224
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(code -> package)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 1736
+        },
+        {
+          "x": 211,
+          "y": 1786
+        },
+        {
+          "x": 211,
+          "y": 1836
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(package -> no height)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 211,
+          "y": 2348
+        },
+        {
+          "x": 211,
+          "y": 2398
+        },
+        {
+          "x": 211,
+          "y": 2448
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 2548,
+    "width": 422
+  },
+  "nodes": [
+    {
+      "height": 512,
+      "id": "0",
+      "width": 422,
+      "x": 211,
+      "y": 256
+    },
+    {
+      "height": 512,
+      "id": "1",
+      "width": 208,
+      "x": 211,
+      "y": 868
+    },
+    {
+      "height": 512,
+      "id": "2",
+      "width": 199,
+      "x": 211,
+      "y": 1480
+    },
+    {
+      "height": 512,
+      "id": "3",
+      "width": 100,
+      "x": 211,
+      "y": 2092
+    },
+    {
+      "height": 100,
+      "id": "4",
+      "width": 100,
+      "x": 211,
+      "y": 2498
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "edges": [
+    {
+      "name": "(find contractors -> solicit quotes)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 505.5,
+          "y": 116
+        },
+        {
+          "x": 505.5,
+          "y": 166
+        },
+        {
+          "x": 505.5,
+          "y": 216
+        },
+        {
+          "x": 505.5,
+          "y": 266
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 332,
+    "width": 601
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 200,
+      "x": 100,
+      "y": 83
+    },
+    {
+      "height": 166,
+      "id": "1",
+      "width": 361,
+      "x": 420.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 110,
+      "x": 335,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "3",
+      "width": 111,
+      "x": 505.5,
+      "y": 83
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 140,
+      "x": 505.5,
+      "y": 299
+    }
+  ]
+}

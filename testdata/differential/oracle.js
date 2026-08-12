@@ -2,6 +2,9 @@
 
 const fs = require("fs");
 const dagre = require(process.env.DAGRO_DAGRE_JS);
+if (dagre.version !== "3.1.1") {
+  throw new Error(`expected Dagre 3.1.1 oracle, got ${dagre.version}`);
+}
 const input = JSON.parse(fs.readFileSync(0, "utf8"));
 const options = input.options || {};
 const graphOptions = {

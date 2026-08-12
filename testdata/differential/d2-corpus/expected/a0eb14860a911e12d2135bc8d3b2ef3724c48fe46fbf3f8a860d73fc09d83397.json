@@ -1,0 +1,162 @@
+{
+  "edges": [
+    {
+      "name": "(a -> b)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1979.5,
+          "y": 66
+        },
+        {
+          "x": 1979.5,
+          "y": 116
+        },
+        {
+          "x": 1979.5,
+          "y": 166
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(b -> c)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1979.5,
+          "y": 337
+        },
+        {
+          "x": 1979.5,
+          "y": 387
+        },
+        {
+          "x": 1979.5,
+          "y": 437
+        }
+      ],
+      "v": "1",
+      "w": "2",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(c -> d)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1979.5,
+          "y": 503
+        },
+        {
+          "x": 1979.5,
+          "y": 553
+        },
+        {
+          "x": 1979.5,
+          "y": 603
+        }
+      ],
+      "v": "2",
+      "w": "3",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(d -> e)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1979.5,
+          "y": 703
+        },
+        {
+          "x": 1979.5,
+          "y": 753
+        },
+        {
+          "x": 1979.5,
+          "y": 803
+        }
+      ],
+      "v": "3",
+      "w": "4",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(e -> f)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1979.5,
+          "y": 869
+        },
+        {
+          "x": 1979.5,
+          "y": 919
+        },
+        {
+          "x": 1979.5,
+          "y": 969
+        }
+      ],
+      "v": "4",
+      "w": "5",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 1035,
+    "width": 3959
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 668,
+      "x": 1979.5,
+      "y": 33
+    },
+    {
+      "height": 171,
+      "id": "1",
+      "width": 3959,
+      "x": 1979.5,
+      "y": 251.5
+    },
+    {
+      "height": 66,
+      "id": "2",
+      "width": 326,
+      "x": 1979.5,
+      "y": 470
+    },
+    {
+      "height": 100,
+      "id": "3",
+      "width": 2184,
+      "x": 1979.5,
+      "y": 653
+    },
+    {
+      "height": 66,
+      "id": "4",
+      "width": 206,
+      "x": 1979.5,
+      "y": 836
+    },
+    {
+      "height": 66,
+      "id": "5",
+      "width": 165,
+      "x": 1979.5,
+      "y": 1002
+    }
+  ]
+}

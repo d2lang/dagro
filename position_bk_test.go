@@ -124,6 +124,18 @@ func TestFindType2ConflictsFavorsBorderSegments(t *testing.T) {
 	})
 }
 
+func TestFindType2ConflictsStartsNorthBoundaryAtMinusOne(t *testing.T) {
+	g := newBKTestGraph()
+	g.SetNode("north", Attrs{"dummy": true, "order": float64(-2)})
+	g.SetNode("south", Attrs{"dummy": true, "order": float64(0)})
+	g.SetEdge("north", "south")
+
+	conflicts := findType2Conflicts(g, [][]string{{"north"}, {"south"}})
+	if !hasConflict(conflicts, "north", "south") {
+		t.Fatalf("missing conflict with modern -1 north boundary: %#v", conflicts)
+	}
+}
+
 func TestPositionConflictsAreOrientationIndependentAndComposable(t *testing.T) {
 	conflicts := positionConflicts{}
 	addConflict(conflicts, "b", "a")
@@ -136,7 +148,35 @@ func TestPositionConflictsAreOrientationIndependentAndComposable(t *testing.T) {
 	}
 }
 
+func TestPositionConflictMergeUsesModernShallowOverwrite(t *testing.T) {
+	got := shallowMergePositionConflicts(
+		positionConflicts{
+			"a": {"b": true, "c": true},
+			"e": {"f": true},
+		},
+		positionConflicts{"a": {"d": true}},
+	)
+	if hasConflict(got, "a", "b") || hasConflict(got, "a", "c") || !hasConflict(got, "a", "d") {
+		t.Fatalf("colliding conflict key was not replaced: %#v", got)
+	}
+	if !hasConflict(got, "e", "f") {
+		t.Fatalf("non-colliding conflict key was lost: %#v", got)
+	}
+}
+
 func TestVerticalAlignment(t *testing.T) {
+	t.Run("ignores neighbors missing from the layering", func(t *testing.T) {
+		g := newBKTestGraph()
+		g.SetNode("outside", Attrs{})
+		g.SetNode("inside", Attrs{"rank": float64(0), "order": float64(0)})
+		g.SetEdge("outside", "inside")
+
+		got := verticalAlignment(g, [][]string{{"inside"}}, positionConflicts{}, g.Predecessors)
+		if got.root["inside"] != "inside" || got.align["inside"] != "inside" {
+			t.Fatalf("missing neighbor changed alignment: %#v", got)
+		}
+	})
+
 	t.Run("self without adjacencies", func(t *testing.T) {
 		g := newBKTestGraph()
 		g.SetNode("a", Attrs{"rank": float64(0), "order": float64(0)})

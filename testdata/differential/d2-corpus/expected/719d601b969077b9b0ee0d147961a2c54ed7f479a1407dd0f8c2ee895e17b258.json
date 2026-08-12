@@ -1,0 +1,46 @@
+{
+  "edges": [
+    {
+      "name": "(rectangle -> square)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 55.5,
+          "y": 66
+        },
+        {
+          "x": 55.5,
+          "y": 116
+        },
+        {
+          "x": 55.5,
+          "y": 166
+        }
+      ],
+      "v": "0",
+      "w": "1",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 260,
+    "width": 111
+  },
+  "nodes": [
+    {
+      "height": 66,
+      "id": "0",
+      "width": 111,
+      "x": 55.5,
+      "y": 33
+    },
+    {
+      "height": 94,
+      "id": "1",
+      "width": 94,
+      "x": 55.5,
+      "y": 213
+    }
+  ]
+}

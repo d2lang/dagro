@@ -1,0 +1,277 @@
+{
+  "edges": [
+    {
+      "name": "(cloud -> class2)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1228,
+          "y": 356
+        },
+        {
+          "x": 1228,
+          "y": 406
+        },
+        {
+          "x": 1228,
+          "y": 456
+        },
+        {
+          "x": 1228,
+          "y": 506
+        },
+        {
+          "x": 1228,
+          "y": 756
+        }
+      ],
+      "v": "9",
+      "w": "11",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(class2 -> tall cylinder)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1228,
+          "y": 1156
+        },
+        {
+          "x": 1228,
+          "y": 1406
+        },
+        {
+          "x": 1228,
+          "y": 1456
+        }
+      ],
+      "v": "11",
+      "w": "10",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(tall cylinder -> users)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1228,
+          "y": 1968
+        },
+        {
+          "x": 1228,
+          "y": 2018
+        },
+        {
+          "x": 1228,
+          "y": 2068
+        }
+      ],
+      "v": "10",
+      "w": "12",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(container -> text)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1888,
+          "y": 261
+        },
+        {
+          "x": 1888,
+          "y": 406
+        },
+        {
+          "x": 1888,
+          "y": 456
+        },
+        {
+          "x": 1888,
+          "y": 506
+        },
+        {
+          "x": 1888,
+          "y": 556
+        }
+      ],
+      "v": "13",
+      "w": "14",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(text -> code)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1888,
+          "y": 1356
+        },
+        {
+          "x": 1888,
+          "y": 1406
+        },
+        {
+          "x": 1888,
+          "y": 1562
+        }
+      ],
+      "v": "14",
+      "w": "15",
+      "xPresent": false,
+      "yPresent": false
+    },
+    {
+      "name": "(code -> small code)[0]",
+      "namePresent": true,
+      "points": [
+        {
+          "x": 1888,
+          "y": 1862
+        },
+        {
+          "x": 1888,
+          "y": 2018
+        },
+        {
+          "x": 1888,
+          "y": 2229
+        }
+      ],
+      "v": "15",
+      "w": "16",
+      "xPresent": false,
+      "yPresent": false
+    }
+  ],
+  "graph": {
+    "height": 2468,
+    "width": 2088
+  },
+  "nodes": [
+    {
+      "height": 456,
+      "id": "0",
+      "width": 932,
+      "x": 466,
+      "y": 228
+    },
+    {
+      "height": 356,
+      "id": "1",
+      "width": 208,
+      "x": 124,
+      "y": 228
+    },
+    {
+      "height": 64,
+      "id": "2",
+      "width": 128,
+      "x": 124,
+      "y": 228
+    },
+    {
+      "height": 356,
+      "id": "3",
+      "width": 208,
+      "x": 352,
+      "y": 228
+    },
+    {
+      "height": 128,
+      "id": "4",
+      "width": 128,
+      "x": 352,
+      "y": 228
+    },
+    {
+      "height": 356,
+      "id": "5",
+      "width": 208,
+      "x": 580,
+      "y": 228
+    },
+    {
+      "height": 64,
+      "id": "6",
+      "width": 128,
+      "x": 580,
+      "y": 228
+    },
+    {
+      "height": 356,
+      "id": "7",
+      "width": 208,
+      "x": 808,
+      "y": 228
+    },
+    {
+      "height": 64,
+      "id": "8",
+      "width": 128,
+      "x": 808,
+      "y": 228
+    },
+    {
+      "height": 256,
+      "id": "9",
+      "width": 512,
+      "x": 1228,
+      "y": 228
+    },
+    {
+      "height": 512,
+      "id": "10",
+      "width": 256,
+      "x": 1228,
+      "y": 1712
+    },
+    {
+      "height": 400,
+      "id": "11",
+      "width": 800,
+      "x": 1228,
+      "y": 956
+    },
+    {
+      "height": 400,
+      "id": "12",
+      "width": 800,
+      "x": 1228,
+      "y": 2268
+    },
+    {
+      "height": 66,
+      "id": "13",
+      "width": 114,
+      "x": 1888,
+      "y": 228
+    },
+    {
+      "height": 800,
+      "id": "14",
+      "width": 400,
+      "x": 1888,
+      "y": 956
+    },
+    {
+      "height": 300,
+      "id": "15",
+      "width": 400,
+      "x": 1888,
+      "y": 1712
+    },
+    {
+      "height": 78,
+      "id": "16",
+      "width": 199,
+      "x": 1888,
+      "y": 2268
+    }
+  ]
+}

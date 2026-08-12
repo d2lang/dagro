@@ -2,6 +2,7 @@ package dagro
 
 import (
 	"math"
+	"reflect"
 	"testing"
 )
 
@@ -178,7 +179,61 @@ func TestLayoutUpstreamSelfLoops(t *testing.T) {
 					t.Errorf("point %#v is outside the expected lower side of node %#v", point, node)
 				}
 			}
+			if rankdir == "RL" {
+				assertLayoutPoints(t, points, []Point{
+					{X: 100, Y: 242.5},
+					{X: 100, Y: 242.5},
+					{X: 50, Y: 192.5},
+					{X: 0, Y: 142.5},
+					{X: 0, Y: 142.5},
+					{X: 50, Y: 192.5},
+					{X: 50, Y: 192.5},
+				})
+			}
 		})
+	}
+}
+
+func TestInsertSelfEdgesSeedsModernSpline(t *testing.T) {
+	g := newOrderTestGraph(false)
+	edge := Edge{V: "a", W: "a", Name: "loop", HasName: true}
+	label := Attrs{"width": 20.0, "height": 10.0}
+	g.SetNode("a", Attrs{
+		"rank": float64(0), "order": float64(0),
+		"selfEdges": []selfEdgeRecord{{e: edge, label: label}},
+	})
+
+	insertSelfEdges(g)
+
+	dummy := asAttrs(g.Node("_se"))
+	dummyLabel, ok := dummy["edgeLabel"].(Attrs)
+	if stringValue(dummy, "dummy") != "selfedge" || !ok || num(dummyLabel, "width") != 20 || has(dummy, "label") {
+		t.Fatalf("self-edge dummy = %#v", dummy)
+	}
+	points, ok := label["points"].([]Point)
+	if !ok || len(points) != 7 {
+		t.Fatalf("seeded self-edge points = %#v, want seven points", label["points"])
+	}
+}
+
+func TestPositionSelfEdgesUsesFiniteFallbacks(t *testing.T) {
+	g := NewGraph(GraphOptions{Multigraph: true})
+	edge := Edge{V: "a", W: "a", Name: "loop", HasName: true}
+	label := Attrs{}
+	g.SetNode("a", Attrs{
+		"x": math.NaN(), "y": math.Inf(1), "width": math.Inf(-1), "height": math.NaN(),
+	})
+	g.SetNode("_se", Attrs{
+		"dummy": "selfedge", "e": edge, "edgeLabel": label,
+		"x": math.Inf(1), "y": math.NaN(),
+	})
+
+	positionSelfEdges(g)
+
+	points := layoutEdgePoints(t, asAttrs(g.Edge(edge)))
+	assertLayoutPoints(t, points, []Point{{}, {}, {}, {}, {}, {}, {}})
+	if num(label, "x") != 0 || num(label, "y") != 0 {
+		t.Fatalf("self-edge label fallback = (%v,%v), want (0,0)", num(label, "x"), num(label, "y"))
 	}
 }
 
@@ -274,6 +329,97 @@ func TestLayoutUpstreamGraphBounds(t *testing.T) {
 	}
 }
 
+func TestLayoutPreservesMultipleReversedParallelPartners(t *testing.T) {
+	g := NewGraph(GraphOptions{Compound: true, Multigraph: true}).SetGraph(Attrs{
+		"edgesep": float64(32), "nodesep": float64(17), "rankdir": "LR", "ranksep": float64(84),
+	})
+	g.SetNode("cluster", Attrs{"width": float64(149), "height": float64(80)})
+	g.SetNode("1", Attrs{"width": float64(113), "height": float64(50)})
+	g.SetNode("7", Attrs{"width": float64(125), "height": float64(71)})
+	if err := g.SetParent("1", "cluster"); err != nil {
+		t.Fatal(err)
+	}
+	g.SetEdge("1", "7", Attrs{"width": float64(1), "height": float64(29), "labelpos": "c"}, "forward")
+	g.SetEdge("7", "1", Attrs{"width": float64(50), "height": float64(34), "labelpos": "c"}, "reverse-1")
+	g.SetEdge("7", "1", Attrs{"width": float64(55), "height": float64(9), "labelpos": "c"}, "reverse-2")
+
+	layoutMustSucceed(t, g)
+	graph := asAttrs(g.Graph())
+	assertNear(t, num(graph, "width"), 461)
+	assertNear(t, num(graph, "height"), 200.5)
+	for _, v := range g.Nodes() {
+		node := asAttrs(g.Node(v))
+		for _, key := range []string{"x", "y", "width", "height"} {
+			if value := num(node, key); math.IsNaN(value) || math.IsInf(value, 0) {
+				t.Fatalf("node %s %s is not finite: %v", v, key, value)
+			}
+		}
+	}
+	for _, edge := range g.Edges() {
+		edgeAttrs := asAttrs(g.Edge(edge))
+		points := layoutEdgePoints(t, edgeAttrs)
+		if len(points) < 2 {
+			t.Fatalf("edge %#v has %d points", edge, len(points))
+		}
+		for i, point := range points {
+			if math.IsNaN(point.X) || math.IsNaN(point.Y) || math.IsInf(point.X, 0) || math.IsInf(point.Y, 0) {
+				t.Fatalf("edge %#v point %d is not finite: %#v", edge, i, point)
+			}
+		}
+		for _, key := range []string{"x", "y"} {
+			if !has(edgeAttrs, key) {
+				continue
+			}
+			if value := num(edgeAttrs, key); math.IsNaN(value) || math.IsInf(value, 0) {
+				t.Fatalf("edge %#v %s is not finite: %v", edge, key, value)
+			}
+		}
+		if !pointOnNodeBorder(points[0], asAttrs(g.Node(edge.V))) {
+			t.Fatalf("edge %#v does not start on its source: %#v", edge, points[0])
+		}
+		if !pointOnNodeBorder(points[len(points)-1], asAttrs(g.Node(edge.W))) {
+			t.Fatalf("edge %#v does not end on its target: %#v", edge, points[len(points)-1])
+		}
+	}
+}
+
+func TestLayoutPreservesModernRootChildInsertionOrder(t *testing.T) {
+	input := NewGraph(GraphOptions{Compound: true, Multigraph: true}).SetGraph(Attrs{
+		"edgesep": float64(12), "nodesep": float64(45), "rankdir": "BT", "ranksep": float64(190),
+	})
+	input.SetNode("cluster0", Attrs{"width": float64(79), "height": float64(87)})
+	input.SetNode("cluster1", Attrs{"width": float64(97), "height": float64(113)})
+	input.SetNode("1", Attrs{"width": float64(48), "height": float64(37)})
+	input.SetNode("5", Attrs{"width": float64(129), "height": float64(77)})
+	input.SetNode("0", Attrs{"width": float64(95), "height": float64(105)})
+	input.SetNode("4", Attrs{"width": float64(42), "height": float64(101)})
+	for _, pair := range []struct {
+		child  string
+		parent string
+	}{
+		{child: "1", parent: "cluster0"},
+		{child: "5", parent: "cluster1"},
+		{child: "0", parent: "cluster1"},
+		{child: "4", parent: "cluster0"},
+	} {
+		if err := input.SetParent(pair.child, pair.parent); err != nil {
+			t.Fatal(err)
+		}
+	}
+	input.SetEdge("0", "4", Attrs{"width": float64(5), "height": float64(24), "labelpos": "c"}, "0-to-4")
+	input.SetEdge("1", "5", Attrs{"width": float64(48), "height": float64(13), "labelpos": "c"}, "1-to-5")
+
+	layoutGraph := buildLayoutGraph(input)
+	if got, want := layoutGraph.Children(), []string{"cluster1", "cluster0"}; !reflect.DeepEqual(got, want) {
+		t.Fatalf("root children = %v, want JavaScript insertion order %v", got, want)
+	}
+	layoutMustSucceed(t, input)
+	assertNear(t, num(asAttrs(input.Graph()), "width"), 303)
+	assertNear(t, num(asAttrs(input.Graph()), "height"), 610)
+	assertNear(t, num(asAttrs(input.Node("0")), "x"), 93)
+	assertNear(t, num(asAttrs(input.Node("cluster0")), "x"), 250.5)
+}
+
 func TestLayoutUpstreamCaseInsensitiveAttributeNames(t *testing.T) {
 	t.Run("graph", func(t *testing.T) {
 		g := newLayoutTestGraph()
@@ -341,6 +487,16 @@ func layoutEdgePoints(t *testing.T, edge Attrs) []Point {
 		t.Fatalf("edge points have type %T, want []Point: %#v", edge["points"], edge)
 	}
 	return points
+}
+
+func pointOnNodeBorder(point Point, node Attrs) bool {
+	const epsilon = 1e-9
+	dx := math.Abs(point.X - num(node, "x"))
+	dy := math.Abs(point.Y - num(node, "y"))
+	halfWidth := num(node, "width") / 2
+	halfHeight := num(node, "height") / 2
+	return math.Abs(dx-halfWidth) <= epsilon && dy <= halfHeight+epsilon ||
+		math.Abs(dy-halfHeight) <= epsilon && dx <= halfWidth+epsilon
 }
 
 func assertLayoutPoints(t *testing.T, got, want []Point) {
