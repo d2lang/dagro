@@ -7,8 +7,9 @@ func networkSimplex(input *Graph) {
 	g := simplify(input)
 	longestPath(g)
 	t := feasibleTree(g)
-	initLowLimValues(t)
-	initCutValues(t, g)
+	order := newRankTreeOrder(t)
+	order.assignLowLim(t)
+	assignCutValues(t, g, order.post)
 
 	for {
 		e, ok := leaveEdge(t)
@@ -19,12 +20,15 @@ func networkSimplex(input *Graph) {
 		if !ok {
 			panic("dagro: networkSimplex could not find an entering edge")
 		}
-		exchangeEdges(t, g, e, f)
+		exchangeEdges(t, g, e, f, order)
 	}
 }
 
 func initCutValues(t, g *Graph) {
-	vs := postorder(t, t.Nodes())
+	assignCutValues(t, g, postorder(t, t.Nodes()))
+}
+
+func assignCutValues(t, g *Graph, vs []string) {
 	if len(vs) > 0 {
 		vs = vs[:len(vs)-1]
 	}
@@ -55,29 +59,38 @@ func calcCutValue(t, g *Graph, child string) float64 {
 	}
 	cutValue := num(asAttrs(g.Edge(graphEdge)), "weight")
 
-	for _, e := range g.NodeEdges(child) {
-		isOutEdge := e.V == child
-		other := e.V
-		if isOutEdge {
-			other = e.W
-		}
-		if other == parent {
+	// The input graph is not mutated while computing cuts. Walk its incident
+	// edge maps directly, in NodeEdges order, without copying both lists on
+	// every tree-edge exchange.
+	for _, incident := range [2]*edgeMap{g.in[child], g.out[child]} {
+		if incident == nil {
 			continue
 		}
+		for _, id := range incident.order {
+			e := incident.items[id]
+			isOutEdge := e.V == child
+			other := e.V
+			if isOutEdge {
+				other = e.W
+			}
+			if other == parent {
+				continue
+			}
 
-		pointsToHead := isOutEdge == childIsTail
-		otherWeight := num(asAttrs(g.Edge(e)), "weight")
-		if pointsToHead {
-			cutValue += otherWeight
-		} else {
-			cutValue -= otherWeight
-		}
-		if isTreeEdge(t, child, other) {
-			otherCutValue := num(asAttrs(t.Edge(treeEdge(t, child, other))), "cutvalue")
+			pointsToHead := isOutEdge == childIsTail
+			otherWeight := num(asAttrs(g.Edge(e)), "weight")
 			if pointsToHead {
-				cutValue -= otherCutValue
+				cutValue += otherWeight
 			} else {
-				cutValue += otherCutValue
+				cutValue -= otherWeight
+			}
+			if isTreeEdge(t, child, other) {
+				otherCutValue := num(asAttrs(t.Edge(treeEdge(t, child, other))), "cutvalue")
+				if pointsToHead {
+					cutValue -= otherCutValue
+				} else {
+					cutValue += otherCutValue
+				}
 			}
 		}
 	}
@@ -94,13 +107,39 @@ func initLowLimValues(tree *Graph, roots ...string) {
 	dfsAssignLowLim(tree, map[string]bool{}, 1, root, "")
 }
 
-func dfsAssignLowLim(tree *Graph, visited map[string]bool, nextLim float64, v, parent string) float64 {
+// A feasible tree stays connected and keeps the same nodes through all edge
+// exchanges. Its low/lim traversal is also the traversal used to calculate
+// cuts and update ranks. Retain both orders instead of traversing it three
+// times, and reuse the traversal storage across exchanges.
+type rankTreeOrder struct {
+	root      string
+	visited   map[string]bool
+	pre, post []string
+}
+
+func newRankTreeOrder(tree *Graph) *rankTreeOrder {
+	return &rankTreeOrder{
+		root: tree.Nodes()[0], visited: make(map[string]bool, tree.NodeCount()),
+		pre: make([]string, 0, tree.NodeCount()), post: make([]string, 0, tree.NodeCount()),
+	}
+}
+
+func (order *rankTreeOrder) assignLowLim(tree *Graph) {
+	clear(order.visited)
+	order.pre, order.post = order.pre[:0], order.post[:0]
+	dfsAssignLowLim(tree, order.visited, 1, order.root, "", order)
+}
+
+func dfsAssignLowLim(tree *Graph, visited map[string]bool, nextLim float64, v, parent string, orders ...*rankTreeOrder) float64 {
 	low := nextLim
 	label := asAttrs(tree.Node(v))
 	visited[v] = true
+	if len(orders) > 0 {
+		orders[0].pre = append(orders[0].pre, v)
+	}
 	for _, w := range tree.Neighbors(v) {
 		if !visited[w] {
-			nextLim = dfsAssignLowLim(tree, visited, nextLim, w, v)
+			nextLim = dfsAssignLowLim(tree, visited, nextLim, w, v, orders...)
 		}
 	}
 
@@ -112,11 +151,15 @@ func dfsAssignLowLim(tree *Graph, visited map[string]bool, nextLim float64, v, p
 	} else {
 		delete(label, "parent")
 	}
+	if len(orders) > 0 {
+		orders[0].post = append(orders[0].post, v)
+	}
 	return nextLim
 }
 
 func leaveEdge(tree *Graph) (Edge, bool) {
-	for _, e := range tree.Edges() {
+	for _, id := range tree.edgeObjs.order {
+		e := tree.edgeObjs.items[id]
 		if num(asAttrs(tree.Edge(e)), "cutvalue") < 0 {
 			return e, true
 		}
@@ -142,7 +185,8 @@ func enterEdge(t, g *Graph, edge Edge) (Edge, bool) {
 	var best Edge
 	bestSlack := 0.0
 	found := false
-	for _, candidate := range g.Edges() {
+	for _, id := range g.edgeObjs.order {
+		candidate := g.edgeObjs.items[id]
 		vDescendant := isDescendant(asAttrs(t.Node(candidate.V)), tailLabel)
 		wDescendant := isDescendant(asAttrs(t.Node(candidate.W)), tailLabel)
 		if flip != vDescendant || flip == wDescendant {
@@ -156,15 +200,26 @@ func enterEdge(t, g *Graph, edge Edge) (Edge, bool) {
 	return best, found
 }
 
-func exchangeEdges(t, g *Graph, e, f Edge) {
+func exchangeEdges(t, g *Graph, e, f Edge, orders ...*rankTreeOrder) {
 	t.RemoveEdge(e)
 	t.SetEdge(f.V, f.W, Attrs{})
+	if len(orders) > 0 {
+		order := orders[0]
+		order.assignLowLim(t)
+		assignCutValues(t, g, order.post)
+		updateRanksWithOrder(t, g, order.pre)
+		return
+	}
 	initLowLimValues(t)
 	initCutValues(t, g)
 	updateRanks(t, g)
 }
 
 func updateRanks(t, g *Graph) {
+	updateRanksWithOrder(t, g, nil)
+}
+
+func updateRanksWithOrder(t, g *Graph, vs []string) {
 	root, found := "", false
 	for _, v := range t.Nodes() {
 		label := asAttrs(g.Node(v))
@@ -178,7 +233,11 @@ func updateRanks(t, g *Graph) {
 		return
 	}
 
-	vs := preorder(t, []string{root})
+	// The JS hook permits a root selected from input labels to differ from
+	// the low/lim root. Preserve that traversal when the roots differ.
+	if len(vs) == 0 || vs[0] != root {
+		vs = preorder(t, []string{root})
+	}
 	if len(vs) > 0 {
 		vs = vs[1:]
 	}
@@ -212,6 +271,16 @@ func isDescendant(vLabel, rootLabel Attrs) bool {
 }
 
 func treeEdge(tree *Graph, u, v string) Edge {
+	// Feasible trees are simple and undirected. Locate their canonical edge
+	// directly instead of allocating and scanning both adjacency lists.
+	// Keep NodeEdges' empty-string filter behavior for the JS test hook.
+	if !tree.directed && !tree.multigraph && v != "" {
+		if e, ok := tree.edgeObjs.items[edgeArgsToID(false, u, v, nil)]; ok &&
+			(e.V == u && e.W == v || e.V == v && e.W == u) {
+			return e
+		}
+		panic("dagro: expected tree edge")
+	}
 	for _, e := range tree.NodeEdges(u, v) {
 		return e
 	}
