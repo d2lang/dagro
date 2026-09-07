@@ -129,9 +129,10 @@ func (m *edgeMap) values() []Edge {
 	if m == nil {
 		return nil
 	}
-	keys := jsObjectKeyOrder(append([]string(nil), m.order...))
-	out := make([]Edge, 0, len(keys))
-	for _, id := range keys {
+	// Canonical edge IDs always contain edgeKeyDelim, so none is a JS
+	// array-index key. Their property order is already their insertion order.
+	out := make([]Edge, 0, len(m.order))
+	for _, id := range m.order {
 		out = append(out, m.items[id])
 	}
 	return out
@@ -397,15 +398,32 @@ func (g *Graph) Successors(v string) []string {
 	return nil
 }
 func (g *Graph) Neighbors(v string) []string {
-	seen := map[string]bool{}
-	var out []string
-	for _, list := range [][]string{g.Predecessors(v), g.Successors(v)} {
-		for _, w := range list {
-			if !seen[w] {
-				seen[w] = true
+	preds, sucs := g.preds[v], g.sucs[v]
+	n := 0
+	if preds != nil {
+		n += len(preds.order)
+	}
+	if sucs != nil {
+		n += len(sucs.order)
+	}
+	if n == 0 {
+		return nil
+	}
+	out := make([]string, 0, n)
+	if preds != nil {
+		out = append(out, preds.order...)
+		jsObjectKeyOrder(out)
+	}
+	// Each counter already contains unique neighbors. Only successors that
+	// also occur in the predecessor counter need to be removed from the union.
+	start := len(out)
+	if sucs != nil {
+		for _, w := range sucs.order {
+			if preds == nil || preds.count[w] == 0 {
 				out = append(out, w)
 			}
 		}
+		jsObjectKeyOrder(out[start:])
 	}
 	return out
 }
@@ -656,7 +674,44 @@ func (g *Graph) OutEdges(v string, w ...string) []Edge {
 	return out
 }
 func (g *Graph) NodeEdges(v string, w ...string) []Edge {
-	return append(g.InEdges(v, w...), g.OutEdges(v, w...)...)
+	in, out := g.in[v], g.out[v]
+	if in == nil && out == nil {
+		if g.HasNode(v) {
+			return []Edge{}
+		}
+		return nil
+	}
+	n := 0
+	if in != nil {
+		n += len(in.order)
+	}
+	if out != nil {
+		n += len(out.order)
+	}
+	edges := make([]Edge, 0, n)
+	filter := ""
+	if len(w) > 0 {
+		filter = w[0]
+	}
+	// Match graphlib's incoming-then-outgoing order, including duplicate
+	// self-edges and its empty-string endpoint meaning "no filter".
+	if in != nil {
+		for _, id := range in.order {
+			e := in.items[id]
+			if filter == "" || e.V == filter {
+				edges = append(edges, e)
+			}
+		}
+	}
+	if out != nil {
+		for _, id := range out.order {
+			e := out.items[id]
+			if filter == "" || e.W == filter {
+				edges = append(edges, e)
+			}
+		}
+	}
+	return edges
 }
 
 func edgeArgsToID(directed bool, v, w string, name *string) string {
@@ -682,6 +737,20 @@ func edgeArgsToObj(directed bool, v, w string, name *string) Edge {
 }
 
 func jsStringGreater(a, b string) bool {
+	// Layout-generated IDs and D2's numeric IDs are ASCII. Compare that common
+	// prefix without allocating UTF-16 copies; retain JS code-unit ordering
+	// when either string reaches a non-ASCII byte.
+	i := 0
+	for i < len(a) && i < len(b) && a[i] < 0x80 && b[i] < 0x80 {
+		if a[i] != b[i] {
+			return a[i] > b[i]
+		}
+		i++
+	}
+	if i == len(a) || i == len(b) {
+		return len(a) > len(b)
+	}
+	a, b = a[i:], b[i:]
 	a16, b16 := utf16.Encode([]rune(a)), utf16.Encode([]rune(b))
 	for i := 0; i < len(a16) && i < len(b16); i++ {
 		if a16[i] != b16[i] {
@@ -787,8 +856,10 @@ func dfs(g *Graph, starts []string, post bool) []string {
 		if !post {
 			out = append(out, v)
 		}
-		next := g.Successors(v)
-		if !g.directed {
+		var next []string
+		if g.directed {
+			next = g.Successors(v)
+		} else {
 			next = g.Neighbors(v)
 		}
 		for _, w := range next {
