@@ -34,7 +34,7 @@ func buildLayerGraphNodes(g *Graph, rank int, relationship string, nodes []strin
 		panic("dagro: unsupported layer-graph relationship: " + relationship)
 	}
 	result := newGraphWithCapacity(GraphOptions{Compound: true}, len(nodes)+1, edgeCapacity).SetGraph(Attrs{"root": root})
-	result.SetDefaultNodeLabel(func(v string) any { return g.Node(v) })
+	result.defaultNodeLabel = g.Node
 
 	for _, v := range nodes {
 		node := asAttrs(g.Node(v))
