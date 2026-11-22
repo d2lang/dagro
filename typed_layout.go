@@ -94,12 +94,15 @@ type elabel struct {
 	nestingEdge                 bool
 }
 
-func newNLabel() nlabel {
-	nan := math.NaN()
-	return nlabel{
-		x: nan, y: nan, rank: nan, order: nan, minRank: nan, maxRank: nan,
-		borderTop: inone, borderBottom: inone, edgeLabel: inone,
-	}
+// newNLabel returns a node label without attributes: a copy of nlabelNone,
+// which is smaller code than building the label at each inlined call.
+func newNLabel() nlabel { return nlabelNone }
+
+// nlabelNone is the label of a node without attributes. It is only ever
+// copied, never written.
+var nlabelNone = nlabel{
+	x: math.NaN(), y: math.NaN(), rank: math.NaN(), order: math.NaN(), minRank: math.NaN(), maxRank: math.NaN(),
+	borderTop: inone, borderBottom: inone, edgeLabel: inone,
 }
 
 func newELabel() elabel {
@@ -301,6 +304,11 @@ func (s *lstate) noteInputEdgeName(name string) {
 	}
 }
 
+// ensureNode extends s.nl with labels without attributes up to node id. It
+// is not inlined: it runs once per new node, and inlining its label append at
+// every call site would add kilobytes of code.
+//
+//go:noinline
 func (s *lstate) ensureNode(id int32) {
 	for int32(len(s.nl)) <= id {
 		s.nl = appendGrow(s.nl, newNLabel())
@@ -405,7 +413,11 @@ func (s *lstate) nodes() []int32 {
 	return s.nodesBuf
 }
 
-// edges returns g.Edges() in a buffer that the next call overwrites.
+// edges returns g.Edges() in a buffer that the next call overwrites. It is
+// not inlined: the phases call it about twenty times, once per pass over the
+// edges, which inlining would not speed up.
+//
+//go:noinline
 func (s *lstate) edges() []int32 {
 	s.edgesBuf = s.g.edgeList(s.edgesBuf[:0])
 	return s.edgesBuf
@@ -1603,8 +1615,7 @@ func (s *lstate) positionSelfEdges() {
 			height := finiteOr(selfNode.height, true, 0)
 			nodeX := finiteOr(node.x, node.hasX, x)
 			nodeY := finiteOr(node.y, node.hasY, y)
-			dx, dy := width/2, height/2
-			s.setPoints(label, appendCenteredSelfEdgePoints(s.pointBuf(label), nodeX, nodeY, dx, dy))
+			s.setSelfLoop(label, nodeX, nodeY, width, height)
 			l := &s.el[label]
 			l.x, l.y, l.hasX, l.hasY = nodeX, nodeY, true, true
 			s.setEdgeRef(r, label)
@@ -1621,9 +1632,7 @@ func (s *lstate) positionSelfEdges() {
 			}
 			x := finiteOr(node.x, node.hasX, 0)
 			y := finiteOr(node.y, node.hasY, 0)
-			dx := finiteOr(node.width, true, 0) / 2
-			dy := finiteOr(node.height, true, 0) / 2
-			s.setPoints(selfEdge.label, appendCenteredSelfEdgePoints(s.pointBuf(selfEdge.label), x, y, dx, dy))
+			s.setSelfLoop(selfEdge.label, x, y, finiteOr(node.width, true, 0), finiteOr(node.height, true, 0))
 		}
 	}
 }
@@ -1867,6 +1876,14 @@ func (s *lstate) undoAcyclic() {
 }
 
 var errIntersectInside = errors.New("not possible to find intersection inside of the rectangle")
+
+// setSelfLoop stores as label i's points the route of a self-loop around
+// (x, y) on a node of the given width and height. It halves the size itself:
+// where the compiler fuses a multiply and an add (arm64, for one), x +
+// width/2 is then fused as in the Attrs engine's positionSelfEdges.
+func (s *lstate) setSelfLoop(i int32, x, y, width, height float64) {
+	s.setPoints(i, appendCenteredSelfEdgePoints(s.pointBuf(i), x, y, width/2, height/2))
+}
 
 func appendCenteredSelfEdgePoints(buf []Point, x, y, dx, dy float64) []Point {
 	return append(buf,

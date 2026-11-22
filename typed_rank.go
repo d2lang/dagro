@@ -6,6 +6,10 @@ import (
 )
 
 // resize returns s with length n and zeroed contents, reusing its storage.
+// It is not inlined: it is called from about thirty places, none of them in
+// a hot loop. (grow, below, is called in hot loops and stays inlinable.)
+//
+//go:noinline
 func resize[T any](s []T, n int) []T {
 	if cap(s) < n {
 		return make([]T, n)
@@ -60,13 +64,53 @@ type rgraph struct {
 	ids            []int32 // local -> global node id
 	ev, ew         []int32
 	weight, minlen []float64
-	inStart        []int32
-	inList         []int32
-	outStart       []int32
-	outList        []int32
-	rank           []float64
-	hasRank        []bool
-	fill           []int32
+	incidence
+	rank    []float64
+	hasRank []bool
+}
+
+// incidence lists the edges ev[i] -> ew[i] of a graph by node, each list in
+// edge order: the edges into node v are inList[inStart[v]:inStart[v+1]], the
+// edges out of it outList[outStart[v]:outStart[v+1]].
+type incidence struct {
+	inStart, inList   []int32
+	outStart, outList []int32
+	fill              []int32 // build's scratch
+}
+
+// build makes the lists of nodes 0 to n-1. local, when not nil, maps the
+// endpoints in ev and ew to their node numbers.
+func (c *incidence) build(n int, ev, ew, local []int32) {
+	c.inStart = resize(c.inStart, n+1)
+	c.outStart = resize(c.outStart, n+1)
+	for i := range ev {
+		v, w := ev[i], ew[i]
+		if local != nil {
+			v, w = local[v], local[w]
+		}
+		c.outStart[v+1]++
+		c.inStart[w+1]++
+	}
+	for v := 0; v < n; v++ {
+		c.outStart[v+1] += c.outStart[v]
+		c.inStart[v+1] += c.inStart[v]
+	}
+	c.inList = grow(c.inList, len(ev))
+	c.outList = grow(c.outList, len(ev))
+	c.fill = grow(c.fill, 2*n)
+	inFill, outFill := c.fill[:n], c.fill[n:]
+	copy(inFill, c.inStart[:n])
+	copy(outFill, c.outStart[:n])
+	for i := range ev {
+		v, w := ev[i], ew[i]
+		if local != nil {
+			v, w = local[v], local[w]
+		}
+		c.outList[outFill[v]] = int32(i)
+		outFill[v]++
+		c.inList[inFill[w]] = int32(i)
+		inFill[w]++
+	}
 }
 
 func (rg *rgraph) n() int { return len(rg.ids) }
@@ -78,29 +122,7 @@ func (rg *rgraph) clearEdges() {
 // finish builds the incidence lists; each keeps edge insertion order.
 func (rg *rgraph) finish() {
 	n := rg.n()
-	rg.inStart = resize(rg.inStart, n+1)
-	rg.outStart = resize(rg.outStart, n+1)
-	for i := range rg.ev {
-		rg.outStart[rg.ev[i]+1]++
-		rg.inStart[rg.ew[i]+1]++
-	}
-	for v := 0; v < n; v++ {
-		rg.outStart[v+1] += rg.outStart[v]
-		rg.inStart[v+1] += rg.inStart[v]
-	}
-	rg.inList = grow(rg.inList, len(rg.ev))
-	rg.outList = grow(rg.outList, len(rg.ev))
-	rg.fill = grow(rg.fill, 2*n)
-	inFill, outFill := rg.fill[:n], rg.fill[n:]
-	copy(inFill, rg.inStart[:n])
-	copy(outFill, rg.outStart[:n])
-	for i := range rg.ev {
-		v, w := rg.ev[i], rg.ew[i]
-		rg.outList[outFill[v]] = int32(i)
-		outFill[v]++
-		rg.inList[inFill[w]] = int32(i)
-		inFill[w]++
-	}
+	rg.incidence.build(n, rg.ev, rg.ew, nil)
 	rg.rank = grow(rg.rank, n)
 	rg.hasRank = resize(rg.hasRank, n)
 	for i := range rg.rank {
