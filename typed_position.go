@@ -428,21 +428,17 @@ func (p *posState) verticalAlignment(layering [][]int32, up bool) {
 
 // blockGraph is the simple directed graph of buildBlockGraph.
 type blockGraph struct {
-	nodes    []int32 // insertion order
-	stamp    []int32
-	gen      int32
-	ev, ew   []int32
-	weight   []float64
-	firstOut []int32 // per position in nodes: its first edge while building
-	nextOut  []int32 // per edge: the next edge from the same source
-	inStart  []int32 // per position in nodes
-	inList   []int32
-	outStart []int32
-	outList  []int32
-	local    []int32 // global -> index in nodes
-	fill     []int32
-	predOrd  []int32 // in-list sources per node, JavaScript order
-	sucOrd   []int32 // out-list targets per node, JavaScript order
+	nodes     []int32 // insertion order
+	stamp     []int32
+	gen       int32
+	ev, ew    []int32
+	weight    []float64
+	firstOut  []int32 // per position in nodes: its first edge while building
+	nextOut   []int32 // per edge: the next edge from the same source
+	incidence         // in- and out-lists per position in nodes
+	local     []int32 // global -> index in nodes
+	predOrd   []int32 // in-list sources per node, JavaScript order
+	sucOrd    []int32 // out-list targets per node, JavaScript order
 }
 
 func (b *blockGraph) reset(n int) {
@@ -487,32 +483,7 @@ func (b *blockGraph) addEdge(v, w int32, weight float64) {
 	b.weight = append(b.weight, weight)
 }
 
-func (b *blockGraph) finish() {
-	n := len(b.nodes)
-	b.inStart = resize(b.inStart, n+1)
-	b.outStart = resize(b.outStart, n+1)
-	for i := range b.ev {
-		b.outStart[b.local[b.ev[i]]+1]++
-		b.inStart[b.local[b.ew[i]]+1]++
-	}
-	for i := 0; i < n; i++ {
-		b.inStart[i+1] += b.inStart[i]
-		b.outStart[i+1] += b.outStart[i]
-	}
-	b.inList = grow(b.inList, len(b.ev))
-	b.outList = grow(b.outList, len(b.ev))
-	b.fill = grow(b.fill, 2*n)
-	inFill, outFill := b.fill[:n], b.fill[n:]
-	copy(inFill, b.inStart[:n])
-	copy(outFill, b.outStart[:n])
-	for i := range b.ev {
-		v, w := b.local[b.ev[i]], b.local[b.ew[i]]
-		b.outList[outFill[v]] = int32(i)
-		outFill[v]++
-		b.inList[inFill[w]] = int32(i)
-		inFill[w]++
-	}
-}
+func (b *blockGraph) finish() { b.incidence.build(len(b.nodes), b.ev, b.ew, b.local) }
 
 func (p *posState) positionSep(v, w int32, nodeSep, edgeSep float64, reverseSep bool) float64 {
 	vLabel, wLabel := &p.s.nl[v], &p.s.nl[w]
