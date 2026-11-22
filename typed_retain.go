@@ -79,20 +79,23 @@ func (s *lstate) retainedBytes() int {
 		n += szIGraph + cap(g.nodes)*szINode + cap(g.edges)*szIEdge + cap(g.counts)*szICount
 	}
 	n += cap(s.nl)*szNLabel + cap(s.el)*szELabel
-	n += 4 * capsI32(s.dummyChains, s.inputNodes, s.buf, s.nodesBuf, s.edgesBuf, s.stack, s.vPath, s.wPath,
-		s.parentBuf, s.borderBuf)
+	n += 4 * (cap(s.dummyChains) + cap(s.inputNodes) + cap(s.buf) + cap(s.nodesBuf) + cap(s.edgesBuf) + cap(s.stack) +
+		cap(s.vPath) + cap(s.wPath) + cap(s.parentBuf) + cap(s.borderBuf))
 	n += cap(s.inputNodeLabels)*szPtr + cap(s.inputEdges)*szEKey + cap(s.inputEdgeLabels)*szIface
 	n += 8 * cap(s.drawn)
 	n += cap(s.ptbuf)*szSlice + s.ptbufCap*szPoint
-	n += (cap(s.depths)+cap(s.layerOf))*szInt + capsBool(s.nonEmpty, s.seenBuf) + 8*cap(s.deltas) + cap(s.nums)*szPostNum
+	n += (cap(s.depths)+cap(s.layerOf))*szInt + cap(s.nonEmpty) + cap(s.seenBuf) + 8*cap(s.deltas) +
+		cap(s.nums)*szPostNum
 	// The inner storage of the per-rank layerings is s.rankBytes.
-	n += (cap(s.lm) + cap(s.o.buckets) + cap(s.o.init) + cap(s.o.layering) + cap(s.o.best) + cap(s.p.adjusted)) * szSlice
+	n += (cap(s.lm) + cap(s.o.buckets) + cap(s.o.init) + cap(s.o.layering) + cap(s.o.best) +
+		cap(s.p.adjusted)) * szSlice
 	n += s.rankBytes
 
 	o := &s.o
 	n += cap(o.layers)*szLayer + o.layerBytes
-	n += 4 * capsI32(o.nodes, o.local, o.stamp, o.mapped, o.mstamp, o.subIdx, o.sstamp, o.prevOf, o.pstamp, o.posOf,
-		o.posGen, o.fill, o.globals, o.simple, o.ordered, o.succStack, o.rankStart, o.rankSorted)
+	n += 4 * (cap(o.nodes) + cap(o.local) + cap(o.stamp) + cap(o.mapped) + cap(o.mstamp) + cap(o.subIdx) +
+		cap(o.sstamp) + cap(o.prevOf) + cap(o.pstamp) + cap(o.posOf) + cap(o.posGen) + cap(o.fill) + cap(o.globals) +
+		cap(o.simple) + cap(o.ordered) + cap(o.succStack) + cap(o.rankStart) + cap(o.rankSorted))
 	// cgSeen holds one entry per entry of cgEdges in a sweep.
 	n += cap(o.cgEdges) * (8 + szU64SetEntry)
 	n += 8*cap(o.tree) + cap(o.sents)*szSouth + cap(o.levels)*szPtr + len(o.levels)*szLevel + o.levelBytes
@@ -100,50 +103,31 @@ func (s *lstate) retainedBytes() int {
 		cap(o.sizes)*szInt
 
 	p := &s.p
-	n += 4 * capsI32(p.predStart, p.predList, p.sucStart, p.sucList, p.nodes, p.chead, p.pos, p.posStamp, p.root,
-		p.align, p.leaves, p.fill, p.compactTo, p.newStart, p.ws, p.order, p.stack, p.next)
-	n += cap(p.cents)*szConfl + capsBool(p.type2Key, p.visited) + cap(p.member)
-	n += 8 * capsF64(p.xs[0], p.xs[1], p.xs[2], p.xs[3])
+	n += 4 * (cap(p.predStart) + cap(p.predList) + cap(p.sucStart) + cap(p.sucList) + cap(p.nodes) + cap(p.chead) +
+		cap(p.pos) + cap(p.posStamp) + cap(p.root) + cap(p.align) + cap(p.leaves) + cap(p.fill) + cap(p.compactTo) +
+		cap(p.newStart) + cap(p.ws) + cap(p.order) + cap(p.stack) + cap(p.next))
+	n += cap(p.cents)*szConfl + cap(p.type2Key) + cap(p.visited) + cap(p.member)
+	n += 8 * (cap(p.xs[0]) + cap(p.xs[1]) + cap(p.xs[2]) + cap(p.xs[3]))
 	b := &p.bk
-	n += 4 * capsI32(b.nodes, b.stamp, b.ev, b.ew, b.firstOut, b.nextOut, b.inStart, b.inList, b.outStart, b.outList,
-		b.local, b.fill, b.predOrd, b.sucOrd)
+	n += 4 * (cap(b.nodes) + cap(b.stamp) + cap(b.ev) + cap(b.ew) + cap(b.firstOut) + cap(b.nextOut) + cap(b.inStart) +
+		cap(b.inList) + cap(b.outStart) + cap(b.outList) + cap(b.local) + cap(b.fill) + cap(b.predOrd) +
+		cap(b.sucOrd))
 	n += 8 * cap(b.weight)
 
 	r := &s.r
 	for _, rg := range [2]*rgraph{&r.full, &r.simple} {
-		n += 4 * capsI32(rg.ids, rg.ev, rg.ew, rg.inStart, rg.inList, rg.outStart, rg.outList, rg.fill)
-		n += 8*capsF64(rg.weight, rg.minlen, rg.rank) + cap(rg.hasRank)
+		n += 4 * (cap(rg.ids) + cap(rg.ev) + cap(rg.ew) + cap(rg.inStart) + cap(rg.inList) + cap(rg.outStart) +
+			cap(rg.outList) + cap(rg.fill))
+		n += 8*(cap(rg.weight)+cap(rg.minlen)+cap(rg.rank)) + cap(rg.hasRank)
 	}
 	t := &r.tree
-	n += capsBool(t.in, t.alive, t.visited) + 8*cap(t.cut) + cap(t.ent)*szTEntry
-	n += 4 * capsI32(t.idxNodes, t.others, t.ea, t.eb, t.eg, t.entA, t.entB, t.pHead, t.pTail, t.sHead, t.sTail,
-		t.low, t.lim, t.parent, t.parentEdge, t.pre, t.post, t.preIdx, t.remap)
-	n += 4 * capsI32(r.local, r.firstOut, r.nextOut, r.snapshot, r.nbr, r.idx, r.rest, r.opp)
+	n += cap(t.in) + cap(t.alive) + cap(t.visited) + 8*cap(t.cut) + cap(t.ent)*szTEntry
+	n += 4 * (cap(t.idxNodes) + cap(t.others) + cap(t.ea) + cap(t.eb) + cap(t.eg) + cap(t.entA) + cap(t.entB) +
+		cap(t.pHead) + cap(t.pTail) + cap(t.sHead) + cap(t.sTail) + cap(t.low) + cap(t.lim) + cap(t.parent) +
+		cap(t.parentEdge) + cap(t.pre) + cap(t.post) + cap(t.preIdx) + cap(t.remap))
+	n += 4 * (cap(r.local) + cap(r.firstOut) + cap(r.nextOut) + cap(r.snapshot) + cap(r.nbr) + cap(r.idx) +
+		cap(r.rest) + cap(r.opp))
 	n += cap(r.visited) + cap(r.lp)*szLP + cap(r.ft)*szFT + cap(r.ll)*szLL
-	return n
-}
-
-func capsI32(xs ...[]int32) int {
-	n := 0
-	for _, x := range xs {
-		n += cap(x)
-	}
-	return n
-}
-
-func capsF64(xs ...[]float64) int {
-	n := 0
-	for _, x := range xs {
-		n += cap(x)
-	}
-	return n
-}
-
-func capsBool(xs ...[]bool) int {
-	n := 0
-	for _, x := range xs {
-		n += cap(x)
-	}
 	return n
 }
 
@@ -163,8 +147,8 @@ func capsLayers(layers [][]int32) int {
 // so all earlier versions together hold at most 4 times the current capacity,
 // which is counted as well.
 func (L *sortLevel) storageBytes() int {
-	n := 4 * capsI32(L.movable, L.subVS, L.vsNext, L.order, L.sourceSet, L.processed, L.resVS, L.expVS, L.insKeys,
-		L.out, L.final)
+	n := 4 * (cap(L.movable) + cap(L.subVS) + cap(L.vsNext) + cap(L.order) + cap(L.sourceSet) + cap(L.processed) +
+		cap(L.resVS) + cap(L.expVS) + cap(L.insKeys) + cap(L.out) + cap(L.final))
 	n += 4 * 4 * (cap(L.expVS) + cap(L.resVS))
 	n += (cap(L.bary) + cap(L.resolved) + cap(L.sortable) + cap(L.unsortable)) * szEntry
 	n += cap(L.subs)*szSubRec + cap(L.cn)*szCNode + (cap(L.inPool)+cap(L.outPool))*szPoolEnt
@@ -174,6 +158,7 @@ func (L *sortLevel) storageBytes() int {
 
 // storageBytes is the storage of the layer graph's buffers.
 func (lg *layerGraph) storageBytes() int {
-	return 4*capsI32(lg.ids, lg.parent, lg.childStart, lg.childList, lg.bl, lg.br, lg.inStart, lg.inU) +
-		cap(lg.replaced) + 8*cap(lg.inW)
+	n := 4 * (cap(lg.ids) + cap(lg.parent) + cap(lg.childStart) + cap(lg.childList) + cap(lg.bl) + cap(lg.br) +
+		cap(lg.inStart) + cap(lg.inU))
+	return n + cap(lg.replaced) + 8*cap(lg.inW)
 }
