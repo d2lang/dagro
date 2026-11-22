@@ -21,13 +21,13 @@ func buildLayerGraphNodes(g *Graph, rank int, relationship string, nodes []strin
 	case "inEdges":
 		for _, v := range nodes {
 			if edges := g.in[v]; edges != nil {
-				edgeCapacity += len(edges.items)
+				edgeCapacity += edges.len()
 			}
 		}
 	case "outEdges":
 		for _, v := range nodes {
 			if edges := g.out[v]; edges != nil {
-				edgeCapacity += len(edges.items)
+				edgeCapacity += edges.len()
 			}
 		}
 	default:

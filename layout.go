@@ -28,6 +28,46 @@ func Layout(g *Graph, options ...LayoutOptions) error {
 		fmt.Printf("%s time: %dms\n", name, time.Since(start).Milliseconds())
 		return err
 	}
+	// Layout runs the typed engine (typed_*.go), which reproduces the Attrs
+	// engine exactly, whenever it accepts the graph. Its storage is reused
+	// between calls; a state is only returned to the pool after a call that
+	// did not panic.
+	typed := getLState()
+	var start time.Time
+	if opts.DebugTiming {
+		start = time.Now()
+	}
+	if !typed.build(g) {
+		putLState(typed)
+		return layoutAttrs(g, run)
+	}
+	if opts.DebugTiming {
+		fmt.Printf("%s time: %dms\n", "  buildLayoutGraph", time.Since(start).Milliseconds())
+	}
+	err, ok := typed.runGuarded(func() error { return run("  runLayout", typed.run) })
+	if !ok {
+		// The typed engine panicked or declined (see runGuarded): typed is
+		// dropped, and the Attrs engine lays out the untouched input,
+		// replaying the counter values typed drew. Its buildLayoutGraph line
+		// was printed above.
+		layoutGraph := buildLayoutGraph(g)
+		layoutGraph.replay = &drawReplay{vals: typed.drawn}
+		return layoutAttrsBuilt(g, layoutGraph, run)
+	}
+	if err == nil {
+		err = run("  updateInputGraph", func() error {
+			typed.update(g)
+			return nil
+		})
+	}
+	putLState(typed)
+	return err
+}
+
+// layoutAttrs is the Attrs-based engine. Layout uses it for graphs the typed
+// engine does not accept (see lstate.build); the tests use it as the
+// reference implementation.
+func layoutAttrs(g *Graph, run func(string, func() error) error) error {
 	var layoutGraph *Graph
 	if err := run("  buildLayoutGraph", func() error {
 		layoutGraph = buildLayoutGraph(g)
@@ -35,6 +75,11 @@ func Layout(g *Graph, options ...LayoutOptions) error {
 	}); err != nil {
 		return err
 	}
+	return layoutAttrsBuilt(g, layoutGraph, run)
+}
+
+// layoutAttrsBuilt is layoutAttrs after buildLayoutGraph.
+func layoutAttrsBuilt(g, layoutGraph *Graph, run func(string, func() error) error) error {
 	if err := run("  runLayout", func() error { return runLayout(layoutGraph) }); err != nil {
 		return err
 	}

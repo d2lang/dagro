@@ -17,6 +17,25 @@ func uniqueID(prefix string) string {
 	return prefix + strconv.FormatUint(uniqueIDCounter.Add(1), 10)
 }
 
+// drawReplay is the counter source of a layout graph that the Attrs engine
+// lays out after the typed engine declined the same input (see
+// lstate.runGuarded): the typed engine has already drawn vals from the
+// process-wide counter, as the original draws its first values, so next
+// returns vals in order before it draws new values.
+type drawReplay struct {
+	vals []uint64
+	at   int
+}
+
+func (r *drawReplay) next() uint64 {
+	if r.at < len(r.vals) {
+		v := r.vals[r.at]
+		r.at++
+		return v
+	}
+	return uniqueIDCounter.Add(1)
+}
+
 // Time evaluates fn and logs its elapsed wall time, matching Dagre's public
 // util.time helper. The deferred log preserves the upstream finally behavior.
 func Time(name string, fn any) (result any) {
@@ -33,7 +52,7 @@ func NoTime(_ string, fn any) any { return callCallable(fn) }
 func addDummyNode(g *Graph, typ string, attrs Attrs, name string) string {
 	v := name
 	for g.HasNode(v) {
-		v = uniqueID(name)
+		v = g.uniqueID(name)
 	}
 	attrs["dummy"] = typ
 	g.SetNode(v, attrs)

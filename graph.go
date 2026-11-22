@@ -3,6 +3,7 @@ package dagro
 import (
 	"fmt"
 	"sort"
+	"strconv"
 	"unicode/utf16"
 )
 
@@ -29,25 +30,54 @@ type Edge struct {
 	HasName bool
 }
 
+// The per-node collections below keep small sets in plain slices and switch
+// to the map representation once they hold more than smallCollection
+// entries. Both representations keep the same insertion order and
+// membership, so every enumeration is unchanged; small graphs just avoid a
+// map per node and direction.
+const smallCollection = 8
+
 type orderedSet struct {
 	order []string
-	has   map[string]bool
+	has   map[string]bool // large sets only
 }
 
-func newOrderedSet() *orderedSet { return &orderedSet{has: map[string]bool{}} }
+func newOrderedSet() *orderedSet { return &orderedSet{} }
+
+func (s *orderedSet) contains(v string) bool {
+	if s.has != nil {
+		return s.has[v]
+	}
+	for _, item := range s.order {
+		if item == v {
+			return true
+		}
+	}
+	return false
+}
 
 func (s *orderedSet) add(v string) {
-	if !s.has[v] {
+	if s.contains(v) {
+		return
+	}
+	s.order = append(s.order, v)
+	if s.has != nil {
 		s.has[v] = true
-		s.order = append(s.order, v)
+	} else if len(s.order) > smallCollection {
+		s.has = make(map[string]bool, 2*len(s.order))
+		for _, item := range s.order {
+			s.has[item] = true
+		}
 	}
 }
 
 func (s *orderedSet) remove(v string) {
-	if !s.has[v] {
+	if !s.contains(v) {
 		return
 	}
-	delete(s.has, v)
+	if s.has != nil {
+		delete(s.has, v)
+	}
 	// Reparenting algorithm-generated nodes normally removes the node that was
 	// just appended. Search backwards so that common case is constant time while
 	// preserving JavaScript property order exactly.
@@ -65,63 +95,170 @@ func (s *orderedSet) values() []string {
 }
 
 type orderedCounter struct {
-	order []string
-	count map[string]int
+	order  []string
+	counts []int          // small counters: parallel to order
+	count  map[string]int // large counters only
 }
 
-func newOrderedCounter() *orderedCounter { return &orderedCounter{count: map[string]int{}} }
+func newOrderedCounter() *orderedCounter { return &orderedCounter{} }
+
+func (m *orderedCounter) find(k string) int {
+	for i, item := range m.order {
+		if item == k {
+			return i
+		}
+	}
+	return -1
+}
+
+// get returns k's count (0 when absent).
+func (m *orderedCounter) get(k string) int {
+	if m.count != nil {
+		return m.count[k]
+	}
+	if i := m.find(k); i >= 0 {
+		return m.counts[i]
+	}
+	return 0
+}
 
 func (m *orderedCounter) inc(k string) {
-	if m.count[k] == 0 {
-		m.order = append(m.order, k)
+	if m.count != nil {
+		if m.count[k] == 0 {
+			m.order = append(m.order, k)
+		}
+		m.count[k]++
+		return
 	}
-	m.count[k]++
+	if i := m.find(k); i >= 0 {
+		m.counts[i]++
+		return
+	}
+	m.order = append(m.order, k)
+	m.counts = append(m.counts, 1)
+	if len(m.order) > smallCollection {
+		m.count = make(map[string]int, 2*len(m.order))
+		for i, item := range m.order {
+			m.count[item] = m.counts[i]
+		}
+		m.counts = nil
+	}
 }
 
 func (m *orderedCounter) dec(k string) {
-	if m.count[k] > 1 {
-		m.count[k]--
-		return
-	}
-	delete(m.count, k)
-	for i, item := range m.order {
-		if item == k {
-			m.order = append(m.order[:i], m.order[i+1:]...)
+	if m.count != nil {
+		if m.count[k] > 1 {
+			m.count[k]--
 			return
 		}
+		delete(m.count, k)
+		for i, item := range m.order {
+			if item == k {
+				m.order = append(m.order[:i], m.order[i+1:]...)
+				return
+			}
+		}
+		return
 	}
+	i := m.find(k)
+	if i < 0 {
+		return
+	}
+	if m.counts[i] > 1 {
+		m.counts[i]--
+		return
+	}
+	m.order = append(m.order[:i], m.order[i+1:]...)
+	m.counts = append(m.counts[:i], m.counts[i+1:]...)
 }
 
 func (m *orderedCounter) keys() []string { return jsObjectKeyOrder(append([]string(nil), m.order...)) }
 
 type edgeMap struct {
 	order []string
-	items map[string]Edge
+	edges []Edge          // small maps: parallel to order
+	items map[string]Edge // large maps only
 }
 
-func newEdgeMap() *edgeMap { return &edgeMap{items: map[string]Edge{}} }
+func newEdgeMap() *edgeMap { return &edgeMap{} }
 
 func newEdgeMapWithCapacity(capacity int) *edgeMap {
+	if capacity <= smallCollection {
+		return &edgeMap{order: make([]string, 0, capacity), edges: make([]Edge, 0, capacity)}
+	}
 	return &edgeMap{order: make([]string, 0, capacity), items: make(map[string]Edge, capacity)}
 }
 
-func (m *edgeMap) set(id string, e Edge) {
-	if _, ok := m.items[id]; !ok {
-		m.order = append(m.order, id)
+func (m *edgeMap) len() int { return len(m.order) }
+
+func (m *edgeMap) find(id string) int {
+	for i, item := range m.order {
+		if item == id {
+			return i
+		}
 	}
-	m.items[id] = e
+	return -1
+}
+
+func (m *edgeMap) get(id string) (Edge, bool) {
+	if m.items != nil {
+		e, ok := m.items[id]
+		return e, ok
+	}
+	if i := m.find(id); i >= 0 {
+		return m.edges[i], true
+	}
+	return Edge{}, false
+}
+
+// at returns the edge at position i of the insertion order.
+func (m *edgeMap) at(i int) Edge {
+	if m.items != nil {
+		return m.items[m.order[i]]
+	}
+	return m.edges[i]
+}
+
+func (m *edgeMap) set(id string, e Edge) {
+	if m.items != nil {
+		if _, ok := m.items[id]; !ok {
+			m.order = append(m.order, id)
+		}
+		m.items[id] = e
+		return
+	}
+	if i := m.find(id); i >= 0 {
+		m.edges[i] = e
+		return
+	}
+	m.order = append(m.order, id)
+	m.edges = append(m.edges, e)
+	if len(m.order) > smallCollection {
+		m.items = make(map[string]Edge, 2*len(m.order))
+		for i, item := range m.order {
+			m.items[item] = m.edges[i]
+		}
+		m.edges = nil
+	}
 }
 
 func (m *edgeMap) remove(id string) {
-	if _, ok := m.items[id]; !ok {
-		return
-	}
-	delete(m.items, id)
-	for i, item := range m.order {
-		if item == id {
-			m.order = append(m.order[:i], m.order[i+1:]...)
+	if m.items != nil {
+		if _, ok := m.items[id]; !ok {
 			return
 		}
+		delete(m.items, id)
+		for i, item := range m.order {
+			if item == id {
+				m.order = append(m.order[:i], m.order[i+1:]...)
+				return
+			}
+		}
+		return
+	}
+	if i := m.find(id); i >= 0 {
+		m.order = append(m.order[:i], m.order[i+1:]...)
+		m.edges = append(m.edges[:i], m.edges[i+1:]...)
 	}
 }
 
@@ -132,6 +269,9 @@ func (m *edgeMap) values() []Edge {
 	// Canonical edge IDs always contain edgeKeyDelim, so none is a JS
 	// array-index key. Their property order is already their insertion order.
 	out := make([]Edge, 0, len(m.order))
+	if m.items == nil {
+		return append(out, m.edges...)
+	}
 	for _, id := range m.order {
 		out = append(out, m.items[id])
 	}
@@ -153,6 +293,9 @@ type Graph struct {
 	preds, sucs                    map[string]*orderedCounter
 	edgeObjs                       *edgeMap
 	edgeLabels                     map[string]any
+	// replay, when set, is where uniqueID takes its counter values (only on
+	// the layout graph of a declined typed layout, see drawReplay).
+	replay *drawReplay
 }
 
 // NewGraph constructs a graph. Graphs are directed by default, matching
@@ -225,7 +368,7 @@ func (g *Graph) Nodes() []string { return jsObjectKeyOrder(append([]string(nil),
 func (g *Graph) Sources() []string {
 	var out []string
 	for _, v := range g.Nodes() {
-		if in := g.in[v]; in == nil || len(in.items) == 0 {
+		if in := g.in[v]; in == nil || in.len() == 0 {
 			out = append(out, v)
 		}
 	}
@@ -235,7 +378,7 @@ func (g *Graph) Sources() []string {
 func (g *Graph) Sinks() []string {
 	var out []string
 	for _, v := range g.Nodes() {
-		if outEdges := g.out[v]; outEdges == nil || len(outEdges.items) == 0 {
+		if outEdges := g.out[v]; outEdges == nil || outEdges.len() == 0 {
 			out = append(out, v)
 		}
 	}
@@ -419,7 +562,7 @@ func (g *Graph) Neighbors(v string) []string {
 	start := len(out)
 	if sucs != nil {
 		for _, w := range sucs.order {
-			if preds == nil || preds.count[w] == 0 {
+			if preds == nil || preds.get(w) == 0 {
 				out = append(out, w)
 			}
 		}
@@ -579,18 +722,41 @@ func (g *Graph) ensureEdgeEndpointMaps(v, w string) {
 	}
 }
 
+// uniqueID is uniqueID(prefix); every counter draw of the Attrs engine goes
+// through its layout graph's uniqueID (addDummyNode, createOrderRootNode,
+// nextReversedEdgeName), so that a replay set on that graph applies to all.
 func (g *Graph) uniqueID(prefix string) string {
+	if g.replay != nil {
+		return prefix + strconv.FormatUint(g.replay.next(), 10)
+	}
 	return uniqueID(prefix)
 }
 
-func (g *Graph) Edge(e Edge) any { return g.edgeLabels[edgeObjToID(g.directed, e)] }
+// edgeLabel looks an edge label up by its id without allocating the id: the
+// id is built in a stack buffer and the map is indexed with string(key).
+func (g *Graph) edgeLabel(v, w string, name *string) (any, bool) {
+	var buf [96]byte
+	key := appendEdgeID(buf[:0], g.directed, v, w, name)
+	label, ok := g.edgeLabels[string(key)]
+	return label, ok
+}
+
+func (g *Graph) Edge(e Edge) any {
+	var n *string
+	if e.HasName {
+		n = &e.Name
+	}
+	label, _ := g.edgeLabel(e.V, e.W, n)
+	return label
+}
 
 func (g *Graph) EdgeByArgs(v, w string, name ...string) any {
 	var n *string
 	if len(name) > 0 {
 		n = &name[0]
 	}
-	return g.edgeLabels[edgeArgsToID(g.directed, v, w, n)]
+	label, _ := g.edgeLabel(v, w, n)
+	return label
 }
 
 func (g *Graph) HasEdge(v, w string, name ...string) bool {
@@ -598,17 +764,21 @@ func (g *Graph) HasEdge(v, w string, name ...string) bool {
 	if len(name) > 0 {
 		n = &name[0]
 	}
-	_, ok := g.edgeLabels[edgeArgsToID(g.directed, v, w, n)]
+	_, ok := g.edgeLabel(v, w, n)
 	return ok
 }
 func (g *Graph) HasEdgeObject(e Edge) bool {
-	_, ok := g.edgeLabels[edgeObjToID(g.directed, e)]
+	var n *string
+	if e.HasName {
+		n = &e.Name
+	}
+	_, ok := g.edgeLabel(e.V, e.W, n)
 	return ok
 }
 
 func (g *Graph) RemoveEdge(e Edge) *Graph {
 	id := edgeObjToID(g.directed, e)
-	stored, ok := g.edgeObjs.items[id]
+	stored, ok := g.edgeObjs.get(id)
 	if !ok {
 		return g
 	}
@@ -627,7 +797,7 @@ func (g *Graph) RemoveEdgeByArgs(v, w string, name ...string) *Graph {
 		n = &name[0]
 	}
 	id := edgeArgsToID(g.directed, v, w, n)
-	if e, ok := g.edgeObjs.items[id]; ok {
+	if e, ok := g.edgeObjs.get(id); ok {
 		return g.RemoveEdge(e)
 	}
 	return g
@@ -696,16 +866,16 @@ func (g *Graph) NodeEdges(v string, w ...string) []Edge {
 	// Match graphlib's incoming-then-outgoing order, including duplicate
 	// self-edges and its empty-string endpoint meaning "no filter".
 	if in != nil {
-		for _, id := range in.order {
-			e := in.items[id]
+		for i := range in.order {
+			e := in.at(i)
 			if filter == "" || e.V == filter {
 				edges = append(edges, e)
 			}
 		}
 	}
 	if out != nil {
-		for _, id := range out.order {
-			e := out.items[id]
+		for i := range out.order {
+			e := out.at(i)
 			if filter == "" || e.W == filter {
 				edges = append(edges, e)
 			}
@@ -723,6 +893,21 @@ func edgeArgsToID(directed bool, v, w string, name *string) string {
 		n = *name
 	}
 	return v + edgeKeyDelim + w + edgeKeyDelim + n
+}
+
+// appendEdgeID appends edgeArgsToID(directed, v, w, name) to dst.
+func appendEdgeID(dst []byte, directed bool, v, w string, name *string) []byte {
+	if !directed && jsStringGreater(v, w) {
+		v, w = w, v
+	}
+	dst = append(dst, v...)
+	dst = append(dst, edgeKeyDelim...)
+	dst = append(dst, w...)
+	dst = append(dst, edgeKeyDelim...)
+	if name != nil {
+		return append(dst, *name...)
+	}
+	return append(dst, defaultEdgeName...)
 }
 
 func edgeArgsToObj(directed bool, v, w string, name *string) Edge {
