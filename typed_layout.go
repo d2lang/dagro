@@ -1615,8 +1615,7 @@ func (s *lstate) positionSelfEdges() {
 			height := finiteOr(selfNode.height, true, 0)
 			nodeX := finiteOr(node.x, node.hasX, x)
 			nodeY := finiteOr(node.y, node.hasY, y)
-			dx, dy := width/2, height/2
-			s.setPoints(label, appendCenteredSelfEdgePoints(s.pointBuf(label), nodeX, nodeY, dx, dy))
+			s.setSelfLoop(label, nodeX, nodeY, width, height)
 			l := &s.el[label]
 			l.x, l.y, l.hasX, l.hasY = nodeX, nodeY, true, true
 			s.setEdgeRef(r, label)
@@ -1633,9 +1632,7 @@ func (s *lstate) positionSelfEdges() {
 			}
 			x := finiteOr(node.x, node.hasX, 0)
 			y := finiteOr(node.y, node.hasY, 0)
-			dx := finiteOr(node.width, true, 0) / 2
-			dy := finiteOr(node.height, true, 0) / 2
-			s.setPoints(selfEdge.label, appendCenteredSelfEdgePoints(s.pointBuf(selfEdge.label), x, y, dx, dy))
+			s.setSelfLoop(selfEdge.label, x, y, finiteOr(node.width, true, 0), finiteOr(node.height, true, 0))
 		}
 	}
 }
@@ -1879,6 +1876,14 @@ func (s *lstate) undoAcyclic() {
 }
 
 var errIntersectInside = errors.New("not possible to find intersection inside of the rectangle")
+
+// setSelfLoop stores as label i's points the route of a self-loop around
+// (x, y) on a node of the given width and height. It halves the size itself:
+// where the compiler fuses a multiply and an add (arm64, for one), x +
+// width/2 is then fused as in the Attrs engine's positionSelfEdges.
+func (s *lstate) setSelfLoop(i int32, x, y, width, height float64) {
+	s.setPoints(i, appendCenteredSelfEdgePoints(s.pointBuf(i), x, y, width/2, height/2))
+}
 
 func appendCenteredSelfEdgePoints(buf []Point, x, y, dx, dy float64) []Point {
 	return append(buf,
