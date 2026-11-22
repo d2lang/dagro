@@ -1,0 +1,687 @@
+{
+ "RankDir": "LR",
+ "RankSep": 1491,
+ "EdgeSep": 20,
+ "NodeSep": 60,
+ "MarginX": 0,
+ "MarginY": 0,
+ "Acyclicer": "",
+ "Ranker": "",
+ "Align": "",
+ "Nodes": [
+  {
+   "ID": "0",
+   "Parent": -1,
+   "Width": 175,
+   "Height": 122
+  },
+  {
+   "ID": "2",
+   "Parent": 0,
+   "Width": 266,
+   "Height": 66
+  },
+  {
+   "ID": "3",
+   "Parent": 0,
+   "Width": 266,
+   "Height": 66
+  },
+  {
+   "ID": "4",
+   "Parent": 0,
+   "Width": 266,
+   "Height": 66
+  },
+  {
+   "ID": "5",
+   "Parent": 0,
+   "Width": 80,
+   "Height": 66
+  },
+  {
+   "ID": "6",
+   "Parent": 0,
+   "Width": 121,
+   "Height": 66
+  },
+  {
+   "ID": "7",
+   "Parent": 0,
+   "Width": 105,
+   "Height": 66
+  },
+  {
+   "ID": "8",
+   "Parent": 0,
+   "Width": 109,
+   "Height": 92
+  },
+  {
+   "ID": "9",
+   "Parent": 0,
+   "Width": 268,
+   "Height": 156
+  },
+  {
+   "ID": "12",
+   "Parent": -1,
+   "Width": 109,
+   "Height": 66
+  },
+  {
+   "ID": "14",
+   "Parent": -1,
+   "Width": 95,
+   "Height": 81
+  },
+  {
+   "ID": "15",
+   "Parent": 10,
+   "Width": 88,
+   "Height": 66
+  },
+  {
+   "ID": "18",
+   "Parent": 10,
+   "Width": 224,
+   "Height": 159
+  },
+  {
+   "ID": "20",
+   "Parent": 10,
+   "Width": 670,
+   "Height": 66
+  },
+  {
+   "ID": "21",
+   "Parent": 10,
+   "Width": 99,
+   "Height": 92
+  },
+  {
+   "ID": "23",
+   "Parent": -1,
+   "Width": 94,
+   "Height": 94
+  },
+  {
+   "ID": "24",
+   "Parent": -1,
+   "Width": 154,
+   "Height": 66
+  },
+  {
+   "ID": "26",
+   "Parent": -1,
+   "Width": 283,
+   "Height": 81
+  },
+  {
+   "ID": "27",
+   "Parent": 17,
+   "Width": 80,
+   "Height": 66
+  },
+  {
+   "ID": "28",
+   "Parent": 17,
+   "Width": 71,
+   "Height": 66
+  },
+  {
+   "ID": "31",
+   "Parent": 17,
+   "Width": 63,
+   "Height": 66
+  },
+  {
+   "ID": "34",
+   "Parent": -1,
+   "Width": 987,
+   "Height": 122
+  },
+  {
+   "ID": "35",
+   "Parent": 21,
+   "Width": 164,
+   "Height": 114
+  },
+  {
+   "ID": "36",
+   "Parent": 21,
+   "Width": 101,
+   "Height": 66
+  },
+  {
+   "ID": "37",
+   "Parent": 21,
+   "Width": 1,
+   "Height": 61
+  },
+  {
+   "ID": "39",
+   "Parent": -1,
+   "Width": 107,
+   "Height": 66
+  },
+  {
+   "ID": "42",
+   "Parent": -1,
+   "Width": 344,
+   "Height": 92
+  },
+  {
+   "ID": "43",
+   "Parent": -1,
+   "Width": 159,
+   "Height": 114
+  },
+  {
+   "ID": "44",
+   "Parent": -1,
+   "Width": 72,
+   "Height": 66
+  },
+  {
+   "ID": "45",
+   "Parent": -1,
+   "Width": 770,
+   "Height": 81
+  },
+  {
+   "ID": "46",
+   "Parent": 29,
+   "Width": 93,
+   "Height": 51
+  },
+  {
+   "ID": "47",
+   "Parent": 29,
+   "Width": 100,
+   "Height": 100
+  },
+  {
+   "ID": "49",
+   "Parent": -1,
+   "Width": 182,
+   "Height": 130
+  },
+  {
+   "ID": "51",
+   "Parent": -1,
+   "Width": 176,
+   "Height": 92
+  }
+ ],
+ "Edges": [
+  {
+   "V": 3,
+   "W": 4,
+   "Name": "ogr.(kqpdzm \u003c-\u003e k)[0]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 27,
+   "W": 31,
+   "Name": "(tzgz.kc -\u003e yrbv.ü77)[1]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 27,
+   "W": 31,
+   "Name": "(tzgz.kc -\u003e yrbv.ü77)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 18,
+   "W": 5,
+   "Name": "(itkye.pr -\u003e ogr.brown-959)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 99,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 14,
+   "W": 8,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 33,
+   "W": 3,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 118,
+   "Height": 21,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 15,
+   "W": 16,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 174,
+   "Height": 21,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 9,
+   "W": 6,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 170,
+   "Height": 69,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 24,
+   "W": 11,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 7,
+   "W": 19,
+   "Name": "(ogr.ltwo -\u003e itkye.hvq)[0]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 119,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 7,
+   "W": 19,
+   "Name": "(ogr.ltwo -\u003e itkye.hvq)[1]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 119,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 31,
+   "W": 14,
+   "Name": "(yrbv \u003c-\u003e café24.λ44)[1]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 103,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 28,
+   "W": 31,
+   "Name": "(tzgz.λ83 \u003c-\u003e yrbv)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 103,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 31,
+   "W": 14,
+   "Name": "(yrbv \u003c-\u003e café24.λ44)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 103,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 30,
+   "W": 22,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 54,
+   "Height": 21,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 25,
+   "W": 15,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 28,
+   "W": 16,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 48,
+   "Height": 26,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 1,
+   "W": 25,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 5,
+   "W": 22,
+   "Name": "(ogr.brown-959 -- tvwq.ephq)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 23,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 9,
+   "W": 1,
+   "Name": "(lorem-14 -\u003e ogr.worker-982)[1]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 9,
+   "W": 1,
+   "Name": "(lorem-14 -\u003e ogr.worker-982)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 9,
+   "W": 1,
+   "Name": "(lorem-14 -\u003e ogr.worker-982)[3]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 7,
+   "W": 20,
+   "Name": "(ogr.ltwo -\u003e itkye.vp)[1]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 32,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 6,
+   "W": 33,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 13,
+   "W": 3,
+   "Name": "(café24.dolor alpha db211 -\u003e ogr)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 26,
+   "W": 1,
+   "Name": "(tzgz.λ90 -\u003e ogr.worker-982)[0]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 4,
+   "W": 31,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 18,
+   "W": 26,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 26,
+   "W": 23,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 15,
+   "W": 7,
+   "Name": "(ur -- ogr.ltwo)[3]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 101,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 16,
+   "W": 12,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 78,
+   "Height": 21,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 16,
+   "W": 2,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 5,
+   "W": 13,
+   "Name": "(ogr.brown-959 -\u003e café24.dolor alpha db211)[1]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 277,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 5,
+   "W": 13,
+   "Name": "(ogr.brown-959 -\u003e café24.dolor alpha db211)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 277,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 27,
+   "W": 24,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 20,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 27,
+   "W": 26,
+   "Name": "(tzgz \u003c- tzgz)[0]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 246,
+   "Height": 73,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 33,
+   "W": 32,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 92,
+   "Height": 53,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 2,
+   "W": 30,
+   "Name": "(yrbv.kxlcwd \u003c- ogr.ad)[2]",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 36,
+   "Height": 41,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 8,
+   "W": 27,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 42,
+   "Height": 37,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  }
+ ]
+}
