@@ -16,7 +16,8 @@ func originalEdgeValues(m *edgeMap) []Edge {
 	keys := jsObjectKeyOrder(append([]string(nil), m.order...))
 	out := make([]Edge, 0, len(keys))
 	for _, id := range keys {
-		out = append(out, m.items[id])
+		e, _ := m.get(id)
+		out = append(out, e)
 	}
 	return out
 }

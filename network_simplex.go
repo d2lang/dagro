@@ -66,8 +66,8 @@ func calcCutValue(t, g *Graph, child string) float64 {
 		if incident == nil {
 			continue
 		}
-		for _, id := range incident.order {
-			e := incident.items[id]
+		for i := range incident.order {
+			e := incident.at(i)
 			isOutEdge := e.V == child
 			other := e.V
 			if isOutEdge {
@@ -158,8 +158,8 @@ func dfsAssignLowLim(tree *Graph, visited map[string]bool, nextLim float64, v, p
 }
 
 func leaveEdge(tree *Graph) (Edge, bool) {
-	for _, id := range tree.edgeObjs.order {
-		e := tree.edgeObjs.items[id]
+	for i := range tree.edgeObjs.order {
+		e := tree.edgeObjs.at(i)
 		if num(asAttrs(tree.Edge(e)), "cutvalue") < 0 {
 			return e, true
 		}
@@ -185,8 +185,8 @@ func enterEdge(t, g *Graph, edge Edge) (Edge, bool) {
 	var best Edge
 	bestSlack := 0.0
 	found := false
-	for _, id := range g.edgeObjs.order {
-		candidate := g.edgeObjs.items[id]
+	for i := range g.edgeObjs.order {
+		candidate := g.edgeObjs.at(i)
 		vDescendant := isDescendant(asAttrs(t.Node(candidate.V)), tailLabel)
 		wDescendant := isDescendant(asAttrs(t.Node(candidate.W)), tailLabel)
 		if flip != vDescendant || flip == wDescendant {
@@ -275,7 +275,7 @@ func treeEdge(tree *Graph, u, v string) Edge {
 	// directly instead of allocating and scanning both adjacency lists.
 	// Keep NodeEdges' empty-string filter behavior for the JS test hook.
 	if !tree.directed && !tree.multigraph && v != "" {
-		if e, ok := tree.edgeObjs.items[edgeArgsToID(false, u, v, nil)]; ok &&
+		if e, ok := tree.edgeObjs.get(edgeArgsToID(false, u, v, nil)); ok &&
 			(e.V == u && e.W == v || e.V == v && e.W == u) {
 			return e
 		}

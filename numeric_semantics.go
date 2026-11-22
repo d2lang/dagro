@@ -41,6 +41,24 @@ func mathMaxJS(values ...float64) float64 {
 	return result
 }
 
+// maxJS2 and minJS2 are mathMaxJS(a, b) and mathMinJS(a, b) without the
+// variadic slice. Past the NaN test the builtin max and min equal math.Max
+// and math.Min (also for infinities and signed zeros: max(-0, +0) = +0,
+// min(-0, +0) = -0) and compile to one instruction instead of a call.
+func maxJS2(a, b float64) float64 {
+	if a != a || b != b {
+		return math.NaN()
+	}
+	return max(a, b)
+}
+
+func minJS2(a, b float64) float64 {
+	if a != a || b != b {
+		return math.NaN()
+	}
+	return min(a, b)
+}
+
 // lodashMinJS and lodashMaxJS model the Lodash 4 extrema helpers used by
 // Dagre. Lodash skips undefined and NaN values rather than propagating NaN.
 // A NaN return represents Lodash's undefined result when no numeric value is
@@ -73,6 +91,35 @@ func lodashMaxJS(values ...float64) float64 {
 		}
 	}
 	return result
+}
+
+// lodashMin2 and lodashMax2 are lodashMinJS(a, b) and lodashMaxJS(a, b)
+// without the variadic slice: NaN arguments are skipped, a is kept on ties,
+// and two NaNs give math.NaN().
+func lodashMin2(a, b float64) float64 {
+	if a != a {
+		if b != b {
+			return math.NaN()
+		}
+		return b
+	}
+	if b < a {
+		return b
+	}
+	return a
+}
+
+func lodashMax2(a, b float64) float64 {
+	if a != a {
+		if b != b {
+			return math.NaN()
+		}
+		return b
+	}
+	if b > a {
+		return b
+	}
+	return a
 }
 
 // jsConcatString covers the primitive values Dagre concatenates into debug
