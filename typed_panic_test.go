@@ -230,6 +230,7 @@ func TestConcurrentCounterDraws(t *testing.T) {
 // never reach a caller of Layout.
 func TestNoTypedPanicTextEscapes(t *testing.T) {
 	slowUnderRace(t)
+	skipUnlessNaNConvertsToZero(t)
 	z := newSpecGenerator(4242, "minlen0,weirdnums")
 	for i := 0; i < 3000; i++ {
 		s := z.spec(14)

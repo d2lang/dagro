@@ -167,6 +167,7 @@ func TestReplaySource(t *testing.T) {
 // the original's outcome and leave the counter where the original leaves it.
 // Without the replay the counter would end ahead by the typed engine's draws.
 func TestDeclineReplaysDraws(t *testing.T) {
+	skipUnlessNaNConvertsToZero(t)
 	replayed := 0
 	z := newSpecGenerator(20261121, "minlen0,weirdnums,weirdlabels,removals")
 	for i := 0; i < 700; i++ {

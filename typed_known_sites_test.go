@@ -133,8 +133,12 @@ func TestKnownSitesRaiseOriginalPanic(t *testing.T) {
 
 	// A Graph-API spec on which the original's assignOrder fails.
 	g, _ := buildFromSpec(declineSpec())
-	if site, value, _, _ := knownSite(func(s *lstate) bool { return s.build(g) }); site != "assignOrder" {
-		t.Fatalf("decline spec: typed engine stopped at %q (%v)", site, value)
+	// Its minlen is NaN, so where int(NaN) is not 0 the run takes another
+	// path (see nanConvertsToZero).
+	if nanConvertsToZero() {
+		if site, value, _, _ := knownSite(func(s *lstate) bool { return s.build(g) }); site != "assignOrder" {
+			t.Fatalf("decline spec: typed engine stopped at %q (%v)", site, value)
+		}
 	}
 
 	// The empty graph: the original's order fails on make([]int, 0, -1).

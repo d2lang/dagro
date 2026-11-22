@@ -8,6 +8,7 @@ import (
 // Brandes-Koepf membership and the other position phases on
 // generated graphs with fractional and zero minlen, against the original.
 func TestFracAndZeroMinlenMatchOriginal(t *testing.T) {
+	skipUnlessNaNConvertsToZero(t)
 	for _, c := range []struct {
 		features string
 		seed     int64
