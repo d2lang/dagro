@@ -6,6 +6,10 @@ import (
 )
 
 // resize returns s with length n and zeroed contents, reusing its storage.
+// It is not inlined: it is called from about thirty places, none of them in
+// a hot loop. (grow, below, is called in hot loops and stays inlinable.)
+//
+//go:noinline
 func resize[T any](s []T, n int) []T {
 	if cap(s) < n {
 		return make([]T, n)

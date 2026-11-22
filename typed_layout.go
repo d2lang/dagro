@@ -301,6 +301,11 @@ func (s *lstate) noteInputEdgeName(name string) {
 	}
 }
 
+// ensureNode extends s.nl with labels without attributes up to node id. It
+// is not inlined: it runs once per new node, and inlining its label append at
+// every call site would add kilobytes of code.
+//
+//go:noinline
 func (s *lstate) ensureNode(id int32) {
 	for int32(len(s.nl)) <= id {
 		s.nl = appendGrow(s.nl, newNLabel())
@@ -405,7 +410,11 @@ func (s *lstate) nodes() []int32 {
 	return s.nodesBuf
 }
 
-// edges returns g.Edges() in a buffer that the next call overwrites.
+// edges returns g.Edges() in a buffer that the next call overwrites. It is
+// not inlined: the phases call it about twenty times, once per pass over the
+// edges, which inlining would not speed up.
+//
+//go:noinline
 func (s *lstate) edges() []int32 {
 	s.edgesBuf = s.g.edgeList(s.edgesBuf[:0])
 	return s.edgesBuf
