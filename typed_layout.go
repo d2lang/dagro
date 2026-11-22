@@ -94,12 +94,15 @@ type elabel struct {
 	nestingEdge                 bool
 }
 
-func newNLabel() nlabel {
-	nan := math.NaN()
-	return nlabel{
-		x: nan, y: nan, rank: nan, order: nan, minRank: nan, maxRank: nan,
-		borderTop: inone, borderBottom: inone, edgeLabel: inone,
-	}
+// newNLabel returns a node label without attributes: a copy of nlabelNone,
+// which is smaller code than building the label at each inlined call.
+func newNLabel() nlabel { return nlabelNone }
+
+// nlabelNone is the label of a node without attributes. It is only ever
+// copied, never written.
+var nlabelNone = nlabel{
+	x: math.NaN(), y: math.NaN(), rank: math.NaN(), order: math.NaN(), minRank: math.NaN(), maxRank: math.NaN(),
+	borderTop: inone, borderBottom: inone, edgeLabel: inone,
 }
 
 func newELabel() elabel {
