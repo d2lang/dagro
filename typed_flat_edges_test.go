@@ -79,7 +79,7 @@ func TestSameRankFlatEdgeTrackReuse(t *testing.T) {
 	}{{0, 1, "left"}, {2, 3, "right"}, {0, 1, "parallel"}} {
 		e := NewLayoutEdge(edge.v, edge.w)
 		e.HasName, e.Name = true, edge.name
-		e.Width, e.Height, e.LabelPos = 16, 12, "c"
+		e.Width, e.Height, e.LabelPos = 80, 12, "c"
 		in.Edges = append(in.Edges, e)
 	}
 	var out LayoutOutput
@@ -89,5 +89,44 @@ func TestSameRankFlatEdgeTrackReuse(t *testing.T) {
 	y0, y1, y2 := out.Edges[0].Y, out.Edges[1].Y, out.Edges[2].Y
 	if (y1 != y0 && y1 != y2) || math.Abs(y0-y2) < in.EdgeSep+in.Edges[0].Height {
 		t.Fatalf("edge track label centers = %v, %v, %v", y0, y1, y2)
+	}
+}
+
+// Reciprocal labeled transitions must retain distinct arrowheads even when a
+// regular edge also enters the peer perpendicularly to the rank.
+func TestSameRankReciprocalPorts(t *testing.T) {
+	for _, dir := range []string{"TB", "BT", "LR", "RL"} {
+		t.Run(dir, func(t *testing.T) {
+			in := DefaultLayoutInput()
+			in.RankDir = dir
+			in.Nodes = []LayoutNode{
+				{ID: "source", Parent: -1, Width: 60, Height: 60},
+				{ID: "playing", Parent: -1, Width: 80, Height: 80},
+				{ID: "paused", Parent: -1, Width: 80, Height: 80},
+			}
+			in.RankGroups = [][]string{{"playing", "paused"}}
+			in.Edges = []LayoutEdge{NewLayoutEdge(0, 1), NewLayoutEdge(1, 2), NewLayoutEdge(2, 1)}
+			for i := 1; i < len(in.Edges); i++ {
+				in.Edges[i].Width, in.Edges[i].Height, in.Edges[i].LabelPos = 25, 13, "c"
+			}
+			var out LayoutOutput
+			if err := LayoutTyped(&in, &out); err != nil {
+				t.Fatal(err)
+			}
+			direct, back := out.Edges[1], out.Edges[2]
+			if len(direct.Points) != 3 || !direct.HasXY || direct.Points[1] != (Point{X: direct.X, Y: direct.Y}) {
+				t.Fatalf("label should fit the direct edge between adjacent boxes: %+v", direct)
+			}
+			incoming := out.Edges[0].Points
+			if len(back.Points) != 4 || back.Points[3] == incoming[len(incoming)-1] {
+				t.Fatalf("return arrow shares the incoming tip: %+v, %+v", back, incoming)
+			}
+			for _, i := range []int{0, 2} {
+				a, b := back.Points[i], back.Points[i+1]
+				if a.X != b.X && a.Y != b.Y {
+					t.Fatalf("diagonal stem between %+v and %+v", a, b)
+				}
+			}
+		})
 	}
 }

@@ -58,6 +58,8 @@ func (s *lstate) positionWithFlatEdges(flat []detachedEdge) {
 // different layers. Once ordering is final, route adjacent endpoints directly
 // and allocate space above the layer for the remaining spans and their labels.
 func (s *lstate) routeFlatEdges(flat []detachedEdge) {
+	const flatLabelEndClearance = 8
+
 	layers := s.buildLayerMatrix(s.p.leaves)
 	rows := make([][]flatSpan, len(layers))
 	// Number of obstacles preceding each node, ignoring the zero-sized chain
@@ -88,7 +90,10 @@ func (s *lstate) routeFlatEdges(flat []detachedEdge) {
 		labeled := l.width > 0 && l.height > 0
 		pair := [2]int32{v, w}
 		_, used := straight[pair]
-		if !labeled && !used && before[w] == before[v]+1 && gapRight > gapLeft {
+		// A centered label can use a direct link when the space
+		// between the boxes leaves room at both ends for the markers.
+		fits := !labeled || (strings.EqualFold(l.labelpos, "c") && gapRight-gapLeft >= l.width+2*flatLabelEndClearance)
+		if fits && !used && before[w] == before[v]+1 && gapRight > gapLeft {
 			straight[pair] = f.label
 			continue
 		}
@@ -140,6 +145,35 @@ func (s *lstate) routeFlatEdges(flat []detachedEdge) {
 		a, b := s.nl[pair[0]], s.nl[pair[1]]
 		middle := Point{X: (a.x + a.width/2 + b.x - b.width/2) / 2, Y: a.y}
 		s.setPoints(label, append(s.pointBuf(label), middle))
+		l := &s.el[label]
+		if l.width > 0 && l.height > 0 {
+			l.x, l.y, l.hasX, l.hasY = middle.X, middle.Y, true, true
+		}
+	}
+}
+
+// Flat tracks approach their endpoint face perpendicularly. Project
+// their stems onto that face after restoring the requested orientation.
+func (s *lstate) dockFlatEdgeStems(flat []detachedEdge) {
+	if len(flat) == 0 {
+		return
+	}
+	dir := lowerRankdir(s.rankdir)
+	horizontal := dir == "lr" || dir == "rl"
+	for _, f := range flat {
+		points := s.el[f.label].points
+		if len(points) != 4 {
+			continue // direct link
+		}
+		for i, id := range [2]int32{f.e.v, f.e.w} {
+			n := &s.nl[id]
+			end, bend := &points[3*i], points[1+i]
+			if horizontal {
+				end.X, end.Y = n.x+math.Copysign(n.width/2, bend.X-n.x), bend.Y
+			} else {
+				end.X, end.Y = bend.X, n.y+math.Copysign(n.height/2, bend.Y-n.y)
+			}
+		}
 	}
 }
 
@@ -194,14 +228,41 @@ func (s *lstate) routeFlatSpans(spans []flatSpan, top, clearance float64) float6
 		t.y = y + clearance + t.above
 		y = t.y + t.below
 	}
+	// Spread the stems over the half of each node facing its peer. The
+	// middle remains available for ordinary inter-rank connections. Inner
+	// tracks dock nearer the peer, so their stems do not cross outer spans.
+	type face struct {
+		node int32
+		side int
+	}
+	counts, used := map[face]int{}, map[face]int{}
+	faceOf := func(v, w int32) face {
+		side := 1
+		if s.nl[v].x > s.nl[w].x {
+			side = -1
+		}
+		return face{node: v, side: side}
+	}
+	for _, r := range spans {
+		e := r.edge.e
+		counts[faceOf(e.v, e.w)]++
+		counts[faceOf(e.w, e.v)]++
+	}
+	port := func(face face) float64 {
+		used[face]++
+		n := &s.nl[face.node]
+		return n.x + float64(face.side)*n.width/2*float64(used[face])/float64(counts[face]+1)
+	}
+	sort.SliceStable(spans, func(i, j int) bool { return spans[i].track < spans[j].track })
 	for _, r := range spans {
 		f := r.edge
-		v, w := &s.nl[f.e.v], &s.nl[f.e.w]
+		vx := port(faceOf(f.e.v, f.e.w))
+		wx := port(faceOf(f.e.w, f.e.v))
 		y := tracks[r.track].y
-		s.setPoints(f.label, append(s.pointBuf(f.label), Point{X: v.x, Y: y}, Point{X: w.x, Y: y}))
+		s.setPoints(f.label, append(s.pointBuf(f.label), Point{X: vx, Y: y}, Point{X: wx, Y: y}))
 		l := &s.el[f.label]
 		if l.width > 0 && l.height > 0 {
-			l.x, l.y, l.hasX, l.hasY = (v.x+w.x)/2, y+r.labelDY, true, true
+			l.x, l.y, l.hasX, l.hasY = (vx+wx)/2, y+r.labelDY, true, true
 		}
 	}
 	return y + clearance - top

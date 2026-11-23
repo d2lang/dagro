@@ -777,6 +777,7 @@ func (s *lstate) runWithRankGroups(groups [][]string) error {
 	if err := s.assignNodeIntersects(); err != nil {
 		return err
 	}
+	s.dockFlatEdgeStems(flat)
 	s.reversePointsForReversedEdges()
 	s.undoAcyclic()
 	return nil
