@@ -32,24 +32,46 @@ func Layout(g *Graph, options ...LayoutOptions) error {
 	// engine exactly, whenever it accepts the graph. Its storage is reused
 	// between calls; a state is only returned to the pool after a call that
 	// did not panic.
+	attrs, _ := g.Graph().(Attrs)
+	groups, err := graphRankGroups(attrs)
+	if err != nil {
+		return err
+	}
+	constrained := hasRankEquality(groups)
 	typed := getLState()
 	var start time.Time
 	if opts.DebugTiming {
 		start = time.Now()
 	}
-	if !typed.build(g) {
+	if !typed.buildGraph(g, constrained) {
 		putLState(typed)
+		if constrained {
+			return fmt.Errorf("dagro: edges in a rank-constrained layout must connect leaf nodes")
+		}
+		for i, group := range groups {
+			if len(group) > 0 {
+				id := group[0]
+				if !g.HasNode(id) || len(g.Children(id)) != 0 {
+					return fmt.Errorf("dagro: same-rank group %d: %q must name a leaf node", i, id)
+				}
+			}
+		}
 		return layoutAttrs(g, run)
 	}
 	if opts.DebugTiming {
 		fmt.Printf("%s time: %dms\n", "  buildLayoutGraph", time.Since(start).Milliseconds())
 	}
-	err, ok := typed.runGuarded(func() error { return run("  runLayout", typed.run) })
+	err, ok := typed.tryLayout(constrained, func() error {
+		return run("  runLayout", func() error { return typed.runWithRankGroups(groups) })
+	})
 	if !ok {
 		// The typed engine panicked or declined (see runGuarded): typed is
 		// dropped, and the Attrs engine lays out the untouched input,
 		// replaying the counter values typed drew. Its buildLayoutGraph line
 		// was printed above.
+		if constrained {
+			return err
+		}
 		layoutGraph := buildLayoutGraph(g)
 		layoutGraph.replay = &drawReplay{vals: typed.drawn}
 		return layoutAttrsBuilt(g, layoutGraph, run)

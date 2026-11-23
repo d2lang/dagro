@@ -15,9 +15,9 @@ The compatibility boundary is D2's default Dagre adapter profile:
 
 The public graph operations already exposed by Dagro remain available. This is
 not a claim to implement every Dagre 3.1.1 or Graphlib 4.0.5 feature. In
-particular, dynamic remembered layout state, per-cluster direction, manual or
-custom ranking and ordering, constraints, and the `rankalign` option are
-outside the verified D2 profile.
+particular, dynamic remembered layout state, per-cluster direction, custom
+ranking and ordering, and the `rankalign` option are outside the verified D2
+profile. Dagro also provides opt-in [same-rank groups](#same-rank-groups).
 
 ## Usage
 
@@ -56,6 +56,44 @@ The API uses `Attrs` maps because Dagre and Graphlib labels are open JavaScript
 objects. Recognized numeric layout attributes accept Go numeric types and are
 coerced to `float64` for JavaScript `Number` compatibility; arbitrary label
 values are preserved.
+
+## Same-rank groups
+
+Use `LayoutInput.RankGroups` to put leaf nodes on the same row in a vertical
+layout or the same column in a horizontal layout. For example, Commerce can
+belong to a system while its payment provider stays outside it.
+
+```go
+in := dagro.DefaultLayoutInput()
+in.Nodes = []dagro.LayoutNode{
+	{ID: "system", Parent: -1},
+	{ID: "commerce", Parent: 0, Width: 96, Height: 48},
+	{ID: "payments", Parent: -1, Width: 72, Height: 30},
+}
+in.Edges = []dagro.LayoutEdge{dagro.NewLayoutEdge(1, 2)}
+in.RankGroups = [][]string{{"commerce", "payments"}}
+var out dagro.LayoutOutput
+if err := dagro.LayoutTyped(&in, &out); err != nil {
+	panic(err)
+}
+// out.Nodes[1].Y == out.Nodes[2].Y and out.Edges[0] connects them.
+```
+
+For the Graph API, set `"rankgroups": [][]string{{"commerce", "payments"}}`
+on the graph's `Attrs` label. Both APIs identify members by node ID and
+return an error for unknown IDs or IDs of nodes with children.
+
+Groups can overlap. If A shares a rank with B and B shares a rank with C,
+all three centers align. Dagro chooses the rank's position and the order of
+its members. A direct edge within a group keeps its direction and label.
+Rank equality takes precedence over that edge's minimum rank separation.
+All three rankers support the feature in TB, BT, LR and RL layouts.
+
+Internally, each group shares one variable during cycle breaking and rank
+assignment. Cluster borders keep independent variables so each parent can
+still enclose its children. Edges within a group are routed after node
+ordering. An adjacent pair can connect directly, while edges spanning other
+nodes, parallel edges and labels can use separate tracks beside the row.
 
 ## Compatibility and tests
 

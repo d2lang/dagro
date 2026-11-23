@@ -248,7 +248,10 @@ edges:
 }
 
 func (s *lstate) rank() {
-	rg := s.nonCompoundRankGraph()
+	s.rankGraph(s.nonCompoundRankGraph())
+}
+
+func (s *lstate) rankGraph(rg *rgraph) {
 	rg.finish()
 	switch s.ranker {
 	case "longest-path":

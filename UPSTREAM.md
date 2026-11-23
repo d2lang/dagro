@@ -109,6 +109,12 @@ The raw seven-point self-loop route intentionally remains identical to Dagre
 3.1.1. Any D2 curve or endpoint-chopping normalization belongs in the D2
 adapter and is not hidden in Dagro.
 
+## Same-rank extension
+
+Dagro's opt-in [same-rank groups](README.md#same-rank-groups) are a native
+extension to this profile. Regression tests cover their rank and routing
+semantics separately from the upstream differential corpus.
+
 ## Out of scope
 
 No parity claim is made for dynamic remembered layout state, per-cluster

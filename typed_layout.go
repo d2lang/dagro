@@ -2,6 +2,7 @@ package dagro
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -41,7 +42,7 @@ type edgeRef struct {
 	hasName    bool
 }
 
-type selfRec struct {
+type detachedEdge struct {
 	e     edgeRef
 	label int32
 }
@@ -72,7 +73,7 @@ type nlabel struct {
 	borderBase       int
 	borderLeft       []int32
 	borderRight      []int32
-	selfEdges        []selfRec
+	selfEdges        []detachedEdge
 }
 
 // elabel is an edge label. minlen, weight, labeloffset and labelRank are NaN
@@ -360,11 +361,20 @@ var errDecline = errors.New("dagro: typed engine declined the input")
 // original's panic (the typed engine's own panics and errDecline mark inputs
 // on which the original fails or which the typed engine does not reproduce),
 // draws the counter as the original does, or produces the original's layout.
-func (s *lstate) runGuarded(fn func() error) (err error, ok bool) {
+func (s *lstate) runGuarded(fn func() error) (error, bool) {
+	return s.tryLayout(false, fn)
+}
+
+// Constrained layouts have no equivalent Attrs layout to fall back to. Let
+// the caller return an error on any solver failure without publishing output.
+func (s *lstate) tryLayout(constrained bool, fn func() error) (err error, ok bool) {
 	s.origPanic = false
 	defer func() {
-		if !ok && !s.origPanic {
-			recover()
+		if !ok && (!s.origPanic || constrained) {
+			reason := recover()
+			if constrained {
+				err = fmt.Errorf("dagro: rank-constrained layout failed: %v", reason)
+			}
 		}
 	}()
 	err = fn()
@@ -575,9 +585,13 @@ func (s *lstate) begin(nodes, edges int) {
 // without a random draw (number is a pure function of its argument), and its
 // first random draw is the original's.
 func (s *lstate) build(input *Graph) bool {
+	return s.buildGraph(input, false)
+}
+
+func (s *lstate) buildGraph(input *Graph, constrained bool) bool {
 	inputNodes := input.Nodes()
 	for _, v := range inputNodes {
-		if !typedEligibleName(v) {
+		if !constrained && !typedEligibleName(v) {
 			return false
 		}
 	}
@@ -595,7 +609,7 @@ func (s *lstate) build(input *Graph) bool {
 
 	vals, found := s.vals[:], s.found[:]
 	if a, ok := input.Graph().(Attrs); ok && a != nil {
-		if !attrLookup(a, typedGraphKeys, vals, found) {
+		if !layoutAttrLookup(a, typedGraphKeys, vals, found, constrained) {
 			return false
 		}
 		nums := [5]*float64{&s.nodesep, &s.edgesep, &s.ranksep, &s.marginx, &s.marginy}
@@ -619,7 +633,7 @@ func (s *lstate) build(input *Graph) bool {
 		value := input.Node(v)
 		a, ok := value.(Attrs)
 		if ok && a != nil {
-			if !attrLookup(a, typedNodeKeys, vals[:2], found[:2]) {
+			if !layoutAttrLookup(a, typedNodeKeys, vals[:2], found[:2], constrained) {
 				return false
 			}
 			if found[0] {
@@ -650,7 +664,7 @@ func (s *lstate) build(input *Graph) bool {
 		l.hasWidth, l.hasHeight = true, true
 		value := input.Edge(e)
 		if a, ok := value.(Attrs); ok && a != nil {
-			if !attrLookup(a, typedEdgeKeys, vals[:6], found[:6]) {
+			if !layoutAttrLookup(a, typedEdgeKeys, vals[:6], found[:6], constrained) {
 				return false
 			}
 			nums := [5]*float64{&l.minlen, &l.weight, &l.width, &l.height, &l.labeloffset}
@@ -717,11 +731,28 @@ func (s *lstate) update(input *Graph) {
 }
 
 func (s *lstate) run() error {
+	return s.runWithRankGroups(nil)
+}
+
+func (s *lstate) runWithRankGroups(groups [][]string) error {
+	constraints, err := s.prepareSameRanks(groups)
+	if err != nil {
+		return err
+	}
 	s.makeSpaceForEdgeLabels()
 	s.removeSelfEdges()
-	s.runAcyclic()
+	var flat []detachedEdge
+	if constraints == nil {
+		s.runAcyclic()
+	} else {
+		flat = constraints.makeAcyclic(s)
+	}
 	s.runNestingGraph()
-	s.rank()
+	if constraints == nil {
+		s.rank()
+	} else {
+		constraints.rank(s)
+	}
 	s.injectEdgeLabelProxies()
 	s.removeEmptyRanks()
 	s.cleanupNestingGraph()
@@ -734,13 +765,14 @@ func (s *lstate) run() error {
 	s.order()
 	s.insertSelfEdges()
 	s.adjustCoordinateSystem()
-	s.position()
+	s.positionWithFlatEdges(flat)
 	s.positionSelfEdges()
 	s.removeBorderNodes()
 	s.undoNormalize()
 	s.fixupEdgeLabelCoords()
+	s.restoreFlatEdges(flat)
 	s.undoCoordinateSystem()
-	s.translateGraph()
+	s.translateGraphWithFlatEdges(flat)
 	if err := s.assignNodeIntersects(); err != nil {
 		return err
 	}
@@ -772,7 +804,7 @@ func (s *lstate) removeSelfEdges() {
 			continue
 		}
 		n := &s.nl[ed.v]
-		n.selfEdges = append(n.selfEdges, selfRec{e: s.refOf(e), label: ed.label})
+		n.selfEdges = append(n.selfEdges, detachedEdge{e: s.refOf(e), label: ed.label})
 		n.hasSelfEdges = true
 		s.g.removeEdge(e)
 	}
@@ -786,17 +818,7 @@ func (s *lstate) runAcyclic() {
 		fas = s.dfsFAS()
 	}
 	for _, r := range fas {
-		e := s.edgeByRef(r)
-		label := inone
-		if e != inone {
-			label = s.g.edges[e].label
-			s.g.removeEdge(e)
-		}
-		l := &s.el[label]
-		l.forwardName, l.forwardHasName = r.name, r.hasName
-		l.reversed = true
-		name := s.nextReversedEdgeName(r.w, r.v)
-		s.g.setEdge(r.w, r.v, name, true, label, true)
+		s.reverseAcyclicEdge(r)
 	}
 }
 
@@ -1720,6 +1742,10 @@ func (s *lstate) fixupEdgeLabelCoords() {
 }
 
 func (s *lstate) translateGraph() {
+	s.translateGraphWithFlatEdges(nil)
+}
+
+func (s *lstate) translateGraphWithFlatEdges(flat []detachedEdge) {
 	minX, minY := math.Inf(1), math.Inf(1)
 	maxX, maxY := 0.0, 0.0
 	marginX, marginY := s.marginx, s.marginy
@@ -1732,6 +1758,12 @@ func (s *lstate) translateGraph() {
 	getExtremes := func(x, y, w, h float64) {
 		minX, maxX = minJS2(minX, x-w/2), maxJS2(maxX, x+w/2)
 		minY, maxY = minJS2(minY, y-h/2), maxJS2(maxY, y+h/2)
+	}
+	// A flat edge may occupy a lane outside the topmost row of nodes.
+	for _, edge := range flat {
+		for _, p := range s.el[edge.label].points {
+			getExtremes(p.X, p.Y, 0, 0)
+		}
 	}
 	all := s.nodes()
 	for _, v := range all {

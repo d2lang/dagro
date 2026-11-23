@@ -11,7 +11,7 @@ import (
 // LayoutTyped(in, out) produces exactly the numbers Layout produces for the
 // Graph returned by in.Graph(): a compound multigraph whose graph label holds
 // rankdir, ranksep, edgesep and nodesep (and marginx, marginy, acyclicer,
-// ranker and align when set), built by calling, for each node in order,
+// ranker, align and rankgroups when set), built by calling, for each node in order,
 // SetNode(ID, Attrs{"width", "height"}) and, when Parent >= 0,
 // SetParent(ID, Nodes[Parent].ID), and then SetEdge for each edge in order
 // with all six edge attributes and, when HasName, its name.
@@ -31,6 +31,12 @@ type LayoutInput struct {
 	Align     string // "", or one of ul, ur, dl, dr (any case)
 	Nodes     []LayoutNode
 	Edges     []LayoutEdge
+	// RankGroups puts the centers of the listed leaf nodes on the same rank:
+	// the same Y in TB/BT, or the same X in LR/RL. Groups may span parents
+	// and overlap; each member is identified by its node ID. Within-rank
+	// order is chosen by the layout. Rank equality takes precedence over
+	// the minimum length of edges within the group.
+	RankGroups [][]string
 }
 
 // LayoutNode is a node of a LayoutInput.
@@ -104,6 +110,9 @@ func (in *LayoutInput) Graph() (*Graph, error) {
 	if in.Align != "" {
 		label["align"] = in.Align
 	}
+	if len(in.RankGroups) != 0 {
+		label["rankgroups"] = in.RankGroups
+	}
 	g := NewGraph(GraphOptions{Compound: true, Multigraph: true}).SetGraph(label)
 	for i, n := range in.Nodes {
 		g.SetNode(n.ID, Attrs{"width": n.Width, "height": n.Height})
@@ -136,7 +145,7 @@ func (in *LayoutInput) Graph() (*Graph, error) {
 // LayoutTyped lays out in and stores the result in out, reusing out's
 // slices. The points of all edges share one newly allocated array.
 func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
-	if typedFastPaths && layoutSingleNode(in, out) {
+	if typedFastPaths && len(in.RankGroups) == 0 && layoutSingleNode(in, out) {
 		return nil
 	}
 	s := getLState()
@@ -144,13 +153,17 @@ func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
 		putLState(s)
 		return layoutTypedViaGraph(in, out)
 	}
-	err, ok := s.runGuarded(s.run)
+	constrained := hasRankEquality(in.RankGroups)
+	err, ok := s.tryLayout(constrained, func() error { return s.runWithRankGroups(in.RankGroups) })
 	if !ok {
 		// The typed engine panicked or declined (see runGuarded): s is
 		// dropped. Layout(in.Graph()) would build the same typed state, run
 		// it into the same panic and hand the graph to the Attrs engine, so
 		// that engine lays out in.Graph() directly, replaying the counter
 		// values s drew.
+		if constrained {
+			return err
+		}
 		return layoutTypedViaAttrs(in, out, s.drawn)
 	}
 	if err != nil {
