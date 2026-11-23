@@ -91,9 +91,11 @@ All three rankers support the feature in TB, BT, LR and RL layouts.
 
 Internally, each group shares one variable during cycle breaking and rank
 assignment. Cluster borders keep independent variables so each parent can
-still enclose its children. Edges within a group are routed after node
-ordering. An adjacent pair can connect directly, while edges spanning other
-nodes, parallel edges and labels can use separate tracks beside the row.
+still enclose its children. After inter-rank crossing minimization, Dagro can
+swap adjacent siblings that have no inter-rank edges to shorten their
+connections along the row. An adjacent pair can connect directly, while
+edges spanning other nodes, parallel edges and labels can use separate tracks
+beside the row.
 
 ## Compatibility and tests
 

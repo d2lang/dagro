@@ -156,6 +156,8 @@ type orderState struct {
 	rs         rankSorter
 	rankStart  []int32
 	rankSorted []int32
+
+	skipWeightlessBarycenters bool
 }
 
 func (o *orderState) ensure(n int) {
@@ -414,8 +416,13 @@ func (o *orderState) localIn(lg *layerGraph, v int32) int32 {
 const maxTypedRank = 1 << 26
 
 func (s *lstate) order() {
+	s.orderWithRankConstraints(false)
+}
+
+func (s *lstate) orderWithRankConstraints(skipWeightlessBarycenters bool) {
 	o := &s.o
 	o.reset(s)
+	o.skipWeightlessBarycenters = skipWeightlessBarycenters
 	o.nodes = append(o.nodes[:0], s.nodes()...)
 	nodes := o.nodes
 	maxRank := -1
@@ -919,9 +926,7 @@ func (o *orderState) sortSubgraph(lg *layerGraph, lv int32, biasRight bool, dept
 				sum += edgeWeight * o.labelOrder(lg, lg.inU[i])
 				weight += edgeWeight
 			}
-			entry.barycenter = sum / weight
-			entry.weight = weight
-			entry.has = true
+			o.setBarycenter(&entry, sum, weight)
 		}
 		bary = append(bary, entry)
 	}
@@ -1153,7 +1158,7 @@ func (o *orderState) resolveConflicts(L *sortLevel, entries []typedOrderEntry) [
 				continue
 			}
 			if !incoming.e.has || !entry.e.has || incoming.e.barycenter >= entry.e.barycenter {
-				mergeTypedEntries(L, entry, incoming)
+				o.mergeEntries(L, entry, incoming)
 			}
 		}
 		for k := entry.outHead; k != inone; k = L.outPool[k].next {
@@ -1200,7 +1205,18 @@ func (o *orderState) resolveConflicts(L *sortLevel, entries []typedOrderEntry) [
 	return result
 }
 
-func mergeTypedEntries(L *sortLevel, target, source *cnode) {
+// With rank constraints, a zero-weight neighborhood expresses no ordering
+// preference. Treat it like a node with no incident edges. A NaN here can
+// invalidate the ordering of compound siblings in later sweeps.
+func (o *orderState) setBarycenter(entry *typedOrderEntry, sum, weight float64) {
+	entry.weight = weight
+	entry.has = weight != 0 || !o.skipWeightlessBarycenters
+	if entry.has {
+		entry.barycenter = sum / weight
+	}
+}
+
+func (o *orderState) mergeEntries(L *sortLevel, target, source *cnode) {
 	sum := 0.0
 	weight := 0.0
 	if jsTruthyNumber(target.e.weight) {
@@ -1214,9 +1230,7 @@ func mergeTypedEntries(L *sortLevel, target, source *cnode) {
 	// target.vs = source.vs ++ target.vs
 	L.vsNext[source.vsTail] = target.vsHead
 	target.vsHead = source.vsHead
-	target.e.barycenter = sum / weight
-	target.e.weight = weight
-	target.e.has = true
+	o.setBarycenter(&target.e, sum, weight)
 	if source.e.i < target.e.i {
 		target.e.i = source.e.i
 	}

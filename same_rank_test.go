@@ -127,6 +127,37 @@ func TestSameRankCycleAfterContraction(t *testing.T) {
 	}
 }
 
+func TestSameRankWeightlessOrdering(t *testing.T) {
+	in := DefaultLayoutInput()
+	in.Ranker = "longest-path"
+	in.Nodes = []LayoutNode{
+		{ID: "left", Parent: -1}, {ID: "middle", Parent: -1}, {ID: "right", Parent: -1},
+		{ID: "a", Parent: 2, Width: 20, Height: 10},
+		{ID: "b", Parent: -1, Width: 20, Height: 10},
+		{ID: "c", Parent: 1, Width: 20, Height: 10},
+		{ID: "d", Parent: 0, Width: 20, Height: 10},
+	}
+	in.RankGroups = [][]string{{"a", "c"}}
+	in.Edges = []LayoutEdge{
+		NewLayoutEdge(6, 3), NewLayoutEdge(4, 6), NewLayoutEdge(6, 4),
+		NewLayoutEdge(4, 5), NewLayoutEdge(4, 3), NewLayoutEdge(5, 6),
+	}
+	// The d -> a edge must still be routed, but contributes no weight
+	// when choosing the order of the three containers across layers.
+	in.Edges[0].Weight = 0
+	in.Edges[3].Weight, in.Edges[4].Weight = 3, 3
+	var out LayoutOutput
+	if err := LayoutTyped(&in, &out); err != nil {
+		t.Fatal(err)
+	}
+	if out.Nodes[3].Y != out.Nodes[5].Y {
+		t.Fatalf("different rank centers: %v", out.Nodes)
+	}
+	for i, edge := range in.Edges {
+		checkSameRankRoute(t, out.Edges[i], out.Nodes[edge.V], out.Nodes[edge.W])
+	}
+}
+
 func TestSameRankFlatMultiedges(t *testing.T) {
 	in := DefaultLayoutInput()
 	in.MarginX, in.MarginY = 11, 17
