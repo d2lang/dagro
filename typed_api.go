@@ -124,11 +124,12 @@ func (in *LayoutInput) Graph() (*Graph, error) {
 			"minlen": e.Minlen, "weight": e.Weight, "width": e.Width, "height": e.Height,
 			"labeloffset": e.LabelOffset, "labelpos": e.LabelPos,
 		}
+		// SetEdge(v, w, label) or, when HasName, SetEdge(v, w, label, Name).
+		var name *string
 		if e.HasName {
-			g.SetEdge(in.Nodes[e.V].ID, in.Nodes[e.W].ID, label, e.Name)
-		} else {
-			g.SetEdge(in.Nodes[e.V].ID, in.Nodes[e.W].ID, label)
+			name = &e.Name
 		}
+		g.setEdge(in.Nodes[e.V].ID, in.Nodes[e.W].ID, label, true, name)
 	}
 	return g, nil
 }

@@ -635,6 +635,28 @@ func (g *Graph) SetEdge(v, w string, args ...any) *Graph {
 		n := jsConcatString(args[1])
 		name = &n
 	}
+	return g.setEdge(v, w, value, valueSpecified, name)
+}
+
+// SetEdgeObject is the edge-object form of graphlib's setEdge.
+func (g *Graph) SetEdgeObject(e Edge, value ...any) *Graph {
+	var name *string
+	if e.HasName {
+		name = &e.Name
+	}
+	if len(value) > 0 {
+		return g.setEdge(e.V, e.W, value[0], true, name)
+	}
+	return g.setEdge(e.V, e.W, nil, false, name)
+}
+
+// setEdge is SetEdge with its optional arguments spelled out: the label, if
+// valueSpecified, and the edge's name, already a string, if name is not nil.
+// SetEdge, which accepts a name of any type as graphlib does, SetEdgeObject
+// and LayoutInput.Graph all end here; LayoutInput.Graph calls it directly so
+// that a program which builds Graphs only that way does not link SetEdge's
+// conversion of names.
+func (g *Graph) setEdge(v, w string, value any, valueSpecified bool, name *string) *Graph {
 	id := edgeArgsToID(g.directed, v, w, name)
 	if _, ok := g.edgeLabels[id]; ok {
 		if valueSpecified {
@@ -660,51 +682,6 @@ func (g *Graph) SetEdge(v, w string, args ...any) *Graph {
 	g.in[e.W].set(id, e)
 	g.out[e.V].set(id, e)
 	return g
-}
-
-// SetEdgeObject is the edge-object form of graphlib's setEdge.
-func (g *Graph) SetEdgeObject(e Edge, value ...any) *Graph {
-	if len(value) > 0 {
-		if e.HasName {
-			return g.SetEdge(e.V, e.W, value[0], e.Name)
-		}
-		return g.SetEdge(e.V, e.W, value[0])
-	}
-	if e.HasName {
-		return g.setEdge(e.V, e.W, nil, false, &e.Name)
-	}
-	return g.SetEdge(e.V, e.W)
-}
-
-func (g *Graph) setEdge(v, w string, value any, valueSpecified bool, name *string) *Graph {
-	args := []any{}
-	if valueSpecified {
-		args = append(args, value)
-	}
-	if name != nil {
-		if !valueSpecified {
-			id := edgeArgsToID(g.directed, v, w, name)
-			if _, ok := g.edgeLabels[id]; ok {
-				return g
-			}
-			if !g.multigraph {
-				panic("dagro: cannot set a named edge when Multigraph is false")
-			}
-			g.SetNode(v)
-			g.SetNode(w)
-			g.edgeLabels[id] = g.defaultEdgeLabel(v, w, name)
-			e := edgeArgsToObj(g.directed, v, w, name)
-			g.edgeObjs.set(id, e)
-			g.ensureEdgeEndpointMaps(e.V, e.W)
-			g.preds[e.W].inc(e.V)
-			g.sucs[e.V].inc(e.W)
-			g.in[e.W].set(id, e)
-			g.out[e.V].set(id, e)
-			return g
-		}
-		args = append(args, *name)
-	}
-	return g.SetEdge(v, w, args...)
 }
 
 func (g *Graph) ensureEdgeEndpointMaps(v, w string) {
