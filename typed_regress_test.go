@@ -92,11 +92,11 @@ func TestSingleNodeNegativeZero(t *testing.T) {
 		{RankDir: "TB", RankSep: 50, EdgeSep: 20, NodeSep: 50, Nodes: []LayoutNode{{ID: "a", Parent: -1, Width: 10, Height: negZero}}},
 	} {
 		want, got := runTypedPair(in, 1)
-		if d := diffOutcomes(want, got); d != "" {
+		if d := diffTypedOutcomes(in, 1, want, got); d != "" {
 			t.Errorf("LayoutTyped differs from the original Layout(in.Graph()):\n%s\ninput %+v", d, in)
 		}
 		var viaGraph LayoutOutput
-		if err := layoutTypedViaGraph(&in, &viaGraph); err != nil {
+		if err := layoutViaGraph(&in, &viaGraph); err != nil {
 			t.Fatal(err)
 		}
 		var fast LayoutOutput

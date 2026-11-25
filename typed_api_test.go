@@ -116,6 +116,22 @@ func typedAPIRead(in *LayoutInput, g *Graph) LayoutOutput {
 	return out
 }
 
+// layoutViaGraph lays out in.Graph() with Layout and reads the result the way
+// LayoutTyped reports it: what LayoutTyped(in, out) is defined to equal. It
+// is the same in every build (LayoutTyped's own fallback is not, see
+// typed_fallback.go).
+func layoutViaGraph(in *LayoutInput, out *LayoutOutput) error {
+	g, err := in.Graph()
+	if err != nil {
+		return err
+	}
+	if err := Layout(g); err != nil {
+		return err
+	}
+	*out = typedAPIRead(in, g)
+	return nil
+}
+
 func typedAPICompare(t *testing.T, name string, want, got LayoutOutput) bool {
 	t.Helper()
 	if !sameBits(want.Width, got.Width) || !sameBits(want.Height, got.Height) {
@@ -176,6 +192,24 @@ func typedAPICheck(t *testing.T, name string, in *LayoutInput) bool {
 		uniqueIDCounter.Store(start)
 		gotErr = LayoutTyped(in, &got)
 	}()
+	if !graphFallback {
+		// Without the Graph fallback LayoutTyped equals Layout(in.Graph())
+		// only where the typed engine lays the input out.
+		switch typedOnlyKind(in, start) {
+		case kindNotTyped:
+			if wantErr := notTypedError(in); gotPanic != nil || gotErr == nil || gotErr.Error() != wantErr.Error() || gotCounter != start {
+				t.Errorf("%s: an input the typed engine does not accept: error %v, panic %v, %d draws; want error %v", name, gotErr, gotPanic, gotCounter-start, wantErr)
+				return false
+			}
+			return true
+		case kindGaveUp:
+			if gotPanic == nil {
+				t.Errorf("%s: the typed engine gives up on the input, but LayoutTyped returned %v", name, gotErr)
+				return false
+			}
+			return true
+		}
+	}
 	if (wantPanic != nil) != (gotPanic != nil) {
 		t.Errorf("%s: panic mismatch: Graph %v, typed %v", name, wantPanic, gotPanic)
 		return false

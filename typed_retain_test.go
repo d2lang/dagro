@@ -203,7 +203,9 @@ func TestKeptStateIsBounded(t *testing.T) {
 				in.Edges = append(in.Edges, e)
 			}
 			var out LayoutOutput
-			if err := LayoutTyped(&in, &out); err != nil {
+			// The first two inputs repeat edges, so their layout goes
+			// through the Graph, whose Layout runs the typed engine.
+			if err := layoutAny(&in, &out); err != nil {
 				t.Fatal(err)
 			}
 		}()

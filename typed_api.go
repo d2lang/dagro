@@ -1,6 +1,7 @@
 package dagro
 
 import (
+	"errors"
 	"fmt"
 	"math"
 )
@@ -134,8 +135,32 @@ func (in *LayoutInput) Graph() (*Graph, error) {
 	return g, nil
 }
 
+// ErrGraphEngine is what LayoutTyped returns, in a build with the
+// dagro_typed_only tag (see LayoutTyped), for a valid input that the typed
+// engine does not lay out. No other build returns it.
+var ErrGraphEngine = errors.New("dagro: LayoutTyped: this input needs the Graph engine, which a build with the dagro_typed_only tag leaves out of LayoutTyped (build without the tag, or lay out in.Graph() with Layout)")
+
 // LayoutTyped lays out in and stores the result in out, reusing out's
 // slices. The points of all edges share one newly allocated array.
+//
+// The typed engine lays out the inputs it accepts: valid ones whose node ids
+// are distinct, not empty and free of "\x01", whose edges are distinct and
+// touch no node with children (and, without the fallback below, that do not
+// ask for the "greedy" acyclicer). For every other input, and where the
+// typed engine gives up on one it accepted, LayoutTyped falls back to the
+// Graph engine: it lays out in.Graph() as Layout does.
+//
+// A build that sets the dagro_typed_only tag leaves that fallback out, and
+// the Graph engine with it, so that a program which only uses the typed API
+// and never needs the fallback (D2's WebAssembly module) does not carry a
+// second engine. Nothing else leaves it out: without the tag LayoutTyped is
+// the same under every compiler and on every platform. With the tag,
+// LayoutTyped returns the error of in.Graph() for an invalid input and
+// ErrGraphEngine for any other input the typed engine does not accept, and a
+// panic of the typed engine reaches the caller: it stands for an input on
+// which the Graph engine fails as well or which the typed engine does not
+// reproduce (see lstate.runGuarded). Layout lays out every graph in every
+// build.
 func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
 	if typedFastPaths && layoutSingleNode(in, out) {
 		return nil
@@ -143,24 +168,19 @@ func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
 	s := getLState()
 	if !s.buildTyped(in) {
 		putLState(s)
-		return layoutTypedViaGraph(in, out)
+		return layoutNotTyped(in, out)
 	}
-	err, ok := s.runGuarded(s.run)
-	if !ok {
-		// The typed engine panicked or declined (see runGuarded): s is
-		// dropped. Layout(in.Graph()) would build the same typed state, run
-		// it into the same panic and hand the graph to the Attrs engine, so
-		// that engine lays out in.Graph() directly, replaying the counter
-		// values s drew.
-		return layoutTypedViaAttrs(in, out, s.drawn)
+	return layoutBuilt(s, in, out)
+}
+
+// finishTyped ends a LayoutTyped call whose run returned err: it stores the
+// result and keeps s for the next call.
+func (s *lstate) finishTyped(in *LayoutInput, out *LayoutOutput, err error) error {
+	if err == nil {
+		s.updateTyped(in, out)
 	}
-	if err != nil {
-		putLState(s)
-		return err
-	}
-	s.updateTyped(in, out)
 	putLState(s)
-	return nil
+	return err
 }
 
 // typedFastPaths enables the closed-form results below (tests turn it off to
@@ -215,68 +235,20 @@ func layoutSingleNode(in *LayoutInput, out *LayoutOutput) bool {
 	return true
 }
 
-// layoutTypedViaGraph handles inputs the typed engine does not take (and
-// invalid ones) through the equivalent Graph.
-func layoutTypedViaGraph(in *LayoutInput, out *LayoutOutput) error {
-	return layoutTypedWith(in, out, func(g *Graph) error { return Layout(g) })
-}
-
-// layoutTypedViaAttrs lays out the equivalent Graph with the Attrs engine,
-// which takes its first counter values from drawn (see drawReplay).
-func layoutTypedViaAttrs(in *LayoutInput, out *LayoutOutput, drawn []uint64) error {
-	return layoutTypedWith(in, out, func(g *Graph) error {
-		layoutGraph := buildLayoutGraph(g)
-		layoutGraph.replay = &drawReplay{vals: drawn}
-		return layoutAttrsBuilt(g, layoutGraph, func(_ string, fn func() error) error { return fn() })
-	})
-}
-
-// layoutTypedWith lays out the Graph equivalent to in with layout and stores
-// the result in out.
-func layoutTypedWith(in *LayoutInput, out *LayoutOutput, layout func(*Graph) error) error {
-	g, err := in.Graph()
-	if err != nil {
-		return err
-	}
-	if err := layout(g); err != nil {
-		return err
-	}
-	ga := asAttrs(g.Graph())
-	out.Width, out.Height = num(ga, "width"), num(ga, "height")
-	out.Nodes = resize(out.Nodes, len(in.Nodes))
-	for i, n := range in.Nodes {
-		a := asAttrs(g.Node(n.ID))
-		out.Nodes[i] = NodeLayout{X: num(a, "x"), Y: num(a, "y"), Width: num(a, "width"), Height: num(a, "height")}
-	}
-	out.Edges = resize(out.Edges, len(in.Edges))
-	for i, e := range in.Edges {
-		var a Attrs
-		if e.HasName {
-			a = asAttrs(g.EdgeByArgs(in.Nodes[e.V].ID, in.Nodes[e.W].ID, e.Name))
-		} else {
-			a = asAttrs(g.EdgeByArgs(in.Nodes[e.V].ID, in.Nodes[e.W].ID))
-		}
-		points, _ := a["points"].([]Point)
-		el := EdgeLayout{Points: append([]Point(nil), points...)}
-		if has(a, "x") {
-			el.X, el.Y, el.HasXY = num(a, "x"), num(a, "y"), true
-		}
-		out.Edges[i] = el
-	}
-	return nil
-}
-
 // buildTyped is build for a LayoutInput: it reproduces buildLayoutGraph on
 // in.Graph() without building it. It returns false for inputs that take the
 // Graph path: names the typed engine does not accept, duplicate node ids or
-// edge keys, parent cycles, indices out of range, and edges touching a node
-// with children.
+// edge keys, parent cycles, indices out of range, edges touching a node
+// with children, and acyclicer "greedy" in a build without typedGreedy.
 func (s *lstate) buildTyped(in *LayoutInput) bool {
 	n := len(in.Nodes)
 	for _, node := range in.Nodes {
 		if !typedEligibleName(node.ID) {
 			return false
 		}
+	}
+	if !typedGreedy && in.Acyclicer == "greedy" {
+		return false
 	}
 	s.begin(n, len(in.Edges))
 	for i, node := range in.Nodes {

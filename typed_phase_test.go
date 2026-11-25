@@ -527,6 +527,7 @@ func negZeroWeightGreedyGraph() *Graph {
 }
 
 func TestPhaseNegZeroWeightGreedy(t *testing.T) {
+	skipWithoutTypedGreedy(t)
 	comparePhases(t, negZeroWeightGreedyGraph, 42312)
 }
 

@@ -202,7 +202,7 @@ func TestDeclineReplaysDraws(t *testing.T) {
 		if want.hung || got.hung {
 			t.Fatalf("typed case %d hangs (original %v, new %v)", i, want.hung, got.hung)
 		}
-		if d := diffOutcomes(want, got); d != "" {
+		if d := diffTypedOutcomes(in, start, want, got); d != "" {
 			t.Fatalf("typed case %d (counter start %d) differs:\n%s\ninput: %+v", i, start, d, in)
 		}
 	}

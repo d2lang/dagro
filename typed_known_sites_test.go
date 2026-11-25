@@ -90,7 +90,7 @@ func TestKnownSitesRaiseOriginalPanic(t *testing.T) {
 			if want.panicked != "assignment to entry in nil map" {
 				t.Fatalf("%s: the original gives %+v", c.fixture, want)
 			}
-			if d := diffOutcomes(want, got); d != "" {
+			if d := diffTypedOutcomes(in, start, want, got); d != "" {
 				t.Fatalf("%s (counter start %d): LayoutTyped differs from the original:\n%s", c.fixture, start, d)
 			}
 		}

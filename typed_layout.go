@@ -567,8 +567,9 @@ func (s *lstate) begin(nodes, edges int) {
 
 // build is buildLayoutGraph. It returns false when the input needs the Attrs
 // engine (see typedEligibleName, edges incident to compound nodes, which the
-// Attrs engine rejects with a panic during ranking, and labels holding two
-// spellings of an attribute key, see attrLookup). It coerces the labels in
+// Attrs engine rejects with a panic during ranking, labels holding two
+// spellings of an attribute key, see attrLookup, and acyclicer "greedy" in a
+// build without typedGreedy). It coerces the labels in
 // buildLayoutGraph's order, so a coercion panic is the original's; when it
 // returns false, every label it has coerced holds at most one spelling of
 // each key it reads, so buildLayoutGraph coerces the same values again
@@ -609,6 +610,9 @@ func (s *lstate) build(input *Graph) bool {
 			if found[5+i] {
 				*p = anyString(vals[5+i])
 			}
+		}
+		if !typedGreedy && s.acyclicer == "greedy" {
+			return false
 		}
 	}
 
@@ -858,41 +862,6 @@ func (s *lstate) dfsFAS() []edgeRef {
 		dfs(v)
 	}
 	return fas
-}
-
-// greedyFAS runs the Attrs implementation on a copy of the graph that has the
-// same node order, edge order and weights; it is only used with
-// acyclicer "greedy", which D2 does not set.
-func (s *lstate) greedyFAS() []edgeRef {
-	c := NewGraph(GraphOptions{Multigraph: true})
-	names := make([]string, len(s.enames)+1)
-	names[0] = defaultEdgeName
-	for name, k := range s.enames {
-		names[k] = name
-	}
-	for _, v := range s.nodes() {
-		c.SetNode(s.names.name(v))
-	}
-	for _, e := range s.edges() {
-		ed := s.g.edges[e]
-		edge := Edge{V: s.names.name(ed.v), W: s.names.name(ed.w)}
-		if ed.hasName {
-			edge.Name, edge.HasName = names[ed.name], true
-		}
-		c.SetEdgeObject(edge, s.el[ed.label].weight)
-	}
-	found := greedyFAS(c, func(e Edge) float64 { return c.Edge(e).(float64) })
-	out := make([]edgeRef, len(found))
-	for i, e := range found {
-		v, _ := s.names.lookup(e.V)
-		w, _ := s.names.lookup(e.W)
-		r := edgeRef{v: v, w: w, hasName: e.HasName}
-		if e.HasName {
-			r.name = s.edgeNameKey(e.Name)
-		}
-		out[i] = r
-	}
-	return out
 }
 
 func (s *lstate) runNestingGraph() {

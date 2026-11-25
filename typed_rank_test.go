@@ -140,6 +140,7 @@ func rankStates(build func() *Graph, start uint64) (attrs, typed string, ok bool
 // also repairs where the typed engine panics later) equal the Attrs engine's
 // on greedy two-cycles.
 func TestGreedyTwoCycleRanksMatchAttrsEngine(t *testing.T) {
+	skipWithoutTypedGreedy(t)
 	builds := map[string]func() *Graph{
 		"negzero-weight": negZeroWeightGreedyGraph,
 		"three-edges": func() *Graph {

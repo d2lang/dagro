@@ -47,7 +47,7 @@ func TestEmptyInputLayoutTypedMatchesOriginal(t *testing.T) {
 		if want.panicked == "" {
 			t.Fatalf("the original no longer panics on %+v", in)
 		}
-		if d := diffOutcomes(want, got); d != "" {
+		if d := diffTypedOutcomes(in, 77, want, got); d != "" {
 			t.Errorf("LayoutTyped differs from the original Layout(in.Graph()):\n%s\ninput %+v", d, in)
 		}
 	}

@@ -16,7 +16,7 @@ func TestSingleNodeSignedZeroMatchesOriginal(t *testing.T) {
 				in := LayoutInput{RankDir: dir, RankSep: 50, EdgeSep: 20, NodeSep: 50,
 					Nodes: []LayoutNode{{ID: "a", Parent: -1, Width: w, Height: h}}}
 				want, got := runTypedPair(in, 3)
-				if d := diffOutcomes(want, got); d != "" {
+				if d := diffTypedOutcomes(in, 3, want, got); d != "" {
 					t.Errorf("rankdir %q w %v h %v (signbits %v %v): LayoutTyped differs from the original:\n%s",
 						dir, w, h, math.Signbit(w), math.Signbit(h), d)
 				}

@@ -57,6 +57,32 @@ objects. Recognized numeric layout attributes accept Go numeric types and are
 coerced to `float64` for JavaScript `Number` compatibility; arbitrary label
 values are preserved.
 
+## Typed API
+
+`LayoutTyped` lays out a `LayoutInput` (plain Go values: node sizes, parents
+by index, edges by endpoint index) into a `LayoutOutput`, without building a
+`Graph` or `Attrs` labels. It returns exactly what `Layout` writes for the
+graph `LayoutInput.Graph` describes. D2 uses this API.
+
+The typed engine behind it lays out every valid input whose node ids are
+distinct, non-empty and free of `"\x01"` and whose edges are distinct, have
+a whole-number `minlen` of at least 1 and touch no node with children. For
+anything else `LayoutTyped` falls back to the `Graph` engine, the engine
+behind `Layout` for graphs the typed engine does not take.
+
+That fallback is the only thing that ties the typed API to the `Graph`
+engine. A program that only calls the typed API and knows its inputs never
+need the fallback can leave it out, and with it the engine it would never
+run, by building with `-tags dagro_typed_only` (with TinyGo:
+`tinygo build -tags=dagro_typed_only`). No build leaves it out on its own.
+
+With that tag `LayoutTyped` returns `ErrGraphEngine` for a valid input the
+typed engine does not accept (the error of `LayoutInput.Graph` for an invalid
+one), which then includes inputs that ask for the `"greedy"` acyclicer,
+and a panic of the typed engine reaches the caller instead of being handed
+to the `Graph` engine. `Layout` and the rest of the `Graph` API
+work in every build.
+
 ## Compatibility and tests
 
 The checked-in D2 corpus contains 311 unique layouts captured at D2 commit
@@ -79,7 +105,9 @@ A fourth synthetic compatibility case minimizes the multiple-reversed-partner
 failure using only D2-profile inputs. It is separate from the 311 captured
 layouts and pins the finite result of the source patch.
 
-The normal Go suite runs the complete 311-input corpus. CI additionally
+The normal Go suite runs the complete 311-input corpus;
+`go test -tags dagro_typed_only ./...` runs it without the `Graph` engine
+fallback of `LayoutTyped`. CI additionally
 installs the exact JavaScript oracle from `package-lock.json`, checks ordinary
 fixtures against official Dagre 3.1.1 using exact `float64` bits, and verifies
 the three captured upstream failures plus the minimized synthetic divergence:

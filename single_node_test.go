@@ -43,7 +43,7 @@ func TestSingleNodeMatchesEngine(t *testing.T) {
 		counter := uniqueIDCounter.Load()
 		typedFastPaths = false
 		var engine, viaGraph LayoutOutput
-		err := LayoutTyped(&in, &engine)
+		err := layoutAny(&in, &engine)
 		typedFastPaths = true
 		if err != nil {
 			t.Fatalf("case %d: %v", c, err)
@@ -51,7 +51,7 @@ func TestSingleNodeMatchesEngine(t *testing.T) {
 		if uniqueIDCounter.Load() != counter {
 			t.Fatalf("case %d: the engine drew %d generated names", c, uniqueIDCounter.Load()-counter)
 		}
-		if err := layoutTypedViaGraph(&in, &viaGraph); err != nil {
+		if err := layoutViaGraph(&in, &viaGraph); err != nil {
 			t.Fatalf("case %d: %v", c, err)
 		}
 		for _, ref := range []*LayoutOutput{&engine, &viaGraph} {
