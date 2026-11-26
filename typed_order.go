@@ -64,7 +64,7 @@ type typedReversedPair struct {
 // incoming and outgoing lists are array-linked: merging prepends the source's
 // vs list in O(1), and incoming entries are pushed at the front, which visits
 // them in the reverse of their arrival order exactly like the reversed slice
-// of the Attrs engine.
+// of dagre.
 type cnode struct {
 	e                typedOrderEntry
 	indegree         int
@@ -426,16 +426,14 @@ func (s *lstate) order() {
 			}
 		}
 	}
-	// The Attrs engine's order starts with make([]int, 0, maxRank) (the same
-	// maxRank: the ranks of the same nodes, converted as integer does). When
-	// no node has a rank (an empty graph) that panics with Go's "makeslice:
-	// cap out of range", and the typed engine makes the same call. For huge
-	// values it fails or runs out of memory (an infinite rank converts to the
-	// largest int): the typed engine declines, so that the Attrs engine fails
-	// as the original does; no layout has that many ranks.
+	// dagre's order starts with make([]int, 0, maxRank), which fails when no
+	// node has a rank. LayoutTyped rejects inputs without nodes, so some node
+	// always has one here. Huge ranks (an infinite rank converts to the
+	// largest int) would make the rank lists run out of memory: the typed
+	// engine declines them (LayoutTyped returns errDecline); no real layout
+	// has that many ranks.
 	if maxRank < 0 {
-		s.origPanic = true
-		_ = makeRankList(maxRank)
+		panic("no node has a rank")
 	}
 	if maxRank > maxTypedRank {
 		panic(errDecline)
@@ -558,20 +556,11 @@ func (s *lstate) assignOrder(layering [][]int32) {
 	for _, layer := range layering {
 		for i, v := range layer {
 			if v == inone {
-				s.failNilMapWrite("order", float64(i))
+				s.failNilMapWrite("order")
 			}
 			s.nl[v].order, s.nl[v].hasOrder = float64(i), true
 		}
 	}
-}
-
-// makeRankList is the original order's first allocation, make([]int, 0,
-// maxRank); order calls it only for a negative maxRank, where it fails with
-// the original's runtime error.
-//
-//go:noinline
-func makeRankList(maxRank int) []int {
-	return make([]int, 0, maxRank)
 }
 
 type rankSorter struct {
@@ -824,7 +813,7 @@ func (o *orderState) sweep(from, to int, switchBias bool) {
 			}
 			l := o.localIn(lg, v)
 			if l == inone || l == 0 {
-				// The Attrs engine writes into a nil label here and panics.
+				// dagre writes into the label of a missing node here and fails.
 				panic("dagro: order assigned to a node without a layer label")
 			}
 			if lg.replaced[l] {
@@ -1019,7 +1008,7 @@ func (o *orderState) sortSubgraph(lg *layerGraph, lv int32, biasRight bool, dept
 		if blPred, ok := o.firstPred(lg, bl, key); ok {
 			brPred, ok := o.firstPred(lg, br, key)
 			if !ok {
-				// g.Predecessors(br)[0] on an empty list: the Attrs engine panics.
+				// g.Predecessors(br)[0] on an empty list: dagre fails.
 				panic("dagro: border node without predecessor")
 			}
 			blOrder := o.labelOrder(lg, blPred)

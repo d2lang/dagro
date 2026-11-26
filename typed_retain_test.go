@@ -141,37 +141,22 @@ func TestRetainedBytesCountsEveryBuffer(t *testing.T) {
 		in := in
 		run(fmt.Sprint("big ", i), func() bool {
 			var out LayoutOutput
-			if !s.buildTyped(&in) {
+			if s.buildTyped(&in) != nil {
 				return false
 			}
-			err, ok := s.runGuarded(s.run)
-			if !ok || err != nil {
+			if err := s.runGuarded(&in, &out); err != nil {
 				return false
 			}
-			s.updateTyped(&in, &out)
 			return true
 		})
 	}
-	for _, features := range []string{"", "fracminlen", "weirdlabels,removals", "minlen0"} {
-		z := newSpecGenerator(17, features)
+	for _, features := range []string{"", "fracminlen", "weirdlabels,oddnames", "minlen0"} {
+		z := newInputGen(17, features)
 		for i := 0; i < 120; i++ {
-			sp := z.spec(30)
-			g, _ := buildFromSpec(sp)
-			run(fmt.Sprintf("%q %d", features, i), func() (ok bool) {
-				defer func() {
-					if recover() != nil {
-						ok = false
-					}
-				}()
-				if !s.build(g) {
-					return false
-				}
-				err, ok := s.runGuarded(s.run)
-				if !ok || err != nil {
-					return false
-				}
-				s.update(g)
-				return true
+			in := z.input(30)
+			run(fmt.Sprintf("%q %d", features, i), func() bool {
+				var out LayoutOutput
+				return s.buildTyped(&in) == nil && s.runGuarded(&in, &out) == nil
 			})
 		}
 	}
@@ -200,6 +185,8 @@ func TestKeptStateIsBounded(t *testing.T) {
 			for i := 0; i < size.edges; i++ {
 				e := NewLayoutEdge(i%size.nodes, (i*7+1)%size.nodes)
 				e.Minlen = float64(size.minlen)
+				// Edges with the same endpoints need different names.
+				e.Name, e.HasName = strconv.Itoa(i), true
 				in.Edges = append(in.Edges, e)
 			}
 			var out LayoutOutput
@@ -220,29 +207,6 @@ func TestKeptStateIsBounded(t *testing.T) {
 	}
 }
 
-// release drops the attribute values the build read (an earlier version kept a
-// 64 MB string reachable through s.vals).
-func TestReleaseDropsAttrValues(t *testing.T) {
-	lstateCache.Store(nil)
-	before := liveHeap()
-	func() {
-		big := string(make([]byte, 64<<20))
-		g := NewGraph(GraphOptions{Compound: true, Multigraph: true}).SetGraph(Attrs{"ranker": big})
-		g.SetNode("a", Attrs{"width": 10.0, "height": 10.0, "x-big": big})
-		g.SetNode("b", Attrs{"width": 10.0, "height": 10.0})
-		g.SetEdge("a", "b", Attrs{"labelpos": big[:10]})
-		if err := Layout(g); err != nil {
-			t.Fatal(err)
-		}
-	}()
-	if lstateCache.Load() == nil {
-		t.Fatal("no state kept")
-	}
-	if retained := int64(liveHeap()) - int64(before); retained > 8<<20 {
-		t.Errorf("heap retained %.1f MB after Layout returned", float64(retained)/1e6)
-	}
-}
-
 // A state above the limit is never cached (lstateCache survives garbage
 // collections). Under the gc toolchain it goes to lstatePool, which the
 // collector empties (so that large graphs keep their speed);
@@ -251,11 +215,11 @@ func TestReleaseDropsAttrValues(t *testing.T) {
 func TestOversizedStateNotKept(t *testing.T) {
 	big := new(lstate)
 	in := bigInput(3000, 40)
-	if !big.buildTyped(&in) {
+	if big.buildTyped(&in) != nil {
 		t.Fatal("declined")
 	}
-	if _, ok := big.runGuarded(big.run); !ok {
-		t.Fatal("panicked")
+	if err := big.run(); err != nil {
+		t.Fatal(err)
 	}
 	big.release()
 	if b := big.retainedBytes(); b <= lstateKeepMaxBytes {

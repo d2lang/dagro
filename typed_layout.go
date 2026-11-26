@@ -2,6 +2,7 @@ package dagro
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -9,10 +10,10 @@ import (
 	"sync/atomic"
 )
 
-// The typed engine runs the same phases as runLayout on interned integer node
-// ids and typed labels. Every phase below is a line-by-line port of the
-// Attrs-based function of the same name; comments note where a JavaScript or
-// Go map semantic is reproduced explicitly.
+// The typed engine runs the same phases as dagre's runLayout on interned
+// integer node ids and typed labels. Every phase below reproduces dagre's
+// function of the same name (dagro's earlier Graph engine ported them line by
+// line); comments note where a JavaScript semantic is reproduced explicitly.
 
 type dummyKind uint8
 
@@ -47,7 +48,7 @@ type selfRec struct {
 }
 
 // nlabel is a node label. Numeric attributes that may be absent carry a
-// presence flag; an absent attribute reads as NaN, like num on Attrs.
+// presence flag; an absent attribute reads as NaN, as in dagre's labels.
 type nlabel struct {
 	width, height    float64
 	x, y             float64
@@ -128,10 +129,8 @@ type lstate struct {
 	dummyChains                                 []int32
 	width, height                               float64
 
-	inputNodes      []int32
-	inputNodeLabels []Attrs
-	inputEdges      []ekey
-	inputEdgeLabels []any
+	inputNodes []int32
+	inputEdges []ekey
 
 	buf       []int32
 	nodesBuf  []int32
@@ -157,13 +156,6 @@ type lstate struct {
 	lazyNodeNames bool
 	lazyRevNames  bool
 	lm            [][]int32
-
-	// drawn holds the values this layout has drawn from uniqueIDCounter, in
-	// order (see draw and runGuarded).
-	drawn []uint64
-	// origPanic is set right before run performs an operation that fails
-	// with the original's own runtime error (see failNilMapWrite).
-	origPanic bool
 
 	o orderState
 	p posState
@@ -217,10 +209,6 @@ func (s *lstate) release() {
 	clear(s.enames)
 	clear(s.vals[:])
 	clear(s.found[:])
-	clear(s.inputNodeLabels)
-	s.inputNodeLabels = s.inputNodeLabels[:0]
-	clear(s.inputEdgeLabels)
-	s.inputEdgeLabels = s.inputEdgeLabels[:0]
 	clear(s.el)
 	clear(s.nl)
 	s.nl = s.nl[:0]
@@ -320,14 +308,16 @@ func (s *lstate) nameInUse(name string) bool {
 	return ok && s.g.hasNode(id)
 }
 
-// draw is uniqueIDCounter.Add(1), the Attrs engine's draw: each value is
-// visible to the whole process as soon as it is drawn, and concurrent layouts
-// never draw the same value. The value is also recorded in s.drawn, for a
-// decline to replay (see runGuarded).
+// uniqueIDCounter numbers the dummy nodes whose plain names are taken, as
+// dagre's uniqueId does: process-wide, so that concurrent layouts never draw
+// the same value.
+var uniqueIDCounter atomic.Uint64
+
+// draw is dagre's uniqueId counter increment: each value is visible to the
+// whole process as soon as it is drawn, and concurrent layouts never draw the
+// same value.
 func (s *lstate) draw() uint64 {
-	v := uniqueIDCounter.Add(1)
-	s.drawn = append(s.drawn, v)
-	return v
+	return uniqueIDCounter.Add(1)
 }
 
 // uniqueID is uniqueID(prefix), drawn through draw.
@@ -336,55 +326,41 @@ func (s *lstate) uniqueID(prefix string) string {
 }
 
 // errDecline is the panic value with which the typed engine gives up on an
-// input whose layout it does not reproduce (see runGuarded).
-var errDecline = errors.New("dagro: typed engine declined the input")
+// input it does not lay out (see order); LayoutTyped returns it.
+var errDecline = fmt.Errorf("%w: more than %d ranks", ErrUnsupportedInput, maxTypedRank)
 
-// runGuarded runs fn, which runs s.run, and reports whether it finished
-// without panicking. run changes nothing outside s except the process-wide
-// counter, which it draws as the Attrs engine does (draw), the same values in
-// the same order.
-//
-// Where the original fails with a Go runtime error at a known site, run
-// performs the original's failing operation itself (failNilMapWrite,
-// makeRankList) and that panic goes through unchanged: the caller sees the
-// original's panic value, the counter is at the original's value (run has
-// made the original's draws up to that point) and nothing was printed (the
-// original prints no DebugTiming line between buildLayoutGraph's and its
-// panic). The caller drops s.
-//
-// On any other panic runGuarded recovers and reports false; the caller drops
-// s and lets the Attrs engine, which is the original algorithm, lay out the
-// untouched input with s.drawn replayed (drawReplay): its first draws return
-// the values run drew, in order, as the original's first draws would have,
-// and only its later draws take new values. So the Attrs engine raises the
-// original's panic (the typed engine's own panics and errDecline mark inputs
-// on which the original fails or which the typed engine does not reproduce),
-// draws the counter as the original does, or produces the original's layout.
-func (s *lstate) runGuarded(fn func() error) (err error, ok bool) {
-	s.origPanic = false
+// runGuarded runs s.run and, when it succeeds, stores the result in out
+// (updateTyped). It turns a panic into an error: errDecline is returned as it
+// is, any other value p as &PanicError{Value: p}. The caller drops s after a
+// panic.
+func (s *lstate) runGuarded(in *LayoutInput, out *LayoutOutput) (err error) {
 	defer func() {
-		if !ok && !s.origPanic {
-			recover()
+		if p := recover(); p != nil {
+			if p == errDecline {
+				err = errDecline
+			} else {
+				err = &PanicError{Value: p}
+			}
 		}
 	}()
-	err = fn()
-	return err, true
+	if err := s.run(); err != nil {
+		return err
+	}
+	s.updateTyped(in, out)
+	return nil
 }
 
-// failNilMapWrite is the original's write of key into the label of a node
-// that is not in its graph: asAttrs(g.Node(v)) is a nil map for a missing
-// node, so the write panics with Go's "assignment to entry in nil map". The
-// sites (assignOrder, insertSelfEdges and positionY reaching a missing entry
-// of a layer matrix) call it where the original makes that write.
-func (s *lstate) failNilMapWrite(key string, value float64) {
-	s.origPanic = true
-	var label Attrs
-	label[key] = value
+// failNilMapWrite stops the layout where dagre writes key into the label of
+// a node that is not in its graph (an entry missing from a layer of the
+// layer matrix), which fails in dagre too ("assignment to entry in nil map").
+// The sites are assignOrder, insertSelfEdges and positionY.
+func (s *lstate) failNilMapWrite(key string) {
+	panic(fmt.Sprintf("dagre fails on this input: it sets %q on a node missing from a layer", key))
 }
 
 // addDummy is addDummyNode: the plain prefix when free, otherwise the next
-// free uniqueID(prefix). It consumes the process-wide counter exactly as the
-// Attrs engine does.
+// free uniqueID(prefix). It consumes the process-wide counter exactly as
+// dagre does.
 func (s *lstate) addDummy(kind dummyKind, prefix string, label nlabel) int32 {
 	var id int32
 	if !s.nameInUse(prefix) {
@@ -444,80 +420,7 @@ func (s *lstate) setEdgeRef(r edgeRef, label int32) int32 {
 	return s.g.setEdge(r.v, r.w, r.name, r.hasName, label, true)
 }
 
-// attrLookup resolves canonicalize(a)[keys[i]] for lowercase keys and
-// reports whether that result is independent of Go's map iteration order.
-// canonicalize stores every key of a under its lower-case form
-// (strings.ToLower, which also maps some non-ASCII letters to ASCII ones) as
-// it ranges over a, so of several spellings of one key (say "width" and
-// "WIDTH") the one the range visits last wins: a random draw. attrLookup
-// returns false when a holds two spellings of one of keys; build then
-// declines the graph before it coerces any value of a, so that
-// buildLayoutGraph's canonicalize makes the only draw, as in the original.
-// Otherwise each of keys has at most one spelling in a and the result is
-// fixed. When every key of a is one of keys, or every key is ASCII without
-// upper-case letters (its own lower-case form, so one of keys, found
-// directly, or no spelling of any), no key has two spellings and the direct
-// lookups are the result.
-func attrLookup(a Attrs, keys []string, out []any, found []bool) bool {
-	n := 0
-	for i, k := range keys {
-		v, ok := a[k]
-		out[i], found[i] = v, ok
-		if ok {
-			n++
-		}
-	}
-	if n == len(a) {
-		return true
-	}
-	plain := true
-	for k := range a {
-		if !lowerASCII(k) {
-			plain = false
-			break
-		}
-	}
-	if plain {
-		return true
-	}
-	for i := range keys {
-		out[i], found[i] = nil, false
-	}
-	for k, v := range a {
-		lk := strings.ToLower(k)
-		for i, key := range keys {
-			if lk == key {
-				if found[i] {
-					return false // a second spelling of keys[i]
-				}
-				out[i], found[i] = v, true
-			}
-		}
-	}
-	return true
-}
-
-// lowerASCII reports whether s is ASCII without upper-case letters, so that
-// strings.ToLower(s) == s.
-func lowerASCII(s string) bool {
-	for i := 0; i < len(s); i++ {
-		if c := s[i]; c >= 0x80 || 'A' <= c && c <= 'Z' {
-			return false
-		}
-	}
-	return true
-}
-
-var typedGraphKeys = []string{"nodesep", "edgesep", "ranksep", "marginx", "marginy", "acyclicer", "ranker", "rankdir", "align"}
-var typedNodeKeys = []string{"width", "height"}
-var typedEdgeKeys = []string{"minlen", "weight", "width", "height", "labeloffset", "labelpos"}
-
-func anyString(v any) string {
-	s, _ := v.(string)
-	return s
-}
-
-// typedEligible reports whether the typed engine reproduces Graph's string
+// typedEligibleName reports whether the typed engine reproduces graphlib's string
 // edge ids and node-id truthiness for g: no empty node name and no node name
 // containing the edge-id delimiter.
 func typedEligibleName(v string) bool {
@@ -534,7 +437,6 @@ func (s *lstate) begin(nodes, edges int) {
 		clear(s.enames)
 	}
 	s.nextNameKey = 0
-	s.drawn = s.drawn[:0]
 	s.lazyNodeNames, s.lazyRevNames = true, true
 	// Dummy nodes and internal edges typically outnumber the input; size the
 	// label storage once instead of growing it repeatedly.
@@ -560,160 +462,7 @@ func (s *lstate) begin(nodes, edges int) {
 	s.acyclicer, s.ranker, s.align = "", "", ""
 	s.nestingRoot, s.nodeRankFactor, s.maxRank, s.width, s.height = inone, 0, 0, 0, 0
 	s.inputNodes = s.inputNodes[:0]
-	s.inputNodeLabels = s.inputNodeLabels[:0]
 	s.inputEdges = s.inputEdges[:0]
-	s.inputEdgeLabels = s.inputEdgeLabels[:0]
-}
-
-// build is buildLayoutGraph. It returns false when the input needs the Attrs
-// engine (see typedEligibleName, edges incident to compound nodes, which the
-// Attrs engine rejects with a panic during ranking, and labels holding two
-// spellings of an attribute key, see attrLookup). It coerces the labels in
-// buildLayoutGraph's order, so a coercion panic is the original's; when it
-// returns false, every label it has coerced holds at most one spelling of
-// each key it reads, so buildLayoutGraph coerces the same values again
-// without a random draw (number is a pure function of its argument), and its
-// first random draw is the original's.
-func (s *lstate) build(input *Graph) bool {
-	inputNodes := input.Nodes()
-	for _, v := range inputNodes {
-		if !typedEligibleName(v) {
-			return false
-		}
-	}
-	inputEdges := input.Edges()
-	s.begin(len(inputNodes), len(inputEdges))
-	for _, v := range inputNodes {
-		s.names.intern(v)
-		s.noteInputName(v)
-	}
-	for _, e := range inputEdges {
-		if e.HasName {
-			s.noteInputEdgeName(e.Name)
-		}
-	}
-
-	vals, found := s.vals[:], s.found[:]
-	if a, ok := input.Graph().(Attrs); ok && a != nil {
-		if !attrLookup(a, typedGraphKeys, vals, found) {
-			return false
-		}
-		nums := [5]*float64{&s.nodesep, &s.edgesep, &s.ranksep, &s.marginx, &s.marginy}
-		for i, p := range nums {
-			if found[i] {
-				*p = number(vals[i])
-			}
-		}
-		strs := [4]*string{&s.acyclicer, &s.ranker, &s.rankdir, &s.align}
-		for i, p := range strs {
-			if found[5+i] {
-				*p = anyString(vals[5+i])
-			}
-		}
-	}
-
-	for i, v := range inputNodes {
-		id := int32(i)
-		s.inputNodes = append(s.inputNodes, id)
-		label := newNLabel()
-		value := input.Node(v)
-		a, ok := value.(Attrs)
-		if ok && a != nil {
-			if !attrLookup(a, typedNodeKeys, vals[:2], found[:2]) {
-				return false
-			}
-			if found[0] {
-				label.width = number(vals[0])
-			}
-			if found[1] {
-				label.height = number(vals[1])
-			}
-		}
-		s.inputNodeLabels = append(s.inputNodeLabels, a)
-		s.ensureNode(id)
-		s.nl[id] = label
-		s.g.setNode(id)
-		if parent, ok := input.Parent(v); ok {
-			pid, _ := s.names.lookup(parent)
-			s.g.setParent(id, pid)
-		}
-	}
-
-	for _, e := range inputEdges {
-		v, _ := s.names.lookup(e.V)
-		w, _ := s.names.lookup(e.W)
-		if s.g.hasChildren(v) || s.g.hasChildren(w) {
-			return false
-		}
-		l := newELabel()
-		l.minlen, l.weight, l.width, l.height, l.labeloffset, l.labelpos = 1, 1, 0, 0, 10, "r"
-		l.hasWidth, l.hasHeight = true, true
-		value := input.Edge(e)
-		if a, ok := value.(Attrs); ok && a != nil {
-			if !attrLookup(a, typedEdgeKeys, vals[:6], found[:6]) {
-				return false
-			}
-			nums := [5]*float64{&l.minlen, &l.weight, &l.width, &l.height, &l.labeloffset}
-			for j, p := range nums {
-				if found[j] {
-					*p = number(vals[j])
-				}
-			}
-			if found[5] {
-				l.labelpos = anyString(vals[5])
-			}
-		}
-		name := int32(0)
-		if e.HasName {
-			name = s.edgeNameKey(e.Name)
-		}
-		s.g.setEdge(v, w, name, e.HasName, s.newEdgeLabel(l), true)
-		s.inputEdges = append(s.inputEdges, ekey{v, w, name})
-		s.inputEdgeLabels = append(s.inputEdgeLabels, value)
-	}
-	return true
-}
-
-// inputEdgeLabel returns the index of the layout label of input edge i. When
-// the layout lost the edge or left it without points, updateInputGraph fails
-// evaluating layoutLabel["points"].([]Point) on a nil map or on a label
-// without points; inputEdgeLabel raises that same runtime error.
-func (s *lstate) inputEdgeLabel(i int) int32 {
-	k := s.inputEdges[i]
-	le := s.g.findEdge(k.v, k.w, k.n)
-	if le == inone || s.g.edges[le].label == inone || !s.el[s.g.edges[le].label].hasPoints {
-		var layoutLabel Attrs
-		_ = append([]Point(nil), layoutLabel["points"].([]Point)...)
-	}
-	return s.g.edges[le].label
-}
-
-// update is updateInputGraph. The input graph is not modified between build
-// and update, so the labels recorded by build are the ones updateInputGraph
-// would look up again, in the same node and edge order.
-func (s *lstate) update(input *Graph) {
-	for i, inputLabel := range s.inputNodeLabels {
-		if inputLabel == nil {
-			continue
-		}
-		id := s.inputNodes[i]
-		n := &s.nl[id]
-		inputLabel["x"], inputLabel["y"] = n.x, n.y
-		if s.g.hasChildren(id) {
-			inputLabel["width"], inputLabel["height"] = n.width, n.height
-		}
-	}
-	for i, value := range s.inputEdgeLabels {
-		inputLabel := asAttrs(value)
-		li := s.inputEdgeLabel(i)
-		l := &s.el[li]
-		inputLabel["points"] = append([]Point(nil), l.points...)
-		if l.hasX {
-			inputLabel["x"], inputLabel["y"] = l.x, l.y
-		}
-	}
-	inputAttrs := asAttrs(input.Graph())
-	inputAttrs["width"], inputAttrs["height"] = s.width, s.height
 }
 
 func (s *lstate) run() error {
@@ -860,39 +609,126 @@ func (s *lstate) dfsFAS() []edgeRef {
 	return fas
 }
 
-// greedyFAS runs the Attrs implementation on a copy of the graph that has the
-// same node order, edge order and weights; it is only used with
-// acyclicer "greedy", which D2 does not set.
+// greedyFAS is dagre's greedyFAS with the edge weights, run on the layout
+// graph (acyclicer "greedy", which D2 does not set): it returns the edges to
+// reverse, in dagre's order. As graphlib's state graph does, it merges the
+// edges of each ordered node pair into one weighted with their sum, keeps the
+// nodes and the in- and out-edges of each node in the layout graph's order,
+// and removes a node's edges with it.
 func (s *lstate) greedyFAS() []edgeRef {
-	c := NewGraph(GraphOptions{Multigraph: true})
-	names := make([]string, len(s.enames)+1)
-	names[0] = defaultEdgeName
-	for name, k := range s.enames {
-		names[k] = name
+	nodes := s.nodes()
+	if len(nodes) <= 1 {
+		return nil
 	}
-	for _, v := range s.nodes() {
-		c.SetNode(s.names.name(v))
+	index := make(map[int32]int, len(nodes))
+	entries := make([]fasEntry, len(nodes))
+	for i, v := range nodes {
+		index[v] = i
+		entries[i].v = i
 	}
+	type pairKey struct{ v, w int }
+	type pair struct {
+		v, w   int
+		weight float64
+		edges  []int32 // the layout graph's edges from v to w, in order
+	}
+	var pairs []pair
+	pairOf := map[pairKey]int{}
+	in, out := make([][]int, len(nodes)), make([][]int, len(nodes))
+	maxIn, maxOut := 0.0, 0.0
 	for _, e := range s.edges() {
-		ed := s.g.edges[e]
-		edge := Edge{V: s.names.name(ed.v), W: s.names.name(ed.w)}
-		if ed.hasName {
-			edge.Name, edge.HasName = names[ed.name], true
+		ed := &s.g.edges[e]
+		v, w := index[ed.v], index[ed.w]
+		p, ok := pairOf[pairKey{v, w}]
+		if !ok {
+			p = len(pairs)
+			pairOf[pairKey{v, w}] = p
+			pairs = append(pairs, pair{v: v, w: w})
+			out[v] = append(out[v], p)
+			in[w] = append(in[w], p)
 		}
-		c.SetEdgeObject(edge, s.el[ed.label].weight)
+		weight := s.el[ed.label].weight
+		pairs[p].weight += weight
+		pairs[p].edges = append(pairs[p].edges, e)
+		entries[v].out += weight
+		entries[w].in += weight
+		maxOut, maxIn = maxJS2(maxOut, entries[v].out), maxJS2(maxIn, entries[w].in)
 	}
-	found := greedyFAS(c, func(e Edge) float64 { return c.Edge(e).(float64) })
-	out := make([]edgeRef, len(found))
-	for i, e := range found {
-		v, _ := s.names.lookup(e.V)
-		w, _ := s.names.lookup(e.W)
-		r := edgeRef{v: v, w: w, hasName: e.HasName}
-		if e.HasName {
-			r.name = s.edgeNameKey(e.Name)
+	buckets := make([]fasList, int(maxOut+maxIn)+3)
+	zeroIdx := int(maxIn) + 1
+	assign := func(entry *fasEntry) {
+		index := 0
+		if !jsTruthyNumber(entry.out) {
+			index = 0
+		} else if !jsTruthyNumber(entry.in) {
+			index = len(buckets) - 1
+		} else {
+			index = int(entry.out-entry.in) + zeroIdx
 		}
-		out[i] = r
+		buckets[index].enqueue(entry)
 	}
-	return out
+	for i := range entries {
+		assign(&entries[i])
+	}
+	removed := make([]bool, len(nodes))
+	remaining := len(nodes)
+	var results []int
+	remove := func(entry *fasEntry, collect bool) {
+		v := entry.v
+		if removed[v] {
+			return
+		}
+		for _, p := range in[v] {
+			if removed[pairs[p].v] {
+				continue
+			}
+			u := &entries[pairs[p].v]
+			if collect {
+				results = append(results, p)
+			}
+			u.out -= pairs[p].weight
+			assign(u)
+		}
+		for _, p := range out[v] {
+			if removed[pairs[p].w] {
+				continue
+			}
+			w := &entries[pairs[p].w]
+			w.in -= pairs[p].weight
+			assign(w)
+		}
+		removed[v] = true
+		remaining--
+	}
+	sources, sinks := &buckets[len(buckets)-1], &buckets[0]
+	for remaining > 0 {
+		for entry := sinks.dequeue(); entry != nil; entry = sinks.dequeue() {
+			remove(entry, false)
+		}
+		for entry := sources.dequeue(); entry != nil; entry = sources.dequeue() {
+			remove(entry, false)
+		}
+		if remaining > 0 {
+			for i := len(buckets) - 2; i > 0; i-- {
+				if entry := buckets[i].dequeue(); entry != nil {
+					remove(entry, true)
+					break
+				}
+			}
+		}
+	}
+	var fas []edgeRef
+	for _, p := range results {
+		for _, e := range pairs[p].edges {
+			ed := &s.g.edges[e]
+			r := edgeRef{v: ed.v, w: ed.w, hasName: ed.hasName}
+			if ed.hasName {
+				r.name = ed.name
+			}
+			fas = append(fas, r)
+		}
+	}
+	return fas
 }
 
 func (s *lstate) runNestingGraph() {
@@ -1174,7 +1010,6 @@ func (s *lstate) reserveDummies() {
 	s.el = reserve(s.el, edges)
 	s.g.edges = reserve(s.g.edges, edges)
 	s.g.counts = reserve(s.g.counts, 2*edges)
-	s.drawn = reserve(s.drawn, nodes)
 }
 
 func (s *lstate) chainEdge(v, w int32, r edgeRef, weight float64) {
@@ -1451,7 +1286,7 @@ func (s *lstate) insertSelfEdges() {
 			if v == inone {
 				// The original reads node["rank"] of the missing entry's nil
 				// label (nil: no typed number) and writes 0 into it.
-				s.failNilMapWrite("rank", 0)
+				s.failNilMapWrite("rank")
 			}
 			node := &s.nl[v]
 			if !node.hasRank {
@@ -1880,7 +1715,7 @@ var errIntersectInside = errors.New("not possible to find intersection inside of
 // setSelfLoop stores as label i's points the route of a self-loop around
 // (x, y) on a node of the given width and height. It halves the size itself:
 // where the compiler fuses a multiply and an add (arm64, for one), x +
-// width/2 is then fused as in the Attrs engine's positionSelfEdges.
+// width/2 is then fused as in dagre's positionSelfEdges.
 func (s *lstate) setSelfLoop(i int32, x, y, width, height float64) {
 	s.setPoints(i, appendCenteredSelfEdgePoints(s.pointBuf(i), x, y, width/2, height/2))
 }

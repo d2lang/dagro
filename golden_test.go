@@ -3,6 +3,7 @@ package dagro
 import (
 	"bufio"
 	"crypto/sha256"
+	"errors"
 	"flag"
 	"fmt"
 	"math"
@@ -29,9 +30,9 @@ import (
 //
 // The results were recorded with dagro v0.3.1's typed engine, which the
 // Graph engine and dagre.js checked then, by running its steps directly (an
-// "unsupported" input then took the Graph engine and a "panic" was recovered
-// into it or passed through). go test -run TestGolden -update-golden rewrites
-// the files from the current code.
+// "unsupported" input then took the Graph engine, and a panic was recovered
+// into it or passed through to the caller). go test -run TestGolden
+// -update-golden rewrites the files from the current code.
 
 var updateGolden = flag.Bool("update-golden", false, "rewrite testdata/golden from the current LayoutTyped")
 
@@ -133,38 +134,21 @@ func goldenLine(i int, in *LayoutInput) (line, text string) {
 	return fmt.Sprintf("%d %s %d %s", i, kind, draws, hash), text
 }
 
-// goldenOutcome runs the typed engine's steps as LayoutTyped runs them,
-// without the fallback to the Graph engine.
+// goldenOutcome lays out in with LayoutTyped and classifies the result.
 func goldenOutcome(in *LayoutInput) (kind, text string) {
 	var out LayoutOutput
-	if typedFastPaths && layoutSingleNode(in, &out) {
+	err := LayoutTyped(in, &out)
+	var perr *PanicError
+	switch {
+	case err == nil:
 		return "ok", goldenDump(&out)
-	}
-	s := new(lstate)
-	if !s.buildTyped(in) {
-		return "unsupported", ""
-	}
-	var err error
-	if p := goldenCatch(func() {
-		if err = s.run(); err == nil {
-			s.updateTyped(in, &out)
-		}
-	}); p != nil {
-		if p == errDecline {
-			return "unsupported", ""
-		}
-		return "panic", ""
-	}
-	if err != nil {
+	case errors.Is(err, ErrUnsupportedInput):
+		return "unsupported", err.Error()
+	case errors.As(err, &perr):
+		return "panic", err.Error()
+	default:
 		return "error", err.Error()
 	}
-	return "ok", goldenDump(&out)
-}
-
-func goldenCatch(fn func()) (p any) {
-	defer func() { p = recover() }()
-	fn()
-	return nil
 }
 
 // TestGolden checks LayoutTyped against testdata/golden. It runs serially

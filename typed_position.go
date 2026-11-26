@@ -8,7 +8,7 @@ import (
 
 // posState holds asNonCompoundGraph(g) as position reads it: the leaves of g
 // in JavaScript order and their predecessor/successor lists, built from g's
-// edges in insertion order exactly like the copy the Attrs engine makes.
+// edges in insertion order exactly like the copy dagre makes.
 type posState struct {
 	s         *lstate
 	predStart []int32 // per global id, valid for leaves
@@ -145,7 +145,7 @@ func (p *posState) positionY(leaves []int32) {
 			if v == inone {
 				// The original's asAttrs(g.Node(v))["y"] = ... on the
 				// missing entry's nil label.
-				s.failNilMapWrite("y", prevY+maxHeight/2)
+				s.failNilMapWrite("y")
 			}
 			s.nl[v].y, s.nl[v].hasY = prevY+maxHeight/2, true
 		}
@@ -156,7 +156,7 @@ func (p *posState) positionY(leaves []int32) {
 func (p *posState) dummy(v int32) bool { return p.s.nl[v].dummy != dkNone }
 
 // bkConflict is one side of a conflicting pair {a, b}, where a is the
-// endpoint with the smaller name (the key of the Attrs engine's conflict
+// endpoint with the smaller name (the key of dagre's conflict
 // tables): the pair has one entry in a's list and, unless b == a, one in b's,
 // at indices 2k and 2k+1, both with the bits of both tables (1: type 1, 2:
 // type 2). small reports whether the list's owner is a, so a lookup needs no
@@ -642,7 +642,7 @@ func (p *posState) horizontalCompaction(layering [][]int32, xs []float64, revers
 }
 
 // markMembers records which nodes are keys of alignment a's xs map in the
-// Attrs engine: horizontalCompaction gives an entry to every node of the block
+// dagre: horizontalCompaction gives an entry to every node of the block
 // graph (the roots, root[u] for every layering node u) and then, ranging over
 // align, to every value of align. root is idempotent (a node aligns only while
 // align[v] == v, and once some node joins v's block align[v] != v forever), so

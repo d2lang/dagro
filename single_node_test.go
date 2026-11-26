@@ -7,7 +7,7 @@ import (
 )
 
 // TestSingleNodeMatchesEngine compares layoutSingleNode with the
-// typed engine and with the Graph path, bit for bit, on one-node graphs with
+// typed engine, bit for bit, on one-node graphs with
 // every rankdir spelling, ranker, acyclicer and alignment, random separations
 // (NaN and infinities included) and random sizes, and checks that the fast
 // path declines the inputs it does not cover; the process-wide dummy name
@@ -42,7 +42,7 @@ func TestSingleNodeMatchesEngine(t *testing.T) {
 		}
 		counter := uniqueIDCounter.Load()
 		typedFastPaths = false
-		var engine, viaGraph LayoutOutput
+		var engine LayoutOutput
 		err := LayoutTyped(&in, &engine)
 		typedFastPaths = true
 		if err != nil {
@@ -51,10 +51,7 @@ func TestSingleNodeMatchesEngine(t *testing.T) {
 		if uniqueIDCounter.Load() != counter {
 			t.Fatalf("case %d: the engine drew %d generated names", c, uniqueIDCounter.Load()-counter)
 		}
-		if err := layoutTypedViaGraph(&in, &viaGraph); err != nil {
-			t.Fatalf("case %d: %v", c, err)
-		}
-		for _, ref := range []*LayoutOutput{&engine, &viaGraph} {
+		for _, ref := range []*LayoutOutput{&engine} {
 			same := bits(ref.Width) == bits(fast.Width) && bits(ref.Height) == bits(fast.Height) &&
 				len(ref.Nodes) == 1 && len(ref.Edges) == 0 && len(fast.Edges) == 0 &&
 				bits(ref.Nodes[0].X) == bits(fast.Nodes[0].X) && bits(ref.Nodes[0].Y) == bits(fast.Nodes[0].Y) &&

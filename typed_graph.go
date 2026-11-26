@@ -6,7 +6,7 @@ import (
 )
 
 // This file holds the integer-id graph used by the typed layout engine. It
-// re-implements exactly the Graphlib semantics of Graph (insertion order,
+// re-implements exactly the semantics of graphlib's Graph (insertion order,
 // JavaScript property order, ordered predecessor/successor counters, children
 // sets) on flat arrays and array-linked lists, so that the layout phases can be
 // ported one to one without string-keyed maps.
@@ -279,9 +279,9 @@ type iedge struct {
 
 type ekey struct{ v, w, n int32 }
 
-// igraph is a directed graph over interned node ids with Graph's ordering
+// igraph is a directed graph over interned node ids with graphlib's ordering
 // semantics. Edge identity is (v, w, name key), name key 0 being the default
-// name; that matches Graph's string edge ids whenever no node name contains
+// name; that matches graphlib's string edge ids whenever no node name contains
 // the id delimiter, which the typed engine requires. Edges are found by
 // scanning the shorter of v's outgoing and w's incoming lists, which hold
 // exactly the live edges, so a key finds the one live edge it identifies.
@@ -397,7 +397,7 @@ func (g *igraph) unlinkChild(v int32) {
 	n.sprev, n.snext = inone, inone
 }
 
-// setParent mirrors Graph.setParent without the cycle check; p == inone moves
+// setParent mirrors graphlib's setParent without the cycle check; p == inone moves
 // v to the graph root. Like Graphlib, re-parenting moves v to the end of the
 // new parent's children.
 func (g *igraph) setParent(v, p int32) {
@@ -532,7 +532,7 @@ func (g *igraph) findAnyEdge(v, w int32) int32 {
 	return inone
 }
 
-// setEdge mirrors Graph.SetEdge: an existing edge only gets its label
+// setEdge mirrors graphlib's setEdge: an existing edge only gets its label
 // replaced (when labelSet), a new one is appended to every order. It returns
 // the edge index.
 func (g *igraph) setEdge(v, w, name int32, hasName bool, label int32, labelSet bool) int32 {
@@ -633,7 +633,7 @@ func (g *igraph) removeEdge(e int32) {
 	}
 }
 
-// removeNode mirrors Graph.RemoveNode: incident edges (incoming first) are
+// removeNode mirrors graphlib's removeNode: incident edges (incoming first) are
 // removed, children move to the graph root in JavaScript order.
 func (g *igraph) removeNode(v int32, key []int64, scratch []int32) []int32 {
 	if !g.hasNode(v) {

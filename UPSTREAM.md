@@ -28,16 +28,18 @@ it is generated in CI and is not checked in or shipped.
 
 ## Source map
 
-| Upstream source | Dagro implementation |
+| Upstream | Dagro |
 | --- | --- |
-| `lib/layout.ts`, `lib/coordinate-system.ts`, `lib/position/index.ts` | `layout.go`, `coordinate_system.go`, `position.go` |
-| `lib/acyclic.ts`, `lib/greedy-fas.ts` | `acyclic.go`, `greedy_fas.go` |
-| `lib/nesting-graph.ts`, `lib/normalize.ts`, `lib/parent-dummy-chains.ts`, `lib/add-border-segments.ts` | `nesting_graph.go`, `normalize.go`, `parent_dummy_chains.go`, `add_border_segments.go` |
-| `lib/rank/*.ts` | `rank.go`, `rank_util.go`, `feasible_tree.go`, `network_simplex.go` |
-| `lib/order/*.ts` | `order.go` and `order_*.go` |
-| `lib/position/bk.ts` | `position_bk.go` |
-| `lib/util.ts`, `lib/data/list.ts` | `util.go`, `numeric_semantics.go`, `list.go` |
-| Graphlib graph operations used by D2 and Dagre's default path | `graph.go`, `callback.go`, and ordered collection helpers |
+| `lib/layout.ts` (`runLayout`, `buildLayoutGraph`, `updateInputGraph`), `lib/coordinate-system.ts`, `lib/acyclic.ts`, `lib/greedy-fas.ts`, `lib/nesting-graph.ts`, `lib/normalize.ts`, `lib/parent-dummy-chains.ts`, `lib/add-border-segments.ts`, `lib/util.ts`, `lib/data/list.ts` | `typed_layout.go`, `typed_api.go`, `typed_util.go` |
+| `lib/rank/*.ts` | `typed_rank.go` |
+| `lib/order/*.ts` | `typed_order.go` |
+| `lib/position/index.ts`, `lib/position/bk.ts` | `typed_position.go` |
+| Graphlib graph operations used by Dagre's default path | `typed_graph.go` |
+
+Until v0.3.1 Dagro also contained a line-by-line port of these files with
+Graphlib's `Graph` and open `Attrs` labels (the Graph engine), against which
+the typed engine was checked. v0.4.0 removed it; `testdata/golden` keeps the
+typed engine's results from that time.
 
 ## Verified D2 profile
 

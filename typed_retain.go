@@ -81,8 +81,7 @@ func (s *lstate) retainedBytes() int {
 	n += cap(s.nl)*szNLabel + cap(s.el)*szELabel
 	n += 4 * (cap(s.dummyChains) + cap(s.inputNodes) + cap(s.buf) + cap(s.nodesBuf) + cap(s.edgesBuf) + cap(s.stack) +
 		cap(s.vPath) + cap(s.wPath) + cap(s.parentBuf) + cap(s.borderBuf))
-	n += cap(s.inputNodeLabels)*szPtr + cap(s.inputEdges)*szEKey + cap(s.inputEdgeLabels)*szIface
-	n += 8 * cap(s.drawn)
+	n += cap(s.inputEdges) * szEKey
 	n += cap(s.ptbuf)*szSlice + s.ptbufCap*szPoint
 	n += (cap(s.depths)+cap(s.layerOf))*szInt + cap(s.nonEmpty) + cap(s.seenBuf) + 8*cap(s.deltas) +
 		cap(s.nums)*szPostNum

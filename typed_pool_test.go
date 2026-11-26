@@ -78,11 +78,11 @@ func TestFreshStateAllocation(t *testing.T) {
 	var before, after runtime.MemStats
 	s := new(lstate)
 	runtime.ReadMemStats(&before)
-	if !s.buildTyped(&in) {
+	if s.buildTyped(&in) != nil {
 		t.Fatal("declined")
 	}
-	if _, ok := s.runGuarded(s.run); !ok {
-		t.Fatal("panicked")
+	if err := s.run(); err != nil {
+		t.Fatal(err)
 	}
 	runtime.ReadMemStats(&after)
 	allocated, kept := after.TotalAlloc-before.TotalAlloc, uint64(s.retainedBytes())

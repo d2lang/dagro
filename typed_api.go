@@ -1,22 +1,23 @@
 package dagro
 
 import (
+	"errors"
 	"fmt"
 	"math"
 )
 
-// LayoutInput describes a graph for LayoutTyped with every attribute Layout
-// reads as a typed field, so no Graph or Attrs labels have to be built.
+// LayoutInput describes a graph for LayoutTyped: a compound multigraph with
+// every attribute dagre reads as a typed field.
 //
-// LayoutTyped(in, out) produces exactly the numbers Layout produces for the
-// Graph returned by in.Graph(): a compound multigraph whose graph label holds
-// rankdir, ranksep, edgesep and nodesep (and marginx, marginy, acyclicer,
-// ranker and align when set), built by calling, for each node in order,
-// SetNode(ID, Attrs{"width", "height"}) and, when Parent >= 0,
-// SetParent(ID, Nodes[Parent].ID), and then SetEdge for each edge in order
-// with all six edge attributes and, when HasName, its name.
+// LayoutTyped(in, out) produces exactly the numbers Dagre 3.1.1's layout
+// produces for the graphlib graph whose graph label holds rankdir, ranksep,
+// edgesep and nodesep (and marginx, marginy, acyclicer, ranker and align
+// when set), built by calling, for each node in order, setNode(ID, {width,
+// height}) and, when Parent >= 0, setParent(ID, Nodes[Parent].ID), and then
+// setEdge for each edge in order with all six edge attributes and, when
+// HasName, its name.
 //
-// Zero values are not Layout's defaults: start from DefaultLayoutInput and
+// Zero values are not dagre's defaults: start from DefaultLayoutInput and
 // NewLayoutEdge, or set every field. In particular RankDir "" and LabelPos ""
 // are valid values that differ from the defaults "TB" and "r".
 type LayoutInput struct {
@@ -61,10 +62,16 @@ type LayoutOutput struct {
 }
 
 // NodeLayout is a node's center and size. Width and Height are computed for
-// nodes with children and are the input values for the others, as Layout
+// nodes with children and are the input values for the others, as dagre
 // leaves them in the node labels.
 type NodeLayout struct {
 	X, Y, Width, Height float64
+}
+
+// Point is a point of an edge's route.
+type Point struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
 // EdgeLayout is an edge's route and, when HasXY, the center of its label.
@@ -74,90 +81,69 @@ type EdgeLayout struct {
 	HasXY  bool
 }
 
-// DefaultLayoutInput returns a LayoutInput with Layout's default graph
+// DefaultLayoutInput returns a LayoutInput with dagre's default graph
 // attributes and no nodes or edges.
 func DefaultLayoutInput() LayoutInput {
 	return LayoutInput{RankDir: "TB", RankSep: 50, EdgeSep: 20, NodeSep: 50}
 }
 
-// NewLayoutEdge returns an edge from Nodes[v] to Nodes[w] with Layout's
+// NewLayoutEdge returns an edge from Nodes[v] to Nodes[w] with dagre's
 // default edge attributes.
 func NewLayoutEdge(v, w int) LayoutEdge {
 	return LayoutEdge{V: v, W: w, Minlen: 1, Weight: 1, Width: 0, Height: 0, LabelOffset: 10, LabelPos: "r"}
 }
 
-// Graph returns the Graph whose Layout LayoutTyped reproduces.
-func (in *LayoutInput) Graph() (*Graph, error) {
-	label := Attrs{"rankdir": in.RankDir, "ranksep": in.RankSep, "edgesep": in.EdgeSep, "nodesep": in.NodeSep}
-	if in.MarginX != 0 {
-		label["marginx"] = in.MarginX
-	}
-	if in.MarginY != 0 {
-		label["marginy"] = in.MarginY
-	}
-	if in.Acyclicer != "" {
-		label["acyclicer"] = in.Acyclicer
-	}
-	if in.Ranker != "" {
-		label["ranker"] = in.Ranker
-	}
-	if in.Align != "" {
-		label["align"] = in.Align
-	}
-	g := NewGraph(GraphOptions{Compound: true, Multigraph: true}).SetGraph(label)
-	for i, n := range in.Nodes {
-		g.SetNode(n.ID, Attrs{"width": n.Width, "height": n.Height})
-		if n.Parent >= 0 {
-			if n.Parent >= len(in.Nodes) {
-				return nil, fmt.Errorf("dagro: node %d has parent %d out of range", i, n.Parent)
-			}
-			if err := g.SetParent(n.ID, in.Nodes[n.Parent].ID); err != nil {
-				return nil, err
-			}
-		}
-	}
-	for i, e := range in.Edges {
-		if e.V < 0 || e.V >= len(in.Nodes) || e.W < 0 || e.W >= len(in.Nodes) {
-			return nil, fmt.Errorf("dagro: edge %d endpoint out of range", i)
-		}
-		label := Attrs{
-			"minlen": e.Minlen, "weight": e.Weight, "width": e.Width, "height": e.Height,
-			"labeloffset": e.LabelOffset, "labelpos": e.LabelPos,
-		}
-		if e.HasName {
-			g.SetEdge(in.Nodes[e.V].ID, in.Nodes[e.W].ID, label, e.Name)
-		} else {
-			g.SetEdge(in.Nodes[e.V].ID, in.Nodes[e.W].ID, label)
-		}
-	}
-	return g, nil
+// ErrUnsupportedInput is wrapped by the errors LayoutTyped returns for inputs
+// it does not lay out: no nodes; a node id that is empty or contains
+// "\x01"; two nodes with the same id; a Parent out of range; parents that
+// form a cycle; an edge endpoint out of range or with children; two edges
+// with the same V, W and name (HasName false counting as one more name); more
+// than 2^26 ranks.
+var ErrUnsupportedInput = errors.New("dagro: unsupported input")
+
+// PanicError is the error LayoutTyped returns when the layout panics, which
+// it does where dagre itself fails (for example "dagre fails on this input:
+// it sets \"order\" on a node missing from a layer") and on a defect of the
+// engine. Value is the value passed to panic.
+type PanicError struct {
+	Value any
+}
+
+func (e *PanicError) Error() string {
+	return fmt.Sprintf("dagro: layout failed: %v", e.Value)
+}
+
+// Unwrap returns Value when it is an error (a Go runtime error, say).
+func (e *PanicError) Unwrap() error {
+	err, _ := e.Value.(error)
+	return err
 }
 
 // LayoutTyped lays out in and stores the result in out, reusing out's
 // slices. The points of all edges share one newly allocated array.
+//
+// It returns an error wrapping ErrUnsupportedInput, without touching out,
+// for an input it does not lay out, and a *PanicError when the layout panics
+// (out may then be partly written). It returns the layout's own error
+// "not possible to find intersection inside of the rectangle" as dagre
+// raises it. LayoutTyped never panics, except on a fatal error such as
+// running out of memory.
 func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
 	if typedFastPaths && layoutSingleNode(in, out) {
 		return nil
 	}
 	s := getLState()
-	if !s.buildTyped(in) {
-		putLState(s)
-		return layoutTypedViaGraph(in, out)
-	}
-	err, ok := s.runGuarded(s.run)
-	if !ok {
-		// The typed engine panicked or declined (see runGuarded): s is
-		// dropped. Layout(in.Graph()) would build the same typed state, run
-		// it into the same panic and hand the graph to the Attrs engine, so
-		// that engine lays out in.Graph() directly, replaying the counter
-		// values s drew.
-		return layoutTypedViaAttrs(in, out, s.drawn)
-	}
-	if err != nil {
+	if err := s.buildTyped(in); err != nil {
 		putLState(s)
 		return err
 	}
-	s.updateTyped(in, out)
+	if err := s.runGuarded(in, out); err != nil {
+		if _, ok := err.(*PanicError); !ok && err != errDecline {
+			putLState(s)
+		}
+		// After a panic s is dropped: it may be inconsistent.
+		return err
+	}
 	putLState(s)
 	return nil
 }
@@ -189,7 +175,7 @@ const maxExactHalf = 1 << 52
 // dummy node is named from the process-wide counter: the nesting graph's
 // root takes the plain name "_root", which no input name can hold, and with
 // one rank no layer graph is built. TestSingleNodeMatchesEngine
-// compares the results bit for bit with the engine and with the Graph path.
+// compares the results bit for bit with the engine.
 func layoutSingleNode(in *LayoutInput, out *LayoutOutput) bool {
 	if len(in.Nodes) != 1 || len(in.Edges) != 0 || in.MarginX != 0 || in.MarginY != 0 {
 		return false
@@ -214,73 +200,23 @@ func layoutSingleNode(in *LayoutInput, out *LayoutOutput) bool {
 	return true
 }
 
-// layoutTypedViaGraph handles inputs the typed engine does not take (and
-// invalid ones) through the equivalent Graph.
-func layoutTypedViaGraph(in *LayoutInput, out *LayoutOutput) error {
-	return layoutTypedWith(in, out, func(g *Graph) error { return Layout(g) })
-}
-
-// layoutTypedViaAttrs lays out the equivalent Graph with the Attrs engine,
-// which takes its first counter values from drawn (see drawReplay).
-func layoutTypedViaAttrs(in *LayoutInput, out *LayoutOutput, drawn []uint64) error {
-	return layoutTypedWith(in, out, func(g *Graph) error {
-		layoutGraph := buildLayoutGraph(g)
-		layoutGraph.replay = &drawReplay{vals: drawn}
-		return layoutAttrsBuilt(g, layoutGraph, func(_ string, fn func() error) error { return fn() })
-	})
-}
-
-// layoutTypedWith lays out the Graph equivalent to in with layout and stores
-// the result in out.
-func layoutTypedWith(in *LayoutInput, out *LayoutOutput, layout func(*Graph) error) error {
-	g, err := in.Graph()
-	if err != nil {
-		return err
-	}
-	if err := layout(g); err != nil {
-		return err
-	}
-	ga := asAttrs(g.Graph())
-	out.Width, out.Height = num(ga, "width"), num(ga, "height")
-	out.Nodes = resize(out.Nodes, len(in.Nodes))
-	for i, n := range in.Nodes {
-		a := asAttrs(g.Node(n.ID))
-		out.Nodes[i] = NodeLayout{X: num(a, "x"), Y: num(a, "y"), Width: num(a, "width"), Height: num(a, "height")}
-	}
-	out.Edges = resize(out.Edges, len(in.Edges))
-	for i, e := range in.Edges {
-		var a Attrs
-		if e.HasName {
-			a = asAttrs(g.EdgeByArgs(in.Nodes[e.V].ID, in.Nodes[e.W].ID, e.Name))
-		} else {
-			a = asAttrs(g.EdgeByArgs(in.Nodes[e.V].ID, in.Nodes[e.W].ID))
-		}
-		points, _ := a["points"].([]Point)
-		el := EdgeLayout{Points: append([]Point(nil), points...)}
-		if has(a, "x") {
-			el.X, el.Y, el.HasXY = num(a, "x"), num(a, "y"), true
-		}
-		out.Edges[i] = el
-	}
-	return nil
-}
-
-// buildTyped is build for a LayoutInput: it reproduces buildLayoutGraph on
-// in.Graph() without building it. It returns false for inputs that take the
-// Graph path: names the typed engine does not accept, duplicate node ids or
-// edge keys, parent cycles, indices out of range, and edges touching a node
-// with children.
-func (s *lstate) buildTyped(in *LayoutInput) bool {
+// buildTyped is dagre's buildLayoutGraph for in. It returns an error
+// wrapping ErrUnsupportedInput for an input the engine does not lay out (see
+// ErrUnsupportedInput).
+func (s *lstate) buildTyped(in *LayoutInput) error {
 	n := len(in.Nodes)
-	for _, node := range in.Nodes {
+	if n == 0 {
+		return fmt.Errorf("%w: no nodes", ErrUnsupportedInput)
+	}
+	for i, node := range in.Nodes {
 		if !typedEligibleName(node.ID) {
-			return false
+			return fmt.Errorf("%w: node %d has the id %q (empty or containing \"\\x01\")", ErrUnsupportedInput, i, node.ID)
 		}
 	}
 	s.begin(n, len(in.Edges))
 	for i, node := range in.Nodes {
-		if s.names.intern(node.ID) != int32(i) {
-			return false // duplicate id
+		if j := s.names.intern(node.ID); j != int32(i) {
+			return fmt.Errorf("%w: nodes %d and %d have the same id %q", ErrUnsupportedInput, j, i, node.ID)
 		}
 		s.noteInputName(node.ID)
 	}
@@ -289,7 +225,7 @@ func (s *lstate) buildTyped(in *LayoutInput) bool {
 			s.noteInputEdgeName(in.Edges[i].Name)
 		}
 	}
-	// Graph.SetParent's cycle check, in call order.
+	// graphlib's setParent cycle check, in call order.
 	s.parentBuf = resize(s.parentBuf, n)
 	parent := s.parentBuf
 	for i := range parent {
@@ -301,11 +237,11 @@ func (s *lstate) buildTyped(in *LayoutInput) bool {
 			continue
 		}
 		if p >= n {
-			return false
+			return fmt.Errorf("%w: node %d has parent %d out of range", ErrUnsupportedInput, i, p)
 		}
 		for a := int32(p); a != inone; a = parent[a] {
 			if a == int32(i) {
-				return false
+				return fmt.Errorf("%w: making node %d the parent of node %d would create a cycle", ErrUnsupportedInput, p, i)
 			}
 		}
 		parent[i] = int32(p)
@@ -347,18 +283,19 @@ func (s *lstate) buildTyped(in *LayoutInput) bool {
 	for i := range in.Edges {
 		e := &in.Edges[i]
 		if e.V < 0 || e.V >= n || e.W < 0 || e.W >= n {
-			return false
+			return fmt.Errorf("%w: edge %d has an endpoint out of range", ErrUnsupportedInput, i)
 		}
 		v, w := int32(e.V), int32(e.W)
 		if s.g.hasChildren(v) || s.g.hasChildren(w) {
-			return false
+			// dagre fails on such an edge while ranking.
+			return fmt.Errorf("%w: edge %d has an endpoint with children", ErrUnsupportedInput, i)
 		}
 		name := int32(0)
 		if e.HasName {
 			name = s.edgeNameKey(e.Name)
 		}
 		if s.g.findEdge(v, w, name) != inone {
-			return false // duplicate edge key
+			return fmt.Errorf("%w: edge %d repeats the endpoints and name of an earlier edge", ErrUnsupportedInput, i)
 		}
 		l := newELabel()
 		l.minlen, l.weight, l.width, l.height, l.labeloffset, l.labelpos = e.Minlen, e.Weight, e.Width, e.Height, e.LabelOffset, e.LabelPos
@@ -366,12 +303,12 @@ func (s *lstate) buildTyped(in *LayoutInput) bool {
 		s.g.setEdge(v, w, name, e.HasName, s.newEdgeLabel(l), true)
 		s.inputEdges = append(s.inputEdges, ekey{v, w, name})
 	}
-	return true
+	return nil
 }
 
-// updateTyped is update for LayoutTyped. The edges' labels are resolved
-// before out is written: where updateInputGraph fails, Layout(in.Graph())
-// fails before layoutTypedViaGraph writes out, so out stays untouched.
+// updateTyped is dagre's updateInputGraph for LayoutTyped. The edges' labels
+// are resolved before out is written: where updateInputGraph fails (an
+// input edge without a layout label), out stays untouched.
 func (s *lstate) updateTyped(in *LayoutInput, out *LayoutOutput) {
 	total := 0
 	labels := s.buf[:0]

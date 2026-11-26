@@ -56,9 +56,9 @@ func reserve[T any](s []T, n int) []T {
 
 // rgraph is the graph a ranker works on: asNonCompoundGraph(g), or its
 // simplification for network simplex. Nodes are local indices in the order of
-// the Graph the Attrs engine builds (JavaScript order of g's leaves); edges
+// the graph dagre builds (JavaScript order of g's leaves); edges
 // are in insertion order. Ranks live in rank/hasRank and are written back to
-// the shared node labels at the end, exactly where the Attrs engine writes
+// the shared node labels at the end, exactly where dagre writes
 // them through shared label maps.
 type rgraph struct {
 	ids            []int32 // local -> global node id
@@ -711,7 +711,7 @@ func (r *rankState) jsOrderEntries(t *rtree, list []int32) {
 	r.idx, r.rest = idx[:0], rest[:0]
 }
 
-// graphEdge returns the graph edge behind tree edge te as the Attrs engine
+// graphEdge returns the graph edge behind tree edge te as dagre
 // finds it from the tree edge's endpoint v: the edge from v to the other
 // endpoint when the graph has it (g.HasEdge(child, parent) in calcCutValue
 // and updateRanks, g.HasEdge(edge.V, edge.W) in enterEdge), else the edge
@@ -824,7 +824,7 @@ func (r *rankState) networkSimplex(rg *rgraph, s *lstate) {
 			break
 		}
 		// enterEdge: the tree stores an edge with its JavaScript-smaller
-		// endpoint first (ea), as Graph does for undirected edges.
+		// endpoint first (ea), as graphlib does for undirected edges.
 		ge := t.graphEdge(t.ea[leave], leave)
 		v, w := rg.ev[ge], rg.ew[ge]
 		tail := v
