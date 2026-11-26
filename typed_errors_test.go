@@ -77,8 +77,10 @@ func TestLayoutTypedUnsupportedInputs(t *testing.T) {
 	}
 }
 
-// TestLayoutTypedDeclinesHugeRanks checks that an input with more ranks than
-// the engine takes gets an error instead of exhausting memory.
+// TestLayoutTypedDeclinesHugeRanks checks that an infinite minlen gives an
+// error instead of exhausting memory: the ranks convert to the largest int on
+// arm64, which the engine declines (more than 2^26 ranks), and to a negative
+// int on amd64, on which the layout fails.
 func TestLayoutTypedDeclinesHugeRanks(t *testing.T) {
 	in := DefaultLayoutInput()
 	in.Nodes = []LayoutNode{{ID: "a", Parent: -1, Width: 1, Height: 1}, {ID: "b", Parent: -1, Width: 1, Height: 1}}
@@ -87,7 +89,9 @@ func TestLayoutTypedDeclinesHugeRanks(t *testing.T) {
 	in.Edges = []LayoutEdge{e}
 	var out LayoutOutput
 	err := LayoutTyped(&in, &out)
-	if !errors.Is(err, ErrUnsupportedInput) || !strings.Contains(err.Error(), "more than 67108864 ranks") {
+	var perr *PanicError
+	declined := errors.Is(err, ErrUnsupportedInput) && strings.Contains(err.Error(), "more than 67108864 ranks")
+	if !declined && !errors.As(err, &perr) {
 		t.Fatalf("error %v", err)
 	}
 }

@@ -24,9 +24,9 @@ import (
 // kind is "ok" (a layout), "error" (an error from the engine), "unsupported"
 // (an input the engine does not lay out) or "panic" (the engine failed);
 // draws is how many values the layout took from the process-wide dummy-name
-// counter; hash is the first 16 hex digits of the SHA-256 of the layout's
-// exact bits (goldenDump) or of the error text, and "-" for the last two
-// kinds.
+// counter ("-" for a panic); hash is the first 16 hex digits of the SHA-256
+// of the layout's exact bits (goldenDump; every NaN counts as one value) or
+// of the error text, and "-" for the last two kinds.
 //
 // The results were recorded with dagro v0.3.1's typed engine, which the
 // Graph engine and dagre.js checked then, by running its steps directly (an
@@ -91,7 +91,14 @@ func goldenSets() []goldenSet {
 // goldenDump writes out's exact bits.
 func goldenDump(out *LayoutOutput) string {
 	var b strings.Builder
-	f := func(x float64) { fmt.Fprintf(&b, " %016x", math.Float64bits(x)) }
+	f := func(x float64) {
+		if math.IsNaN(x) {
+			// NaN payloads differ between platforms.
+			b.WriteString(" NaN")
+			return
+		}
+		fmt.Fprintf(&b, " %016x", math.Float64bits(x))
+	}
 	b.WriteString("graph")
 	f(out.Width)
 	f(out.Height)
@@ -126,12 +133,17 @@ func goldenHash(s string) string {
 func goldenLine(i int, in *LayoutInput) (line, text string) {
 	uniqueIDCounter.Store(goldenCounterStart)
 	kind, text := goldenOutcome(in)
-	draws := uniqueIDCounter.Load() - goldenCounterStart
+	draws := fmt.Sprint(uniqueIDCounter.Load() - goldenCounterStart)
 	hash := "-"
 	if kind == "ok" || kind == "error" {
 		hash = goldenHash(text)
 	}
-	return fmt.Sprintf("%d %s %d %s", i, kind, draws, hash), text
+	if kind == "panic" {
+		// Where a failing layout stops can depend on the platform (Go's
+		// conversion of NaN and infinities to int).
+		draws = "-"
+	}
+	return fmt.Sprintf("%d %s %s %s", i, kind, draws, hash), text
 }
 
 // goldenOutcome lays out in with LayoutTyped and classifies the result.
