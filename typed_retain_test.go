@@ -150,6 +150,49 @@ func TestRetainedBytesCountsEveryBuffer(t *testing.T) {
 			return true
 		})
 	}
+	// These order again with the takeover, or (the one that loses a node)
+	// fail and are laid out again as relayout does, on the same state.
+	for _, c := range constraintCycleInputs(t) {
+		in := c.in
+		run(c.name, func() bool {
+			var out LayoutOutput
+			if s.buildTyped(&in) != nil {
+				t.Fatalf("%s: declined", c.name)
+			}
+			if s.runGuarded(&in, &out) == nil {
+				return true
+			}
+			s.o.repeat = true
+			defer func() { s.o.repeat = false }()
+			if err := s.buildTyped(&in); err != nil {
+				t.Fatalf("%s: %v", c.name, err)
+			}
+			if err := s.runGuarded(&in, &out); err != nil {
+				t.Fatalf("%s: %v", c.name, err)
+			}
+			return true
+		})
+	}
+	// Those keep the takeover's buffers smaller than the slack of the
+	// estimate, which a missing count would then hide. A state can keep
+	// larger ones from an earlier layout: give the buffers that a layout of
+	// tiny uses large capacities, and lay it out again.
+	run("takeover buffers", func() bool {
+		in := tinyConstraintCycle()
+		var out LayoutOutput
+		for pass := 0; pass < 2; pass++ {
+			if s.buildTyped(&in) != nil || s.runGuarded(&in, &out) != nil {
+				t.Fatal("tiny: no layout")
+			}
+			if pass == 0 {
+				s.o.takeStack = make([]takeFrame, 0, 1<<12)
+				for _, L := range s.o.levels[:s.o.depthUsed+1] {
+					L.absorbedHead, L.absorbedTail = make([]int32, 0, 1<<12), make([]int32, 0, 1<<12)
+				}
+			}
+		}
+		return true
+	})
 	for _, features := range []string{"", "fracminlen", "weirdlabels,oddnames", "minlen0"} {
 		z := newInputGen(17, features)
 		for i := 0; i < 120; i++ {
