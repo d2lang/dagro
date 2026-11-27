@@ -1,0 +1,381 @@
+{
+ "RankDir": "TB",
+ "RankSep": 100,
+ "EdgeSep": 20,
+ "NodeSep": 60,
+ "MarginX": 0,
+ "MarginY": 0,
+ "Acyclicer": "",
+ "Ranker": "",
+ "Align": "",
+ "Nodes": [
+  {
+   "ID": "0",
+   "Parent": -1,
+   "Width": 72,
+   "Height": 81
+  },
+  {
+   "ID": "1",
+   "Parent": 0,
+   "Width": 69,
+   "Height": 76
+  },
+  {
+   "ID": "2",
+   "Parent": 0,
+   "Width": 69,
+   "Height": 76
+  },
+  {
+   "ID": "3",
+   "Parent": 2,
+   "Width": 62,
+   "Height": 66
+  },
+  {
+   "ID": "4",
+   "Parent": 1,
+   "Width": 62,
+   "Height": 66
+  },
+  {
+   "ID": "5",
+   "Parent": 2,
+   "Width": 65,
+   "Height": 71
+  },
+  {
+   "ID": "6",
+   "Parent": 5,
+   "Width": 62,
+   "Height": 66
+  },
+  {
+   "ID": "7",
+   "Parent": 1,
+   "Width": 62,
+   "Height": 66
+  },
+  {
+   "ID": "8",
+   "Parent": 1,
+   "Width": 62,
+   "Height": 66
+  },
+  {
+   "ID": "9",
+   "Parent": 2,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "10",
+   "Parent": 5,
+   "Width": 61,
+   "Height": 66
+  },
+  {
+   "ID": "11",
+   "Parent": 10,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "12",
+   "Parent": 2,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "13",
+   "Parent": -1,
+   "Width": 86,
+   "Height": 81
+  },
+  {
+   "ID": "14",
+   "Parent": 13,
+   "Width": 71,
+   "Height": 66
+  },
+  {
+   "ID": "15",
+   "Parent": -1,
+   "Width": 86,
+   "Height": 81
+  },
+  {
+   "ID": "16",
+   "Parent": 15,
+   "Width": 71,
+   "Height": 66
+  },
+  {
+   "ID": "17",
+   "Parent": 15,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "18",
+   "Parent": 13,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "19",
+   "Parent": -1,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "20",
+   "Parent": -1,
+   "Width": 86,
+   "Height": 81
+  },
+  {
+   "ID": "21",
+   "Parent": 20,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "22",
+   "Parent": 20,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "23",
+   "Parent": -1,
+   "Width": 70,
+   "Height": 66
+  },
+  {
+   "ID": "24",
+   "Parent": -1,
+   "Width": 70,
+   "Height": 66
+  }
+ ],
+ "Edges": [
+  {
+   "V": 3,
+   "W": 4,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 6,
+   "W": 7,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 8,
+   "W": 9,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 4,
+   "W": 11,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 4,
+   "W": 12,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 14,
+   "W": 16,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 16,
+   "W": 8,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 17,
+   "W": 3,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 18,
+   "W": 3,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 17,
+   "W": 19,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 21,
+   "W": 3,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 9,
+   "W": 14,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 19,
+   "W": 12,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 4,
+   "W": 22,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 21,
+   "W": 23,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 3,
+   "W": 24,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 7,
+   "W": 14,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  },
+  {
+   "V": 11,
+   "W": 14,
+   "Name": "",
+   "HasName": true,
+   "Minlen": 1,
+   "Weight": 1,
+   "Width": 0,
+   "Height": 0,
+   "LabelOffset": 10,
+   "LabelPos": "c"
+  }
+ ]
+}

@@ -1,11 +1,9 @@
 package dagro
 
 import (
-	"encoding/json"
 	"errors"
 	"math"
 	"math/rand"
-	"os"
 	"reflect"
 	"runtime"
 	"strings"
@@ -96,21 +94,11 @@ func TestLayoutTypedDeclinesHugeRanks(t *testing.T) {
 	}
 }
 
-// TestLayoutTypedPanicBecomesError checks that inputs on which dagre itself
-// fails, and inputs on which the engine raises a Go runtime error, give a
-// *PanicError, and that the next layout is unaffected.
+// TestLayoutTypedPanicBecomesError checks that inputs on which the layout
+// writes into the label of an entry missing from a layer, and inputs on which
+// the engine raises a Go runtime error, give a *PanicError, and that the next
+// layout is unaffected.
 func TestLayoutTypedPanicBecomesError(t *testing.T) {
-	load := func(name string) LayoutInput {
-		data, err := os.ReadFile("testdata/knownsites/" + name)
-		if err != nil {
-			t.Fatal(err)
-		}
-		var in LayoutInput
-		if err := json.Unmarshal(data, &in); err != nil {
-			t.Fatal(err)
-		}
-		return in
-	}
 	ok := d2ProfileInput(rand.New(rand.NewSource(1)), 0)
 	var want LayoutOutput
 	if err := LayoutTyped(&ok, &want); err != nil {
@@ -136,17 +124,17 @@ func TestLayoutTypedPanicBecomesError(t *testing.T) {
 			t.Fatalf("%s: the next layout differs (%v)", what, err)
 		}
 	}
-	check("insertSelfEdges", load("insertselfedges_layer_gap.json"), `dagre fails on this input: it sets "rank" on a node missing from a layer`, false)
-	check("assignOrder", load("assignorder_layer_gap.json"), `dagre fails on this input: it sets "order" on a node missing from a layer`, false)
-
-	// A NaN minlen makes the engine index out of range.
+	// A NaN minlen makes the engine index out of range. A few inputs of this
+	// set leave an empty position in a layer instead, a panic with dagre's
+	// message (the next check covers those), and are skipped: where NaN
+	// converts to int differently (amd64), one could come first.
 	z := newInputGen(6, "minlen0")
 	found := 0
 	for i := 0; i < 1000 && found < 3; i++ {
 		in := z.input(12)
 		var out LayoutOutput
 		var perr *PanicError
-		if errors.As(LayoutTyped(&in, &out), &perr) {
+		if err := LayoutTyped(&in, &out); errors.As(err, &perr) && !strings.Contains(err.Error(), "missing from a layer") {
 			found++
 			check("minlen0", in, "runtime error: index out of range", true)
 		}
@@ -154,16 +142,41 @@ func TestLayoutTypedPanicBecomesError(t *testing.T) {
 	if found == 0 {
 		t.Fatal("no generated input panics")
 	}
+
+	// Fractional minlens can rank a node outside its cluster's ranks, which
+	// leaves an empty position in a layer that no ordering fills (input 411,
+	// whose numbers are all finite, so that it fails the same way on every
+	// platform).
+	z = newInputGen(5, "fracminlen,fracweight")
+	gaps := 0
+	for i := 0; i < 1000 && gaps == 0; i++ {
+		in := z.input(12)
+		var out LayoutOutput
+		if err := LayoutTyped(&in, &out); err != nil && strings.Contains(err.Error(), "missing from a layer") {
+			gaps++
+			check("layer gap", in, `dagre fails on this input: it sets "order" on a node missing from a layer`, false)
+		}
+	}
+	if gaps == 0 {
+		t.Fatal("no generated input leaves an empty position in a layer")
+	}
 }
 
-// TestConcurrentLayouts lays out D2-shaped inputs from several goroutines
-// and compares the results with serial ones (run it with -race).
+// TestConcurrentLayouts lays out D2-shaped inputs, and the inputs whose
+// ordering order repairs (one of which LayoutTyped lays out twice), from
+// several goroutines and compares the results with serial ones (run it with
+// -race).
 func TestConcurrentLayouts(t *testing.T) {
 	rng := rand.New(rand.NewSource(99))
 	inputs := make([]LayoutInput, 200)
-	want := make([]string, len(inputs))
 	for i := range inputs {
 		inputs[i] = d2ProfileInput(rng, i)
+	}
+	for _, c := range constraintCycleInputs(t) {
+		inputs = append(inputs, c.in)
+	}
+	want := make([]string, len(inputs))
+	for i := range inputs {
 		var out LayoutOutput
 		if err := LayoutTyped(&inputs[i], &out); err != nil {
 			t.Fatal(err)

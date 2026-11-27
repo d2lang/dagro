@@ -43,6 +43,7 @@ var (
 	szChild   = int(reflect.TypeOf(childRec{}).Size())
 	szInRec   = int(reflect.TypeOf(inRec{}).Size())
 	szFrame   = int(reflect.TypeOf(ioFrame{}).Size())
+	szTake    = int(reflect.TypeOf(takeFrame{}).Size())
 	szSouth   = int(reflect.TypeOf(southEntry{}).Size())
 	szConfl   = int(reflect.TypeOf(bkConflict{}).Size())
 	szLP      = int(reflect.TypeOf(lpFrame{}).Size())
@@ -99,7 +100,7 @@ func (s *lstate) retainedBytes() int {
 	n += cap(o.cgEdges) * (8 + szU64SetEntry)
 	n += 8*cap(o.tree) + cap(o.sents)*szSouth + cap(o.levels)*szPtr + len(o.levels)*szLevel + o.levelBytes
 	n += (cap(o.childRecs)+cap(o.parents))*szChild + cap(o.inRecs)*szInRec + cap(o.visited) + cap(o.frames)*szFrame +
-		cap(o.sizes)*szInt
+		cap(o.sizes)*szInt + cap(o.takeStack)*szTake
 
 	p := &s.p
 	n += 4 * (cap(p.predStart) + cap(p.predList) + cap(p.sucStart) + cap(p.sucList) + cap(p.nodes) + cap(p.chead) +
@@ -147,7 +148,8 @@ func capsLayers(layers [][]int32) int {
 // which is counted as well.
 func (L *sortLevel) storageBytes() int {
 	n := 4 * (cap(L.movable) + cap(L.subVS) + cap(L.vsNext) + cap(L.order) + cap(L.sourceSet) + cap(L.processed) +
-		cap(L.resVS) + cap(L.expVS) + cap(L.insKeys) + cap(L.out) + cap(L.final))
+		cap(L.resVS) + cap(L.expVS) + cap(L.insKeys) + cap(L.out) + cap(L.final) + cap(L.absorbedHead) +
+		cap(L.absorbedTail))
 	n += 4 * 4 * (cap(L.expVS) + cap(L.resVS))
 	n += (cap(L.bary) + cap(L.resolved) + cap(L.sortable) + cap(L.unsortable)) * szEntry
 	n += cap(L.subs)*szSubRec + cap(L.cn)*szCNode + (cap(L.inPool)+cap(L.outPool))*szPoolEnt

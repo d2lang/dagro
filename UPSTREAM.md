@@ -111,6 +111,61 @@ The raw seven-point self-loop route intentionally remains identical to Dagre
 3.1.1. Any D2 curve or endpoint-chopping normalization belongs in the D2
 adapter and is not hidden in Dagro.
 
+## Ordering repair
+
+Dagro departs from Dagre on one more class of inputs, on which Dagre fails.
+Dagre's ordering (`lib/order`) can end with an inconsistent layering
+([dagrejs/dagre#234](https://github.com/dagrejs/dagre/issues/234) and
+[#255](https://github.com/dagrejs/dagre/issues/255), open up to 3.1.4). In a
+sweep, `resolveConflicts` merges an entry into its successor when their
+barycenters conflict, but the merged entry does not take over the absorbed
+entry's own incoming constraints, which are never checked against its new
+barycenter. The sort can then put the merged entry before a sibling cluster
+it has to follow; `addSubgraphConstraints` records the reverse constraint,
+which closes a cycle in the sweep's constraint graph, and `resolveConflicts`
+never outputs the entries on that cycle in the sweep's later layers. Their
+nodes keep stale orders, so the layering the sweeps keep can have an empty
+position, a node missing from it, or two nodes on one position. Dagre 0.8
+fails in `assignOrder`; Dagre 3.1.1 skips the empty positions and throws
+`Not possible to find intersection inside of the rectangle` where it was
+checked; Dagro v0.4.0 failed in `assignOrder` or `insertSelfEdges` (`dagre
+fails on this input: it sets "order" on a node missing from a layer`, or
+`"rank"`) or with the intersection error, and laid out some inputs that
+lost a node without it.
+
+Dagro's ordering runs Dagre's sweeps unchanged and checks the layering they
+keep (`orderGap` in `typed_order.go`). Only when it is inconsistent does
+Dagro do anything else:
+
+- An empty position, where Dagre's port fails: Dagro runs the sweeps again
+  from the initial order with the *takeover*. When `resolveConflicts` merges
+  an entry into another, the merged entry also takes over the incoming
+  constraints of the absorbed entry, and of the entries that one absorbed,
+  checks each against its new barycenter, and merges those that conflict
+  the same way (`takeIn`). Dagro keeps that layering when it is consistent;
+  otherwise it runs the sweeps once more as Dagre does and fails where
+  Dagre's port fails, with the same error.
+- Two nodes on one position and none empty: the layout goes on as Dagre's
+  does, since it can still lay out (when the lost node is an inner border
+  node, say). If it fails, `LayoutTyped` lays the input out again with the
+  takeover from the first sweep on, and returns the first error when that
+  layering is inconsistent as well or the layout fails. The repeat draws
+  dummy names from a sequence of its own, so the process-wide counter moves
+  by the first layout's draws only.
+
+Every input that Dagre's port lays out therefore keeps its layout bit for
+bit, and takes the same values from the dummy-name counter; `TestGolden` is
+unchanged. An input that the takeover lets go on past `assignOrder` or
+`insertSelfEdges` also takes counter values for the dummy names added after
+the ordering (those of its self-loops), which the port's failed attempt did
+not all take. The takeover does not rule out every such cycle: a merged entry does
+not take over the outgoing constraints of the entries it absorbs, and a cycle
+can still close through one of those. An input whose layering is
+inconsistent with the takeover too fails as before
+(`testdata/knownsites/takeover_inconsistent.json` is one). The takeover is
+not part of Dagre or of the compatibility patch, and the JavaScript oracle
+tests do not reach it.
+
 ## Out of scope
 
 No parity claim is made for dynamic remembered layout state, per-cluster

@@ -156,6 +156,9 @@ type lstate struct {
 	lazyNodeNames bool
 	lazyRevNames  bool
 	lm            [][]int32
+	// drawNext, when not 0, is the next value draw returns instead of one of
+	// uniqueIDCounter: in a layout that LayoutTyped repeats (relayout).
+	drawNext uint64
 
 	o orderState
 	p posState
@@ -310,13 +313,32 @@ func (s *lstate) nameInUse(name string) bool {
 
 // uniqueIDCounter numbers the dummy nodes whose plain names are taken, as
 // dagre's uniqueId does: process-wide, so that concurrent layouts never draw
-// the same value.
+// the same value, except in a layout that LayoutTyped repeats (see draw).
 var uniqueIDCounter atomic.Uint64
 
 // draw is dagre's uniqueId counter increment: each value is visible to the
 // whole process as soon as it is drawn, and concurrent layouts never draw the
 // same value.
+//
+// A layout that LayoutTyped repeats (relayout) draws from a sequence of its
+// own instead, which starts after the counter's value when the repeat
+// starts, and leaves the counter alone: the counter moves only by the draws
+// of the first layout, as for any layout that fails, whether the repeat lays
+// out or not. Other layouts can draw the same values meanwhile; that is
+// harmless, since the names only need to differ within one layout, and the
+// repeat's own never repeat.
+//
+// A layout that order repairs without a repeat goes on past the point where
+// the original fails, drawing from the counter: insertSelfEdges' dummies can
+// take values that the original's failed attempt did not. Where node ids look
+// like dummy names (see addDummy), layouts depend on the counter's value, so
+// after such a layout a process can lay those out differently than the
+// original would; integer node ids, such as D2's, never do.
 func (s *lstate) draw() uint64 {
+	if s.drawNext != 0 {
+		s.drawNext++
+		return s.drawNext - 1
+	}
 	return uniqueIDCounter.Add(1)
 }
 
@@ -350,10 +372,17 @@ func (s *lstate) runGuarded(in *LayoutInput, out *LayoutOutput) (err error) {
 	return nil
 }
 
-// failNilMapWrite stops the layout where dagre writes key into the label of
-// a node that is not in its graph (an entry missing from a layer of the
-// layer matrix), which fails in dagre too ("assignment to entry in nil map").
-// The sites are assignOrder, insertSelfEdges and positionY.
+// failNilMapWrite stops the layout where the original writes key into the
+// label of an entry missing from a layer of the layer matrix. Dagro's
+// earlier line-by-line port of dagre failed there ("assignment to entry in
+// nil map"), as dagre 0.8 does in assignOrder; dagre.js 3.x skips such
+// entries and, on the inputs checked, fails later with "not possible to find
+// intersection inside of the rectangle". The sites are assignOrder,
+// insertSelfEdges and positionY. order repairs most layerings that dagre's
+// constraint cycles leave with empty positions (see order): the inputs that
+// still fail here are those whose repaired layering is inconsistent too, and
+// those with empty positions from other causes, such as unusual minlens that
+// rank a node outside its cluster's ranks.
 func (s *lstate) failNilMapWrite(key string) {
 	panic(fmt.Sprintf("dagre fails on this input: it sets %q on a node missing from a layer", key))
 }
@@ -438,6 +467,7 @@ func (s *lstate) begin(nodes, edges int) {
 	}
 	s.nextNameKey = 0
 	s.lazyNodeNames, s.lazyRevNames = true, true
+	s.o.gap = gapNone
 	// Dummy nodes and internal edges typically outnumber the input; size the
 	// label storage once instead of growing it repeatedly.
 	if want := 2*(nodes+edges) + 32; cap(s.nl) < want {
@@ -480,7 +510,9 @@ func (s *lstate) run() error {
 	s.runNormalize()
 	s.parentDummyChains()
 	s.addBorderSegments()
-	s.order()
+	if err := s.order(); err != nil {
+		return err
+	}
 	s.insertSelfEdges()
 	s.adjustCoordinateSystem()
 	s.position()

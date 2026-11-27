@@ -51,6 +51,9 @@ func main() {
 produces exactly the numbers Dagre 3.1.1 produces for the equivalent Graphlib
 graph (see the `LayoutInput` documentation). Nodes refer to their parents and
 edges to their endpoints by index; the output is indexed like the input.
+Where Dagre's ordering leaves its layering inconsistent, on which Dagre
+fails, Dagro repairs the ordering where it can (see
+[Changes in v0.4.1](#changes-in-v041)).
 
 It returns an error instead of a layout for:
 
@@ -59,15 +62,65 @@ It returns an error instead of a layout for:
   id, a parent out of range or parents forming a cycle, an edge endpoint out of
   range or with children, two edges with the same endpoints and name, or more
   than 2^26 ranks;
-- inputs on which Dagre itself fails, and any other panic inside the layout,
-  with a `*PanicError` whose `Value` is the panic value (for example
-  `dagro: layout failed: dagre fails on this input: it sets "order" on a node
-  missing from a layer`);
+- inputs on which the layout panics, with a `*PanicError` whose `Value` is
+  the panic value: inputs whose layer matrix keeps an empty position
+  (`dagro: layout failed: dagre fails on this input: it sets "order" on a node
+  missing from a layer`), because the ordering repair's layering is
+  inconsistent too or, with unusual `minlen` values, for other reasons; and
+  defects of the engine, such as the runtime errors some inputs with unusual
+  numbers raise (a `minlen` of 0, say);
 - Dagre's own error `not possible to find intersection inside of the
   rectangle`.
 
 `LayoutTyped` is safe for concurrent use and does not panic; only fatal runtime
 errors, such as running out of memory, end the program.
+
+### Changes in v0.4.1
+
+On some compound graphs, Dagre's ordering ends with an inconsistent
+layering: within a sweep, a merge of two conflicting entries lets the sort
+break a constraint between sibling clusters, the sweep's constraint graph
+gets a cycle, and the clusters on it are left out of the sweep's later
+layers, their nodes keeping stale positions
+([dagrejs/dagre#234](https://github.com/dagrejs/dagre/issues/234),
+[#255](https://github.com/dagrejs/dagre/issues/255)). Nested D2 diagrams with
+three or more sibling containers and connections between their contents can
+do this. v0.4.0 failed on them with `dagro: layout failed: dagre fails on this
+input: it sets "order" on a node missing from a layer` (or `"rank"`), or with
+`not possible to find intersection inside of the rectangle`; Dagre 3.1.1 fails
+on them too.
+
+v0.4.1 lays out nearly all of them. Its ordering runs exactly as before and
+checks the layering it ends with; only when that layering is inconsistent
+does it order again with a repair, in which a merged entry takes over the
+constraints of the entries it absorbs (see
+[UPSTREAM.md](UPSTREAM.md#ordering-repair)). So every input that v0.4.0 laid
+out gets the same layout, bit for bit, and takes the same values from the
+dummy-name counter: `TestGolden` is unchanged. A layering that lost a node
+can still lay out, so `LayoutTyped` repeats such a layout with the repair
+only after it fails; those inputs cost up to two layouts.
+
+Limits of the repair:
+
+- It does not rule out every cycle. Where its own layering is inconsistent
+  too, the input fails as before, as a D2 diagram with ordinary numbers in
+  the tests does (`testdata/knownsites/takeover_inconsistent.json`). So do
+  inputs whose empty positions have other causes, such as unusual `minlen`
+  values.
+- On inputs with unusual numbers (a `minlen` of 0, NaN sizes), a layout that
+  v0.4.0 stopped in the ordering can now go on and fail later with another
+  error (`not possible to find intersection inside of the rectangle`, or a
+  runtime error), or end with non-finite coordinates. D2 always uses a
+  `minlen` and a `weight` of 1.
+- A layering that lost a node but lays out keeps v0.4.0's layout, which can
+  have a node outside its cluster or, when the lost node is a cluster's top
+  or bottom border, non-finite coordinates (D2 rejects those).
+- A repaired layout takes counter values for the dummy names it adds after
+  the ordering (those of its self-loops), which v0.4.0's failed attempt did
+  not all take. Layouts whose node ids look like dummy names (such as `_d17`)
+  depend on the counter's value, so after such an input a process can lay
+  those out differently than with v0.4.0. D2's node ids are integers and are
+  not affected.
 
 ### Changes in v0.4.0
 
@@ -106,10 +159,15 @@ The normal Go suite runs the complete 311-input corpus through `LayoutTyped`.
 random inputs with every option and unusual values) against
 `testdata/golden`, results recorded with v0.3.1's typed engine when the Graph
 engine and Dagre still checked it: the kind of outcome, the dummy-name counter
-draws and a hash of the exact bits of each layout. CI additionally
-installs the exact JavaScript oracle from `package-lock.json`, checks ordinary
-fixtures against official Dagre 3.1.1 using exact `float64` bits, and verifies
-the three captured upstream failures plus the minimized synthetic divergence:
+draws and a hash of the exact bits of each layout. `typed_repair_test.go`
+checks the ordering repair on the inputs of `testdata/knownsites`: those on
+which Dagre's ordering fails lay out with every child inside its parent, with
+pinned results; one on which the repair's layering is inconsistent too fails
+as with v0.4.0; and one whose layering loses a node but lays out keeps
+v0.4.0's layout. CI additionally installs the exact JavaScript oracle from
+`package-lock.json`, checks ordinary fixtures against official Dagre 3.1.1
+using exact `float64` bits, and verifies the three captured upstream
+failures plus the minimized synthetic divergence:
 
 ```sh
 cd testdata/differential

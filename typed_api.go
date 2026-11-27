@@ -15,7 +15,9 @@ import (
 // when set), built by calling, for each node in order, setNode(ID, {width,
 // height}) and, when Parent >= 0, setParent(ID, Nodes[Parent].ID), and then
 // setEdge for each edge in order with all six edge attributes and, when
-// HasName, its name.
+// HasName, its name. Where dagre fails because its ordering left a layering
+// inconsistent, LayoutTyped repairs the ordering where it can (see
+// LayoutTyped).
 //
 // Zero values are not dagre's defaults: start from DefaultLayoutInput and
 // NewLayoutEdge, or set every field. In particular RankDir "" and LabelPos ""
@@ -101,10 +103,13 @@ func NewLayoutEdge(v, w int) LayoutEdge {
 // than 2^26 ranks.
 var ErrUnsupportedInput = errors.New("dagro: unsupported input")
 
-// PanicError is the error LayoutTyped returns when the layout panics, which
-// it does where dagre itself fails (for example "dagre fails on this input:
-// it sets \"order\" on a node missing from a layer") and on a defect of the
-// engine. Value is the value passed to panic.
+// PanicError is the error LayoutTyped returns when the layout panics: where
+// the layout writes into the label of an entry missing from a layer of its
+// layer matrix (for example "dagre fails on this input: it sets \"order\" on
+// a node missing from a layer"), which inputs reach whose layering the
+// ordering repair leaves inconsistent too, and some with unusual minlens; and
+// on a defect of the engine, such as the runtime errors that some inputs with
+// unusual numbers raise. Value is the value passed to panic.
 type PanicError struct {
 	Value any
 }
@@ -128,6 +133,16 @@ func (e *PanicError) Unwrap() error {
 // "not possible to find intersection inside of the rectangle" as dagre
 // raises it. LayoutTyped never panics, except on a fatal error such as
 // running out of memory.
+//
+// Where dagre's ordering ends with an inconsistent layering, on which dagre
+// fails, LayoutTyped orders again with a repair (see the README), and fails
+// as dagre does where the repair's layering is inconsistent too. A layering
+// that lost a node can still lay out, so LayoutTyped repeats such a layout,
+// with the repair from the start, only after it fails, and returns the first
+// error if the repeat fails too: such an input costs up to two layouts. A
+// layout that lost a node but does not fail is returned without a repair:
+// it can have a node outside its cluster or, when the lost node is a
+// cluster's top or bottom border, non-finite coordinates.
 func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
 	if typedFastPaths && layoutSingleNode(in, out) {
 		return nil
@@ -137,16 +152,47 @@ func LayoutTyped(in *LayoutInput, out *LayoutOutput) error {
 		putLState(s)
 		return err
 	}
-	if err := s.runGuarded(in, out); err != nil {
-		if _, ok := err.(*PanicError); !ok && err != errDecline {
-			putLState(s)
-		}
-		// After a panic s is dropped: it may be inconsistent.
-		return err
+	err := s.runGuarded(in, out)
+	lost := err != nil && s.o.gap == gapLost // read before s is kept for others
+	putLStateAfter(s, err)
+	if lost && relayout(in, out) {
+		return nil
 	}
-	putLState(s)
-	return nil
+	return err
 }
+
+// putLStateAfter keeps s for the next call (putLState) after a layout that
+// returned err, unless the layout panicked: s may then be inconsistent, and
+// is dropped.
+func putLStateAfter(s *lstate, err error) {
+	if _, ok := err.(*PanicError); !ok && err != errDecline {
+		putLState(s)
+	}
+}
+
+// relayout lays in out again after a layout that failed when its ordering
+// had put two nodes of a rank on one position (gapLost), so that the layer
+// matrix lost one of them. The repeat orders with the takeover from the
+// start (see order) and gives up if its layering is inconsistent all the
+// same. relayout reports whether it laid out. The repeat draws dummy names
+// from a sequence of its own (see draw).
+func relayout(in *LayoutInput, out *LayoutOutput) bool {
+	s := getLState()
+	s.drawNext = uniqueIDCounter.Load() + 1
+	s.o.repeat = true
+	err := s.buildTyped(in)
+	if err == nil {
+		err = s.runGuarded(in, out)
+	}
+	s.drawNext, s.o.repeat = 0, false
+	putLStateAfter(s, err)
+	return err == nil
+}
+
+// errRepeatInconsistent is the error with which order gives up on a layout
+// that LayoutTyped repeats when its layering is inconsistent too; LayoutTyped
+// then returns the first layout's error.
+var errRepeatInconsistent = errors.New("dagro: the repeated layout's layering is inconsistent")
 
 // typedFastPaths enables the closed-form results below (tests turn it off to
 // compare them with the engine).
