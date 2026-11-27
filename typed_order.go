@@ -103,10 +103,21 @@ type sortLevel struct {
 	ss         sortableSorter
 	us         unsortableSorter
 	baryVals   []float64
-	bytes      int // storageBytes as of the end of the last order that used the level
+	// The entries each conflict entry absorbed, in the order it absorbed
+	// them (lists of entry indices in inPool), with the takeover only.
+	absorbedHead, absorbedTail []int32
+	bytes                      int // storageBytes as of the end of the last order that used the level
 }
 
 type ioFrame struct{ start, end, pos int }
+
+// takeFrame is a frame of takeIn's walk: the entry e whose incoming entries
+// (absorbed false) or absorbed entries (absorbed true) it visits, and the
+// next one, k, a position in inPool.
+type takeFrame struct {
+	e, k     int32
+	absorbed bool
+}
 
 type orderState struct {
 	s       *lstate
@@ -156,6 +167,17 @@ type orderState struct {
 	rs         rankSorter
 	rankStart  []int32
 	rankSorted []int32
+	takeStack  []takeFrame
+
+	// The ordering repair (see order). takeover makes resolveConflicts let
+	// a merged entry take over the incoming constraints of the entries it
+	// absorbs (takeIn). repeat is set in a layout that LayoutTyped repeats
+	// (relayout): order then uses the takeover from its first run on, and
+	// gives up when the layering is inconsistent all the same. gap is the
+	// orderGap of order's first run in the current layout (begin resets
+	// it), which LayoutTyped reads.
+	takeover, repeat bool
+	gap              int
 }
 
 func (o *orderState) ensure(n int) {
@@ -413,7 +435,9 @@ func (o *orderState) localIn(lg *layerGraph, v int32) int32 {
 // maxTypedRank bounds the ranks the typed order accepts (see order).
 const maxTypedRank = 1 << 26
 
-func (s *lstate) order() {
+// order is dagre's order, which can give up on a layout LayoutTyped repeats
+// (errRepeatInconsistent).
+func (s *lstate) order() error {
 	o := &s.o
 	o.reset(s)
 	o.nodes = append(o.nodes[:0], s.nodes()...)
@@ -497,8 +521,76 @@ func (s *lstate) order() {
 	}
 	o.ensure(len(s.nl))
 
+	// dagre's ordering can end with an inconsistent layering
+	// (dagrejs/dagre#234 and #255). In a sweep, a merge in resolveConflicts
+	// can make the sort break a constraint between sibling clusters;
+	// addSubgraphConstraints then closes a cycle in the sweep's constraint
+	// graph, and resolveConflicts leaves the clusters on the cycle out of the
+	// sweep's later layers (see takeIn), so that their nodes keep stale
+	// orders. The layering the sweeps keep can then have an empty position
+	// (gapEmpty), a node missing from it whose stale order leaves one
+	// (gapMissing), or two nodes on one position (gapLost). The original
+	// fails on the first two, in assignOrder or insertSelfEdges. On the
+	// third, the layer matrix loses one of the two nodes, and the layout
+	// fails later ("not possible to find intersection inside of the
+	// rectangle") or lays out without it: with non-finite coordinates, or
+	// fine when the rest of the layout can do without the node (an inner
+	// border node). dagre.js 3.1.1 fails on such inputs too, with that error
+	// where it was checked.
+	//
+	// So order runs the sweeps exactly as dagre's, and changes nothing unless
+	// their layering is inconsistent: every input the original lays out keeps
+	// its layout bit for bit. Where the original fails on an empty position,
+	// order runs the sweeps again from the initial order with the takeover
+	// (takeIn), which avoids most of these cycles but not all, and keeps that
+	// layering when it is consistent; otherwise it runs them once more as the
+	// original does, and the layout fails where the original fails. Two nodes
+	// on one position stay as they are, since the original can lay them out:
+	// LayoutTyped repeats a layout that fails after them, with the takeover
+	// from the start (relayout).
+	//
+	// A layout that the takeover lets go on past assignOrder or
+	// insertSelfEdges can still fail later, or end with non-finite numbers,
+	// on inputs with unusual numbers (a minlen of 0, NaN sizes). It draws
+	// the names of insertSelfEdges' dummies from the counter, which the
+	// original, stopped before them, did not all draw (see draw).
+	o.takeover = o.repeat
 	s.assignOrder(o.initOrder(nodes))
+	o.gap = o.orderGap(nodes, maxRank, o.sweeps(nodes, maxRank, downCount))
+	var err error
+	switch {
+	case o.gap == gapNone:
+	case o.repeat:
+		// The repeated layout gives up: LayoutTyped returns the first
+		// layout's error.
+		err = errRepeatInconsistent
+	case o.gap == gapLost:
+		// Left as it is (see above).
+	default:
+		// An empty position, on which the original fails.
+		o.takeover = true
+		s.assignOrder(o.initOrder(nodes))
+		if o.orderGap(nodes, maxRank, o.sweeps(nodes, maxRank, downCount)) != gapNone {
+			o.takeover = false
+			s.assignOrder(o.initOrder(nodes))
+			if o.sweeps(nodes, maxRank, downCount) {
+				s.assignOrder(o.best)
+			}
+		}
+	}
+	o.takeover = false
+	for _, L := range o.levels[:o.depthUsed+1] {
+		b := L.storageBytes()
+		o.levelBytes += b - L.bytes
+		L.bytes = b
+	}
+	return err
+}
 
+// sweeps runs dagre's sweeps from the current orders and keeps the layering
+// with the fewest crossings in o.best. It reports whether it kept one.
+func (o *orderState) sweeps(nodes []int32, maxRank, downCount int) bool {
+	s := o.s
 	bestCC := math.Inf(1)
 	haveBest := false
 	for i, lastBest := 0, 0; lastBest < 4; i, lastBest = i+1, lastBest+1 {
@@ -519,14 +611,70 @@ func (s *lstate) order() {
 			haveBest = true
 		}
 	}
+	return haveBest
+}
+
+// Results of orderGap: whether the layering an ordering run ends with is
+// consistent, and how it is not.
+const (
+	gapNone    = iota
+	gapEmpty   // o.best has an empty position: assignOrder fails on it
+	gapMissing // the orders leave a position empty: insertSelfEdges fails on it
+	gapLost    // no position is empty, but two nodes of a rank share one
+)
+
+// orderGap ends an ordering run as dagre's order does, assigning o.best when
+// there is one (haveBest), and reports whether the orders of the nodes are
+// then consistent: every rank's positions, from 0 to the number of its nodes,
+// hold one node each (gapNone). The nodes the sweeps leave out keep stale
+// orders. A layer of o.best can then have an empty position (gapEmpty), and
+// orderGap does not assign it. A node missing from o.best keeps its stale
+// order, which can leave a position past its rank's end empty (gapMissing,
+// as can the orders of the last sweep without o.best) or fall on a position
+// another node holds (gapLost).
+func (o *orderState) orderGap(nodes []int32, maxRank int, haveBest bool) int {
+	s := o.s
+	placed := 0
 	if haveBest {
+		for _, layer := range o.best {
+			for _, v := range layer {
+				if v == inone {
+					return gapEmpty
+				}
+			}
+			placed += len(layer)
+		}
 		s.assignOrder(o.best)
 	}
-	for _, L := range o.levels[:o.depthUsed+1] {
-		b := L.storageBytes()
-		o.levelBytes += b - L.bytes
-		L.bytes = b
+	// The nodes layerMatrix places; each takes one position of its rank.
+	want := 0
+	for _, v := range nodes {
+		n := &s.nl[v]
+		if n.hasRank && n.hasOrder {
+			if rank := int(n.rank); rank >= 0 && rank <= maxRank && int(n.order) >= 0 {
+				want++
+			}
+		}
 	}
+	// o.best holds distinct nodes, all of which layerMatrix places: when it
+	// holds as many as layerMatrix places, they are the same nodes, every
+	// one at its position in o.best. That is the common case.
+	if haveBest && placed == want {
+		return gapNone
+	}
+	placed = 0
+	for _, layer := range o.layerMatrix(nodes, maxRank) {
+		for _, v := range layer {
+			if v == inone {
+				return gapMissing
+			}
+		}
+		placed += len(layer)
+	}
+	if placed != want {
+		return gapLost
+	}
+	return gapNone
 }
 
 // copyIDLayering copies src into dst's storage (cloneLayering) and adds the
@@ -1130,19 +1278,32 @@ func (o *orderState) resolveConflicts(L *sortLevel, entries []typedOrderEntry) [
 			sourceSet = append(sourceSet, i)
 		}
 	}
+	if o.takeover {
+		L.absorbedHead = grow(L.absorbedHead, len(entries))
+		L.absorbedTail = grow(L.absorbedTail, len(entries))
+		for i := range L.absorbedHead {
+			L.absorbedHead[i], L.absorbedTail[i] = inone, inone
+		}
+	}
 	processed := L.processed[:0]
 	for len(sourceSet) > 0 {
 		i := sourceSet[len(sourceSet)-1]
 		sourceSet = sourceSet[:len(sourceSet)-1]
 		processed = append(processed, i)
 		entry := &L.cn[i]
-		for k := entry.inHead; k != inone; k = L.inPool[k].next {
-			incoming := &L.cn[L.inPool[k].node]
-			if incoming.merged {
-				continue
+		if o.takeover {
+			for k := entry.inHead; k != inone; k = L.inPool[k].next {
+				o.takeIn(L, i, L.inPool[k].node)
 			}
-			if !incoming.e.has || !entry.e.has || incoming.e.barycenter >= entry.e.barycenter {
-				mergeTypedEntries(L, entry, incoming)
+		} else {
+			for k := entry.inHead; k != inone; k = L.inPool[k].next {
+				incoming := &L.cn[L.inPool[k].node]
+				if incoming.merged {
+					continue
+				}
+				if conflicts(incoming, entry) {
+					mergeTypedEntries(L, entry, incoming)
+				}
 			}
 		}
 		for k := entry.outHead; k != inone; k = L.outPool[k].next {
@@ -1187,6 +1348,89 @@ func (o *orderState) resolveConflicts(L *sortLevel, entries []typedOrderEntry) [
 	}
 	L.resolved = result
 	return result
+}
+
+// takeIn is resolveConflicts' handleIn with the takeover, for the processed
+// entry vi and its incoming entry ui (a constraint ui -> vi).
+//
+// handleIn merges u into v when their barycenters conflict (u's is not below
+// v's), but v does not take over u's own incoming constraints: an entry w
+// that has to stay before u, checked against u's barycenter when u was
+// processed, is never checked against the merged entry, whose barycenter can
+// be below w's. The sort then puts the merged entry before w,
+// addSubgraphConstraints adds the reverse of the constraint w -> u, which
+// closes a cycle in the sweep's constraint graph, and resolveConflicts never
+// processes the entries on the cycle in the sweep's later layers.
+//
+// With the takeover, when v absorbs u (merging it as handleIn does), it
+// takes over u's incoming entries: it checks each against its new
+// barycenter and absorbs the conflicting ones the same way, depth first, and
+// then the incoming entries u took over from the entries it absorbed before,
+// in the order it absorbed them:
+//
+//	takeIn(v, u) = if absorb(v, u) { walk(u) }
+//	walk(u)      = for w in u's incoming entries: if absorb(v, w) { walk(w) }
+//	               then for a in the entries u absorbed: walk(a)
+//
+// The entries each entry absorbed are kept in lists (absorbedHead), which
+// the walk follows, so that no list of incoming entries is copied.
+//
+// This does not rule out every such cycle: v does not take over the
+// outgoing constraints of the entries it absorbs (u -> x, which x checks
+// against u only, and skips once u is merged), and a cycle can still close
+// through one of those. order checks the layering the takeover gives and
+// falls back to the original's.
+func (o *orderState) takeIn(L *sortLevel, vi, ui int32) {
+	if !absorb(L, vi, ui) {
+		return
+	}
+	stack := append(o.takeStack[:0], takeFrame{e: ui, k: L.cn[ui].inHead})
+	for len(stack) > 0 {
+		f := &stack[len(stack)-1]
+		if f.k == inone {
+			if f.absorbed {
+				stack = stack[:len(stack)-1]
+			} else {
+				f.k, f.absorbed = L.absorbedHead[f.e], true
+			}
+			continue
+		}
+		w := L.inPool[f.k].node
+		f.k = L.inPool[f.k].next
+		// An incoming entry is checked against v; an entry that f.e
+		// absorbed was merged already, and its own lists are walked.
+		if f.absorbed || absorb(L, vi, w) {
+			stack = append(stack, takeFrame{e: w, k: L.cn[w].inHead})
+		}
+	}
+	o.takeStack = stack[:0]
+}
+
+// conflicts reports whether the barycenters of an entry u that has to stay
+// before v and of v conflict, as handleIn checks them: one of them has none,
+// or u's is not below v's.
+func conflicts(u, v *cnode) bool {
+	return !u.e.has || !v.e.has || u.e.barycenter >= v.e.barycenter
+}
+
+// absorb merges ui into vi as handleIn does, when ui is not merged and their
+// barycenters conflict, and appends ui to the entries vi absorbed. It
+// reports whether it merged them.
+func absorb(L *sortLevel, vi, ui int32) bool {
+	u, v := &L.cn[ui], &L.cn[vi]
+	if u.merged || !conflicts(u, v) {
+		return false
+	}
+	mergeTypedEntries(L, v, u)
+	k := int32(len(L.inPool))
+	L.inPool = append(L.inPool, poolEnt{node: ui, next: inone})
+	if t := L.absorbedTail[vi]; t != inone {
+		L.inPool[t].next = k
+	} else {
+		L.absorbedHead[vi] = k
+	}
+	L.absorbedTail[vi] = k
+	return true
 }
 
 func mergeTypedEntries(L *sortLevel, target, source *cnode) {
